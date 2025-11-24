@@ -1,0 +1,11 @@
+/* Reset doux + fond */
+html, body {
+  height: 100%;
+  font-family: Roboto, Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  background: linear-gradient(180deg, #f6f8ff, #eef2ff);
+}
+
+/* Utilitaires */
+.full { width: 100%; }
+.center { display: grid; place-items: center; }

@@ -1,0 +1,8 @@
+<mat-toolbar color="primary">
+  <span>Autos Stock</span>
+  <span class="spacer"></span>
+  <button mat-button *ngIf="auth.isAuthenticated()" (click)="logout()">
+    <mat-icon>logout</mat-icon>&nbsp;Déconnexion
+  </button>
+</mat-toolbar>
+<router-outlet></router-outlet>

@@ -1,0 +1,40 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Connexion</h1>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label class="label" for="email">Email</label>
+        <div class="input-wrap">
+          <input id="email" type="email" class="input" formControlName="email" placeholder="joel@example.com" />
+        </div>
+        <div class="error" *ngIf="form.controls.email.touched && form.controls.email.invalid">
+          Email requis/valide
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="password">Mot de passe</label>
+        <div class="input-wrap">
+          <input id="password" [type]="hide ? 'password' : 'text'" class="input" formControlName="password" placeholder="••••••••" />
+          <button type="button" class="toggle" (click)="hide = !hide" aria-label="Afficher le mot de passe">
+            <!-- mets ton icône SVG ou <span class="material-icons">visibility</span> -->
+            <span class="material-icons"> {{ hide ? 'visibility' : 'visibility_off' }} </span>
+          </button>
+        </div>
+        <div class="error" *ngIf="form.controls.password.touched && form.controls.password.invalid">
+          6 caractères minimum
+        </div>
+      </div>
+
+      <button class="btn" type="submit" [disabled]="loading || form.invalid">
+        {{ loading ? '...' : 'Se connecter' }}
+      </button>
+
+      <div class="meta">
+        <span></span>
+        <a href="#">Mot de passe oublié ?</a>
+      </div>
+    </form>
+  </div>
+</div>
