@@ -1,0 +1,10 @@
+.dash { padding: clamp(12px, 2.4vw, 20px); }
+.grid { display:grid; grid-template-columns:repeat(12,1fr); gap:12px; margin-bottom:16px; }
+.kpi { grid-column: span 12; display:grid; grid-template-columns:56px 1fr; align-items:center; gap:12px; padding:14px 16px; border-radius:14px; cursor:pointer; }
+.kpi-icon { width:56px; height:56px; border-radius:12px; display:grid; place-items:center; background: color-mix(in oklab, var(--accent) 18%, transparent); }
+.kpi-icon mat-icon { color: var(--accent); }
+.kpi-value { font-size:1.6rem; font-weight:800 }
+.kpi-label { color:#6b7280 }
+@media (min-width:640px){ .kpi{ grid-column:span 6;} }
+@media (min-width:1024px){ .kpi{ grid-column:span 4;} }
+.welcome { padding:16px; border-radius:14px; }

@@ -35,6 +35,8 @@ public class Voiture extends AbstractEntity {
     @Column(nullable = false)
     private LocalDateTime dateEntreeStock;
 
+    private Long kilometrage;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatutVoiture statut = StatutVoiture.EN_STOCK;

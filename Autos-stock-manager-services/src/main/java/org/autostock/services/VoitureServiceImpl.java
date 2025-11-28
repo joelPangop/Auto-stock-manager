@@ -1,11 +1,16 @@
 package org.autostock.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.autostock.dtos.VoitureUpdateDto;
 import org.autostock.enums.StatutVoiture;
 import org.autostock.enums.TypeMouvement;
+import org.autostock.models.Fournisseur;
+import org.autostock.models.Modele;
 import org.autostock.models.Voiture;
+import org.autostock.repositories.FournisseurRepository;
 import org.autostock.repositories.VoitureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +24,9 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
 
     @Autowired
     private StockMouvementService stockMouvementService;
+
+    @Autowired
+    private FournisseurRepository fournisseurRepository;
 
     @Override
     public Voiture create(Voiture voiture) {
@@ -37,6 +45,7 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
 
     @Override
     public List<Voiture> listerVoituresParMarqueEtStatut(String nomMarque, StatutVoiture statut) {
+
         return List.of();
     }
 
@@ -75,4 +84,16 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
         stockMouvementService.enregistrerMouvement(saved, TypeMouvement.VENTE, "Vente du véhicule");
         return saved;
     }
+
+    @Transactional
+    public Voiture update(Long id, Voiture v) {
+        Voiture existedVoiture = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));;
+                v.setId(existedVoiture.getId());
+                v.setVente(existedVoiture.getVente());
+                v.setDateEntreeStock(existedVoiture.getDateEntreeStock());
+                v.setVersion(existedVoiture.getVersion());
+        return repository.save(v);
+    }
+
 }

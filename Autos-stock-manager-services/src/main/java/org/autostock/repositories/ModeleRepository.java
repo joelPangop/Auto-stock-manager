@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ModeleRepository extends JpaRepository<Modele, Long> {
-
+    List<Modele> findByMarque_Id(Long idMarque);
     // Tous les modèles d'une marque (par id marque)
 //    List<Modele> findByMarque_IdMarque(Long marqueId);
 

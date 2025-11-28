@@ -1,4 +1,4 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import jakarta.validation.Valid;
 import org.autostock.dtos.auth.AuthResponse;

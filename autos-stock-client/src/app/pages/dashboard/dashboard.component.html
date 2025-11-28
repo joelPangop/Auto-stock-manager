@@ -1,1 +1,52 @@
-<p>dashboard works!</p>
+<div class="dash">
+  <h2>Vue d’ensemble</h2>
+
+  <section class="grid">
+    <!-- Voitures -->
+    <mat-card class="kpi" [style.--accent]="'#1d4ed8'" (click)="go('/voitures')" tabindex="0">
+      <div class="kpi-icon">
+        <mat-icon>directions_car</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-value">
+          <ng-container *ngIf="voituresCount$ | async as vc; else dash">{{ vc }}</ng-container>
+        </div>
+        <div class="kpi-label">Voitures</div>
+      </div>
+    </mat-card>
+
+    <!-- Ventes -->
+    <mat-card class="kpi" [style.--accent]="'#16a34a'" (click)="go('/ventes')">
+      <div class="kpi-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-value">
+          <ng-container *ngIf="ventesCount$ | async as ve; else dash">{{ ve }}</ng-container>
+        </div>
+        <div class="kpi-label">Ventes</div>
+      </div>
+    </mat-card>
+
+    <!-- Clients -->
+    <mat-card class="kpi" [style.--accent]="'#9333ea'" (click)="go('/clients')">
+      <div class="kpi-icon">
+        <mat-icon>group</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-value">
+          <ng-container *ngIf="clientsCount$ | async as cl; else dash">{{ cl }}</ng-container>
+        </div>
+        <div class="kpi-label">Clients</div>
+      </div>
+    </mat-card>
+
+    <!-- Fallback affiché quand la valeur est null/undefined/en cours -->
+    <ng-template #dash>—</ng-template>
+  </section>
+
+  <mat-card class="welcome">
+    <div class="title">Dernières activités</div>
+    <div class="subtitle">Ventes récentes, mouvements de stock, entretiens à venir.</div>
+  </mat-card>
+</div>

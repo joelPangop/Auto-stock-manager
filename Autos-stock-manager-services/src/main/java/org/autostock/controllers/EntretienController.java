@@ -1,4 +1,4 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.autostock.dtos.EntretienCreateDto;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/voitures/{idVoiture}/entretiens")
+@RequestMapping("/api/entretiens")
 @RequiredArgsConstructor
 public class EntretienController {
 
@@ -22,15 +22,15 @@ public class EntretienController {
     @Autowired
     private EntretienMapper entretienMapper;
 
-    @PostMapping
+    @PostMapping("/voiture/{idVoiture}")
     public EntretienDto add(@PathVariable Long idVoiture, @RequestBody EntretienCreateDto dto) {
         Entretien e = entretienService.ajouterEntretien(idVoiture, entretienMapper.toEntity(dto));
         return entretienMapper.toDto(e);
     }
 
-    @GetMapping
-    public List<EntretienDto> list(@PathVariable Long idVoiture) {
-        return entretienService.entretiensVoiture(idVoiture).stream()
+    @GetMapping("/voiture/{voitureId}")
+    public List<EntretienDto> list(@PathVariable Long voitureId) {
+        return entretienService.entretiensVoiture(voitureId).stream()
                 .map(entretienMapper::toDto).toList();
     }
 }

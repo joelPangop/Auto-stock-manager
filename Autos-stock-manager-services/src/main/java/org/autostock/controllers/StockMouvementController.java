@@ -1,4 +1,4 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.autostock.dtos.StockMouvementDto;
@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/voitures/{idVoiture}/mouvements")
+@RequestMapping("/api/mouvements")
 @RequiredArgsConstructor
 public class StockMouvementController {
 
     @Autowired
     private StockMouvementService stockMouvementService;
 
-    @GetMapping
-    public List<StockMouvementDto> list(@PathVariable Long idVoiture) {
-        return stockMouvementService.historiqueVoiture(idVoiture).stream().map(m -> {
+    @GetMapping("/voiture/{voitureId}")
+    public List<StockMouvementDto> list(@PathVariable Long voitureId) {
+        return stockMouvementService.historiqueVoiture(voitureId).stream().map(m -> {
             var dto = new StockMouvementDto();
             dto.setId(m.getId());
             dto.setType(m.getType().getValue());

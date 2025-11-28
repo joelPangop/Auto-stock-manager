@@ -1,4 +1,4 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.autostock.dtos.PaiementCreateDto;

@@ -1,11 +1,8 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.autostock.dtos.StockMouvementDto;
-import org.autostock.dtos.VoitureCreateDto;
-import org.autostock.dtos.VoitureDetailDto;
-import org.autostock.dtos.VoitureListDto;
+import org.autostock.dtos.*;
 import org.autostock.enums.StatutVoiture;
 import org.autostock.mappers.VoitureMapper;
 import org.autostock.models.Fournisseur;
@@ -59,6 +56,11 @@ public class VoitureController {
         return voitureMapper.toDetailDto(v);
     }
 
+    @GetMapping("/count")
+    public Integer count(){
+        return voitureService.findAll().size();
+    }
+
     @GetMapping
     public List<VoitureListDto> list(@RequestParam(required = false) String marque,
                                      @RequestParam(required = false) StatutVoiture statut) {
@@ -110,4 +112,19 @@ public class VoitureController {
     public void delete(@PathVariable Long id) {
         voitureService.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+    public VoitureDetailDto update(@PathVariable Long id, @RequestBody VoitureUpdateDto dto) {
+
+        Modele modele = modeleRepository.findById(dto.getIdModele())
+                .orElseThrow(() -> new EntityNotFoundException("Modèle introuvable"));
+        Fournisseur fournisseur = (dto.getIdFournisseur() == null) ? null :
+                fournisseurRepository.findById(dto.getIdFournisseur())
+                        .orElseThrow(() -> new EntityNotFoundException("Fournisseur introuvable"));
+
+//        Voiture saved = voitureService.create(voitureMapper.toEntity(dto, modele, fournisseur));
+        Voiture updated = voitureService.update(id, voitureMapper.toUpdatedEntity(dto, modele, fournisseur));
+        return voitureMapper.toDetailDto(updated);
+    }
+
 }

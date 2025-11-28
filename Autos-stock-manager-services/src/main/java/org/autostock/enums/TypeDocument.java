@@ -8,7 +8,8 @@ public enum TypeDocument {
     IMMATRICULATION("Certificat d'immatriculation", "REGISTRATION"),
     INSPECTION("Rapport d'inspection", "INSPECTION"),
     CONTRAT("Contrat de vente", "CONTRACT"),
-    AUTRE("Autre document", "OTHER");
+    AUTRE("Autre document", "OTHER"),
+    PHOTO("Photo", "PHOTO");
 
     private final String label;
     private final String value;

@@ -1,5 +1,6 @@
 package org.autostock.services;
 
+import org.autostock.dtos.VoitureUpdateDto;
 import org.autostock.enums.StatutVoiture;
 import org.autostock.models.Voiture;
 
@@ -19,4 +20,6 @@ public interface VoitureService extends IService<Voiture, Long> {
     Voiture libererReservation(Long idVoiture);
 
     Voiture marquerVendue(Long idVoiture);
+
+    Voiture update(Long id, Voiture voiture);
 }

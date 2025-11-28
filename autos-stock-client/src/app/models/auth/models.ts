@@ -10,3 +10,16 @@ export interface LoginResponse {
   expiresIn?: number;         // en secondes
   user?: { id: number; nom: string; email: string; role: string; };
 }
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+  user: {
+    id: number;
+    nom: string;
+    email: string;
+    role: string;
+  };
+}

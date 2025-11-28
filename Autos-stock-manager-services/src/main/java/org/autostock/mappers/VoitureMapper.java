@@ -3,6 +3,8 @@ package org.autostock.mappers;
 import org.autostock.dtos.VoitureCreateDto;
 import org.autostock.dtos.VoitureDetailDto;
 import org.autostock.dtos.VoitureListDto;
+import org.autostock.dtos.VoitureUpdateDto;
+import org.autostock.enums.StatutVoiture;
 import org.autostock.models.Fournisseur;
 import org.autostock.models.Modele;
 import org.autostock.models.Voiture;
@@ -18,6 +20,7 @@ public class VoitureMapper {
         v.setAnnee(dto.getAnnee());
         v.setCouleur(dto.getCouleur());
         v.setVin(dto.getVin());
+        v.setKilometrage(dto.getKilometrage());
         v.setPrixAchat(dto.getPrixAchat());
         v.setPrixVente(dto.getPrixVente());
         return v;
@@ -43,15 +46,31 @@ public class VoitureMapper {
         dto.setIdFournisseur(
                 v.getFournisseur() != null ? v.getFournisseur().getId() : null
         );
-        dto.setMarque(v.getModele().getMarque().getNom());
-        dto.setModele(v.getModele().getNom());
+        dto.setIdMarque(v.getModele().getMarque().getId());
         dto.setAnnee(v.getAnnee());
         dto.setCouleur(v.getCouleur());
         dto.setVin(v.getVin());
         dto.setPrixAchat(v.getPrixAchat());
+        dto.setKilometrage(v.getKilometrage());
+        dto.setCreatedAt(v.getCreatedAt());
+        dto.setUpdatedAt(v.getUpdatedAt());
         dto.setPrixVente(v.getPrixVente());
         dto.setStatut(v.getStatut().name());
         dto.setDateEntreeStock(v.getDateEntreeStock());
         return dto;
+    }
+
+    public Voiture toUpdatedEntity(VoitureUpdateDto dto, Modele modele, Fournisseur fournisseur) {
+        Voiture v = new Voiture();
+        v.setModele(modele);
+        v.setFournisseur(fournisseur); // sera set par le service si nécessaire
+        v.setAnnee(dto.getAnnee());
+        v.setCouleur(dto.getCouleur());
+        v.setVin(dto.getVin());
+        v.setStatut(StatutVoiture.fromValue(dto.getStatut()));
+        v.setKilometrage(dto.getKilometrage());
+        v.setPrixAchat(dto.getPrixAchat());
+        v.setPrixVente(dto.getPrixVente());
+        return v;
     }
 }

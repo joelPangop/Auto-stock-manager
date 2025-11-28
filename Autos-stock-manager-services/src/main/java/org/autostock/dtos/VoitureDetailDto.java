@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 public class VoitureDetailDto {
     private Long id;
-    private String marque;
-    private String modele;
+    private Long idMarque;
+    private Long modele;
     private Long idModele;
     private Long idFournisseur;
     private Integer annee;
@@ -21,4 +21,7 @@ public class VoitureDetailDto {
     private BigDecimal prixVente;
     private String statut;
     private LocalDateTime dateEntreeStock;
+    private Long kilometrage;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

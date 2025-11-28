@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 // @ts-ignore
-import { Observable, catchError, switchMap, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import {  catchError, switchMap } from 'rxjs/operators';
 import { TokenStorageService } from './token-storage.service';
 import { AuthService } from './auth.service';
 

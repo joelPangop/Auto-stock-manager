@@ -1,4 +1,4 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +47,10 @@ public class ClientController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         clientService.deleteById(id);
+    }
+
+    @GetMapping("/count")
+    public Integer count(){
+        return clientService.findAll().size();
     }
 }

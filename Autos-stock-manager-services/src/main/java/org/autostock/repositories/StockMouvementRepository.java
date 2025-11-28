@@ -15,5 +15,5 @@ public interface StockMouvementRepository extends JpaRepository<StockMouvement, 
 
     // Tous les mouvements d'un certain type (ENTREE, VENTE, etc.)
     List<StockMouvement> findByType(TypeMouvement type);
-//    List<StockMouvement> findByVoiture_IdOrderByDateMouvementDesc(Long voitureId);
+    List<StockMouvement> findByVoiture_Id(Long voitureId);
 }

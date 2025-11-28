@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {AuthService} from "../../services/auth.service";
 
 @Component({
@@ -18,8 +18,12 @@ export class LoginComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  constructor(private fb: FormBuilder, private auth: AuthService,
-              private snack: MatSnackBar, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private snack: MatSnackBar,
+    private router: Router
+  ) {}
 
   submit() {
     if (this.form.invalid) return;

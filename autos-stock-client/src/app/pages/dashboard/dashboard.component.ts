@@ -1,19 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from "@angular/core";
+import {Router} from '@angular/router';
+import {shareReplay} from 'rxjs/operators';
+import {StatsService} from "../../services/stats.service";
 
-// @Component({
-//   selector: 'app-dashboard',
-//   templateUrl: './dashboard.component.html',
-//   styleUrls: ['./dashboard.component.scss']
-// })
+type Stats = { voitures: number; ventes: number; clients: number };
+
 @Component({
   selector: 'app-dashboard',
-  template: `<div style="padding:24px">Bienvenue 👋 — vous êtes connecté.</div>`
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
+  voituresCount$ = this.statsSrv.voituresCount().pipe(shareReplay(1));
+  ventesCount$   = this.statsSrv.ventesCount().pipe(shareReplay(1));
+  clientsCount$  = this.statsSrv.clientsCount().pipe(shareReplay(1));
 
-  constructor() { }
+  constructor(private statsSrv: StatsService, private router: Router) { }
 
-  ngOnInit(): void {
+  go(url: string) {
+    this.router.navigateByUrl(url);
   }
-
 }

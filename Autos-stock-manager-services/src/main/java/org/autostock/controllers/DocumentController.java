@@ -1,4 +1,4 @@
-package org.autostock.controlers;
+package org.autostock.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.autostock.dtos.DocumentCreateDto;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/voitures/{idVoiture}/documents")
+@RequestMapping("/api/documents/voiture/{idVoiture}")
 @RequiredArgsConstructor
 public class DocumentController {
 

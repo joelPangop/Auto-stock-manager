@@ -9,3 +9,6 @@ html, body {
 /* Utilitaires */
 .full { width: 100%; }
 .center { display: grid; place-items: center; }
+
+.mat-toolbar.mat-primary { background:#1d4ed8; }
+.mat-mdc-stroked-button.mat-primary { border-color:#1d4ed8; }

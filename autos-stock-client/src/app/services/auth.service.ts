@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
 import {environment} from "../../environments/environment";
-import {LoginRequest, LoginResponse} from "../models/auth/models";
+import {AuthResponse, LoginRequest, LoginResponse} from "../models/auth/models";
 import {tap} from "rxjs/operators";
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +26,16 @@ export class AuthService {
   logout() {
     this.tokens.clear();
     this.currentUser$.next(null);
+  }
+
+  register(data: { nom: string; email: string; password: string }) {
+    return this.http.post<AuthResponse>(`${this.base}/register`, data).pipe(
+      tap(res => {
+        localStorage.setItem('accessToken', res.accessToken);
+        localStorage.setItem('refreshToken', res.refreshToken);
+        this.currentUser$.next(res.user);
+      })
+    );
   }
 
   me(): Observable<any> {

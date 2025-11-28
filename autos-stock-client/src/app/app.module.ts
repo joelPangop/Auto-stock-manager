@@ -15,20 +15,65 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {RouterModule} from "@angular/router";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {LayoutComponent} from "./pages/layout/layout.component";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatListModule} from "@angular/material/list";
+import {MatDividerModule} from "@angular/material/divider";
+import {MatMenuModule} from "@angular/material/menu";
+import { RegisterComponent } from './pages/register/register.component';
+import { VoituresListComponent } from './pages/voitures/voitures-list/voitures-list.component';
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatSortModule} from "@angular/material/sort";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatTableModule} from "@angular/material/table";
+import { VentesComponent } from './pages/ventes/ventes.component';
+import { ClientsComponent } from './pages/clients/clients.component';
+import { EntretiensComponent } from './pages/entretiens/entretiens.component';
+import { DocumentsComponent } from './pages/documents/documents.component';
+import { MouvementsComponent } from './pages/mouvements/mouvements.component';
+import { PaiementsComponent } from './pages/paiements/paiements.component';
+import { VoitureDetailComponent } from './pages/voitures/voiture-detail/voiture-detail.component';
+import {MatTabsModule} from "@angular/material/tabs";
+import {MatSelectModule} from "@angular/material/select";
+import {JwtInterceptor} from "./services/jwt.interceptor";
+import { VenteCreateDialogComponent } from './pages/features/ventes/vente-create-dialog/vente-create-dialog.component';
+import {MatDialogModule} from "@angular/material/dialog";
+import { VoitureCreateDialogComponent } from './pages/features/voitures/voiture-create-dialog/voiture-create-dialog.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import { MarqueCreateDialogComponent } from './pages/features/catalog/marque-create-dialog/marque-create-dialog.component';
+import { ModeleCreateDialogComponent } from './pages/features/catalog/modele-create-dialog/modele-create-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    DashboardComponent
+    LayoutComponent,
+    DashboardComponent,
+    RegisterComponent,
+    VoituresListComponent,
+    VentesComponent,
+    ClientsComponent,
+    EntretiensComponent,
+    DocumentsComponent,
+    MouvementsComponent,
+    PaiementsComponent,
+    VoitureDetailComponent,
+    VenteCreateDialogComponent,
+    VoitureCreateDialogComponent,
+    MarqueCreateDialogComponent,
+    ModeleCreateDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    MatToolbarModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
+    MatSidenavModule, MatListModule, MatDividerModule, MatMenuModule,
+    MatTableModule, MatPaginatorModule, MatSortModule, MatTooltipModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -37,9 +82,9 @@ import {HttpClientModule} from "@angular/common/http";
     MatSnackBarModule,
     MatProgressSpinnerModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

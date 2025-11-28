@@ -8,7 +8,7 @@ import org.autostock.enums.TypeMouvement;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "stock_movement")
+@Table(name = "stock_mouvement")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,12 +21,12 @@ public class StockMouvement extends AbstractEntity {
     private Voiture voiture;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "type", nullable = false, length = 20)
     private TypeMouvement type;
 
-    @Column(nullable = false)
+    @Column(name = "date_mouvement", nullable = false)
     private LocalDateTime dateMouvement;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "commentaire", columnDefinition = "TEXT")
     private String commentaire;
 }

@@ -34,7 +34,6 @@ public class StockMouvementServiceImpl extends AbstractBaseService<StockMouvemen
     @Override
     @Transactional(readOnly = true)
     public List<StockMouvement> historiqueVoiture(Long idVoiture) {
-        return null;
-//        return stockMouvementRepository.findByVoiture_IdOrderByDateMouvementDesc(idVoiture);
+        return repository.findByVoiture_Id(idVoiture);
     }
 }
