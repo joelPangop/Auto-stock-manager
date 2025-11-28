@@ -1,0 +1,42 @@
+<div class="header"><h2>Clients</h2><span class="spacer"></span>
+  <button mat-stroked-button color="primary" (click)="reload()">
+    <mat-icon>refresh</mat-icon>&nbsp;Rafraîchir
+  </button>
+</div>
+<mat-card class="card">
+  <div class="table-wrap">
+    <table mat-table [dataSource]="data" matSort>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let r">{{ r.nom }}</td>
+      </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let r">{{ r.email || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+        <td mat-cell *matCellDef="let r">{{ r.telephone || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Créé</th>
+        <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'short' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let r">
+          <button mat-icon-button color="warn" (click)="remove(r)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayed"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayed;"></tr>
+    </table>
+  </div>
+  <mat-paginator [length]="total" [pageSize]="pageSize" [pageIndex]="pageIndex" (page)="onPage($event)"></mat-paginator>
+</mat-card>

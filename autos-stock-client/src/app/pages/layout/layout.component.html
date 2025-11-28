@@ -1,0 +1,53 @@
+<mat-sidenav-container class="shell">
+  <!-- Side nav -->
+  <mat-sidenav #drawer
+               [mode]="(isHandset$ | async) ? 'over' : 'side'"
+               [opened]="(isHandset$ | async) ? false : true"
+               class="sidenav">
+    <div class="brand">
+      <mat-icon>directions_car</mat-icon>
+      <span>Autos Stock</span>
+    </div>
+
+    <mat-nav-list>
+<!--      <a mat-list-item *ngFor="let item of nav" (click)="go(item)">-->
+<!--        <mat-icon matListItemIcon>{{item.icon}}</mat-icon>-->
+<!--        <span matListItemTitle>{{item.label}}</span>-->
+<!--      </a>-->
+      <a mat-list-item routerLink="/dashboard"><mat-icon matListItemIcon>dashboard</mat-icon><span matListItemTitle>Dashboard</span></a>
+      <a mat-list-item routerLink="/voitures"><mat-icon matListItemIcon>directions_car</mat-icon><span matListItemTitle>Voitures</span></a>
+      <a mat-list-item routerLink="/ventes"><mat-icon matListItemIcon>receipt_long</mat-icon><span matListItemTitle>Ventes</span></a>
+      <a mat-list-item routerLink="/clients"><mat-icon matListItemIcon>group</mat-icon><span matListItemTitle>Clients</span></a>
+      <a mat-list-item routerLink="/entretiens"><mat-icon matListItemIcon>build</mat-icon><span matListItemTitle>Entretiens</span></a>
+      <a mat-list-item routerLink="/documents"><mat-icon matListItemIcon>description</mat-icon><span matListItemTitle>Documents</span></a>
+      <a mat-list-item routerLink="/mouvements"><mat-icon matListItemIcon>compare_arrows</mat-icon><span matListItemTitle>Mouvements</span></a>
+      <a mat-list-item routerLink="/paiements"><mat-icon matListItemIcon>payments</mat-icon><span matListItemTitle>Paiements</span></a>
+    </mat-nav-list>
+
+    <div class="grow"></div>
+    <button mat-stroked-button color="primary" class="logout" (click)="logout()">
+      <mat-icon>logout</mat-icon>&nbsp;Déconnexion
+    </button>
+  </mat-sidenav>
+
+  <!-- Main content -->
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="toolbar">
+      <button mat-icon-button (click)="drawer.toggle()" class="only-handset"><mat-icon>menu</mat-icon></button>
+      <span class="title">AutoStock</span>
+      <span class="spacer"></span>
+      <button mat-icon-button [matMenuTriggerFor]="u"><mat-icon>account_circle</mat-icon></button>
+      <mat-menu #u="matMenu">
+        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon><span>Déconnexion</span></button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="breadcrumbs">
+      <mat-icon>chevron_right</mat-icon><a routerLink="/voitures">Voitures</a>
+<!--      <ng-container *ngIf="crumb$ | async as crumb"><mat-icon>chevron_right</mat-icon><span>{{crumb}}</span></ng-container>-->
+    </div>
+
+    <main class="content"><router-outlet></router-outlet></main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

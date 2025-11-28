@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Nouvelle marque</h2>
+<mat-dialog-content [formGroup]="form">
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Nom de la marque</mat-label>
+    <input matInput formControlName="nom">
+    <mat-error *ngIf="form.get('nom')?.hasError('required')">Obligatoire</mat-error>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="ref.close()">Annuler</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid || loading">
+    Enregistrer
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,56 @@
+<div class="auth-wrapper">
+  <mat-card class="auth-card" appearance="outlined">
+    <h1>Créer un compte</h1>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+      <!-- Nom -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Nom complet</mat-label>
+        <input matInput formControlName="nom" placeholder="Ex: Joel Pangop" />
+        <mat-error *ngIf="f.nom.hasError('required')">Requis</mat-error>
+        <mat-error *ngIf="f.nom.hasError('minlength')">2 caractères min.</mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="joel@example.com" autocomplete="username" />
+        <mat-error *ngIf="f.email.hasError('required')">Requis</mat-error>
+        <mat-error *ngIf="f.email.hasError('email')">Email invalide</mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <div formGroupName="passwords">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" autocomplete="new-password" />
+          <button mat-icon-button matSuffix type="button" (click)="hide = !hide" aria-label="Afficher/Masquer">
+            <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="pw.password.hasError('required')">Requis</mat-error>
+          <mat-error *ngIf="pw.password.hasError('minlength')">6 caractères min.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Confirmer le mot de passe</mat-label>
+          <input matInput [type]="hide2 ? 'password' : 'text'" formControlName="confirm" autocomplete="new-password" />
+          <button mat-icon-button matSuffix type="button" (click)="hide2 = !hide2" aria-label="Afficher/Masquer">
+            <mat-icon>{{ hide2 ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="pw.confirm.hasError('required')">Requis</mat-error>
+          <mat-error *ngIf="mismatch">Les mots de passe ne correspondent pas</mat-error>
+        </mat-form-field>
+      </div>
+
+      <button mat-raised-button color="primary" class="btn" [disabled]="loading || form.invalid">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">Créer mon compte</span>
+      </button>
+
+      <div class="meta">
+        <span>Déjà inscrit ?</span>
+        <a routerLink="/login">Se connecter</a>
+      </div>
+    </form>
+  </mat-card>
+</div>

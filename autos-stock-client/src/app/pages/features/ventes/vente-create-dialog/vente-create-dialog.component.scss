@@ -1,0 +1,7 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+.api-error { color: #b91c1c; margin-top: 6px; }
