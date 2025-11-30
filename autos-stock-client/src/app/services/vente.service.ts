@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Page} from '../models/page.model';
 import {environment} from "../../environments/environment";
 import {Vente} from "../models/vente";
 import {VenteCreateDto, VenteDto} from "../models/VenteCreateDto";
@@ -13,10 +12,14 @@ export class VenteService {
   constructor(private http: HttpClient) {
   }
 
-  getPage(page = 0, size = 10, sort = 'id,desc', q?: string): Observable<Page<Vente>> {
+  listAll(): Observable<Vente[]> {
+    return this.http.get<Vente[]>(this.base);
+  }
+
+  getPage(page = 0, size = 10, sort = 'id,desc', q?: string): Observable<Vente[]> {
     let params = new HttpParams().set('page', String(page)).set('size', String(size)).set('sort', sort);
     if (q) params = params.set('q', q);
-    return this.http.get<Page<Vente>>(this.base, {params});
+    return this.http.get<Vente[]>(this.base, {params});
   }
 
   getById(id: number) {

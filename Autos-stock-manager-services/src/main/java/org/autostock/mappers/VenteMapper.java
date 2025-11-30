@@ -24,12 +24,29 @@ public class VenteMapper {
         dto.setNomVendeur(v.getVendeur().getNom());
 
         dto.setDateVente(v.getDateVente());
-        dto.setPrixFinal(v.getPrixFinal());
+        dto.setPrixVente(v.getPrixFinal());
         dto.setModePaiement(v.getModePaiement());
 
-        dto.setTotalPaye(totalPaye);
+        dto.setPrixFinal(totalPaye);
         dto.setResteAPayer(resteAPayer);
 
+        return dto;
+    }
+
+    public VenteDto toListDto(Vente v) {
+        VenteDto dto = new VenteDto();
+        dto.setId(v.getId());
+        dto.setIdVoiture(v.getVoiture().getId());
+        dto.setVin(v.getVoiture().getVin());
+        dto.setMarque(v.getVoiture().getModele().getMarque().getNom());
+        dto.setModele(v.getVoiture().getModele().getNom());
+        dto.setIdClient(v.getClient().getId());
+        dto.setNomClient(v.getClient().getNom());
+        dto.setIdVendeur(v.getVendeur().getId());
+        dto.setNomVendeur(v.getVendeur().getNom());
+        dto.setDateVente(v.getDateVente());
+        dto.setPrixFinal(v.getPrixFinal());
+        dto.setModePaiement(v.getModePaiement());
         return dto;
     }
 }

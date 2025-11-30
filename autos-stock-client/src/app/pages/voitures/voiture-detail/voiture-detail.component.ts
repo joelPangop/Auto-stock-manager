@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {VoitureDetailDto} from '../../../models/VoitureDetailDto';
 import {Document} from '../../../models/document';
@@ -31,6 +31,8 @@ import {ModeleService} from "../../../services/modele.service";
 export class VoitureDetailComponent implements OnInit {
   isEditing = false;
   fournisseurLibelle?: string;
+  marqueLibelle?: string;
+  modeleLibelle?: string;
   fournisseurs: Fournisseur[] = [];
   marques: Marque[] = [];
   modeles: Modele[] = [];
@@ -48,23 +50,20 @@ export class VoitureDetailComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.form.get('idMarque')!.valueChanges.subscribe((idMarque: number | null) => {
-      this.form.get('idModele')!.setValue(null, { emitEvent: false });
-      this.modeles = [];
-      if (idMarque) {
-        this.modeleSrv.listByMarque(idMarque).subscribe(ms => this.modeles = ms);
-      }
-    });
-  }
-
   form: FormGroup;
   // donnée principale
   // @ts-ignore
   readonly v$: Observable<VoitureDetailDto> = this.id$.pipe(
     switchMap(id => this.vSrv.getById(id)),
-    tap(voiture => {
-      this.marqueSrv.list().subscribe(m => this.marques = m);
+    switchMap(voiture => this.marqueSrv.list().pipe(
+      map(marques => {
+        // Retourner l'objet voiture original mais avec les marques disponibles
+        this.marques = marques;
+        this.marqueLibelle = this.marques.find(item => item.id === voiture.idMarque).nom;
+        return voiture;
+      })
+    )),
+    tap((voiture) => {
 
       this.form = this.fb.group({
         idMarque: [voiture.idMarque ? voiture.idMarque : null, [Validators.required]],
@@ -80,7 +79,10 @@ export class VoitureDetailComponent implements OnInit {
       });
 
       if (voiture.idMarque) {
-        this.modeleSrv.listByMarque(voiture.idMarque).subscribe(ms => this.modeles = ms);
+        this.modeleSrv.listByMarque(voiture.idMarque).subscribe(ms =>  {
+          this.modeles = ms;
+          this.modeleLibelle = this.modeles.find(item => item.id === voiture.idModele).nom;
+        });
       }
 
       if (voiture?.idFournisseur) {
@@ -168,35 +170,73 @@ export class VoitureDetailComponent implements OnInit {
   edit() {
     this.isEditing = true;
   }
+  //
+  // nouvelleVente() {
+  //   // récupère la voiture en cours pour prix suggéré
+  //   const sub = this.v$.subscribe(v => {
+  //     const ref = this.dialog.open(VenteCreateDialogComponent, {
+  //       width: '720px',
+  //       data: {
+  //         idVoiture: v.id,
+  //         prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
+  //         vendeurCourantId: undefined // ou l’id de l’utilisateur connecté si tu l’as
+  //       }
+  //     });
+  //
+  //     ref.afterClosed().subscribe(created => {
+  //       if (created) {
+  //         // possibilité : afficher un snack et rafraîchir la vue
+  //         // -> recharger v$, enfants si la vente change le statut
+  //         // Ici v$ est un Observable basé sur l’URL; pour forcer un refresh:
+  //         this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+  //           this.router.navigate(['/voitures', v.id])
+  //         );
+  //       }
+  //     });
+  //
+  //     sub.unsubscribe();
+  //   });
+  // }
 
-  nouvelleVente() {
-    // récupère la voiture en cours pour prix suggéré
-    const sub = this.v$.subscribe(v => {
-      const ref = this.dialog.open(VenteCreateDialogComponent, {
-        width: '720px',
-        data: {
-          idVoiture: v.id,
-          prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
-          vendeurCourantId: undefined // ou l’id de l’utilisateur connecté si tu l’as
-        }
-      });
 
-      ref.afterClosed().subscribe(created => {
-        if (created) {
-          // possibilité : afficher un snack et rafraîchir la vue
-          // -> recharger v$, enfants si la vente change le statut
-          // Ici v$ est un Observable basé sur l’URL; pour forcer un refresh:
-          this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
-            this.router.navigate(['/voitures', v.id])
-          );
-        }
-      });
+nouvelleVente(): void {
+  this.v$               // Observable<VoitureDetailDto>
+    .pipe(
+      take(1),          // ✅ prend 1 valeur et se désabonne (plus besoin de 'sub')
+      switchMap(v => {
+        const ref = this.dialog.open(VenteCreateDialogComponent, {
+          width: '720px',
+          data: {
+            idVoiture: v.id,
+            idMarque:  v.idMarque,
+            idModele:  v.idModele,
+            idFournisseur: v.idFournisseur ?? null,
+            prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
+            vendeurId: undefined // ou l'id de l'utilisateur connecté si tu l’as
+          }
+        });
+        return ref.afterClosed(); // Observable<boolean | any>
+      })
+    )
+    .subscribe((created) => {
+      if (created) {
+        // Rafraîchir la fiche + ses onglets
+        this.vSrv.getById(this.id).subscribe(v => this.vSubject.next(v)); // si tu as un subject
+        this.reloadChildren();
 
-      sub.unsubscribe();
+        // OU petit trick de navigation pour forcer un refresh d’Angular :
+        this.router.navigateByUrl('/', { skipLocationChange: true })
+          .then(() => this.router.navigate(['/voitures', this.id]));
+
+        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+          this.router.navigate(['/voitures', v.id])
+        );
+      }
     });
-  }
+}
 
-  cancel() {
+
+cancel() {
     this.isEditing = false;
   }
 

@@ -22,10 +22,10 @@ public class VenteDto {
     private String nomVendeur;
 
     private LocalDateTime dateVente;
-    private BigDecimal prixFinal;
+    private BigDecimal prixVente;
     private String modePaiement;
 
-    private BigDecimal totalPaye;
+    private BigDecimal prixFinal;
     private BigDecimal resteAPayer;
 
     // getters / setters

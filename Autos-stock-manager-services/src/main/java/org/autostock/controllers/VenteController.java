@@ -41,6 +41,11 @@ public class VenteController {
         return venteMapper.toDto(v, total, reste);
     }
 
+    @GetMapping
+    public List<VenteDto> getAll() {
+        return venteService.findAll().stream().map(venteMapper::toListDto).toList();
+    }
+
     @GetMapping("/{id}")
     public VenteDto get(@PathVariable Long id) {
         Vente v = venteService.findById(id).orElseThrow(() -> new EntityNotFoundException("Vente introuvable"));
