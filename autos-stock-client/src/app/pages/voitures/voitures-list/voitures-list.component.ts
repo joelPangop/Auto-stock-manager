@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {Subject, Subscription} from 'rxjs';
+import {debounceTime, takeUntil} from 'rxjs/operators';
 import {VoitureService} from "../../../services/voiture.service";
 import {StatutVoiture} from "../../../models/enums/StatutVoiture";
 import {VoitureListDto} from "../../../models/VoitureListDto";
@@ -13,6 +13,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {
   VoitureCreateDialogComponent
 } from "../../features/voitures/voiture-create-dialog/voiture-create-dialog.component";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-voitures-list',
@@ -33,7 +34,7 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
   pageSize = 10;
   pageIndex = 0;
 
-  onlyMine = false;
+  onlyMine = this.authSrv.onlyMine;
 
   private destroy$ = new Subject<void>();
   private subAll?: Subscription;
@@ -41,7 +42,8 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private voitureService: VoitureService, private fb: FormBuilder, private router: Router, private dialog: MatDialog) {
+  constructor(private voitureService: VoitureService, private fb: FormBuilder, private router: Router,
+              private dialog: MatDialog, private authSrv: AuthService) {
   }
 
   ngOnInit(): void {
@@ -68,7 +70,8 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   reload(): void {
     this.loading = true;
-
+    this.authSrv.onlyMine = this.onlyMine;
+    
     const marque = this.form.controls.marque.value?.trim() || undefined;
     const statut = this.form.controls.statut.value || undefined;
 

@@ -10,6 +10,7 @@ import {tap} from "rxjs/operators";
 export class AuthService {
   private readonly base = `${environment.apiUrl}/auth`;
   private currentUser$ = new BehaviorSubject<LoginResponse['user'] | null>(null);
+  private _onlyMine: boolean = false;
 
   constructor(private http: HttpClient, private tokens: TokenStorageService) {
   }
@@ -70,4 +71,11 @@ export class AuthService {
     return payload?.uid ?? null; // adapte à ta claim
   }
 
+  get onlyMine(): boolean {
+    return this._onlyMine;
+  }
+
+  set onlyMine(value: boolean) {
+    this._onlyMine = value;
+  }
 }
