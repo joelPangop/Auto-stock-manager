@@ -7,6 +7,10 @@
       <mat-option *ngFor="let c of clients" [value]="c.id">
         {{ c.nom }} <span *ngIf="c.email">({{ c.email }})</span>
       </mat-option>
+      <mat-divider></mat-divider>
+      <mat-option  (click)="openNewClientDialog()">
+          <mat-icon>person_add</mat-icon> Ajouter un client
+      </mat-option>
     </mat-select>
     <mat-error *ngIf="form.get('idClient')?.hasError('required')">Obligatoire</mat-error>
   </mat-form-field>

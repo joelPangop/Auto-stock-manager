@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TypeEntretien {
 
-    VIDANGE("Vidange d'huile", "OIL_CHANGE"),
-    FREINS("Remplacement des freins", "BRAKE_SERVICE"),
-    PNEUS("Changement de pneus", "TIRE_CHANGE"),
+    VIDANGE("Vidange d'huile", "VIDANGE"),
+    FREINS("Remplacement des freins", "FREINS"),
+    PNEUS("Changement de pneus", "PNEUS"),
     INSPECTION("Inspection générale", "INSPECTION"),
     DIAGNOSTIC("Diagnostic moteur/électronique", "DIAGNOSTIC"),
-    AUTRE("Autre entretien", "OTHER");
+    ELECTRIQUE("Problème électrique", "ELECTRIQUE"),
+    AUTRE("Autre entretien", "AUTRE");
 
     private final String label;  // lisible en UI
     private final String value;  // stocké/API

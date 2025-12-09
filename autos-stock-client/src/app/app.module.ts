@@ -44,6 +44,12 @@ import { VoitureCreateDialogComponent } from './pages/features/voitures/voiture-
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { MarqueCreateDialogComponent } from './pages/features/catalog/marque-create-dialog/marque-create-dialog.component';
 import { ModeleCreateDialogComponent } from './pages/features/catalog/modele-create-dialog/modele-create-dialog.component';
+import { FournisseurCreateDialogComponent } from './pages/features/fournisseur/fournisseur-create-dialog/fournisseur-create-dialog.component';
+import { EntretienEditDialogComponent } from './pages/features/entretien/entretien-edit-dialog/entretien-edit-dialog.component';
+import { MouvementEditDialogComponent } from './pages/features/mouvement/mouvement-edit-dialog/mouvement-edit-dialog.component';
+import { DocumentUploadDialogComponent } from './pages/features/document/document-upload-dialog/document-upload-dialog.component';
+import { ClientCreateDialogComponent } from './pages/features/client/client-create-dialog/client-create-dialog.component';
+import { DocumentEditDialogComponent } from './pages/features/document/document-edit-dialog/document-edit-dialog-component';
 
 @NgModule({
   declarations: [
@@ -63,7 +69,13 @@ import { ModeleCreateDialogComponent } from './pages/features/catalog/modele-cre
     VenteCreateDialogComponent,
     VoitureCreateDialogComponent,
     MarqueCreateDialogComponent,
-    ModeleCreateDialogComponent
+    ModeleCreateDialogComponent,
+    FournisseurCreateDialogComponent,
+    EntretienEditDialogComponent,
+    MouvementEditDialogComponent,
+    DocumentUploadDialogComponent,
+    ClientCreateDialogComponent,
+    DocumentEditDialogComponent
   ],
   imports: [
     BrowserModule,

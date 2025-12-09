@@ -1,0 +1,15 @@
+.dialog-form {
+  display: grid;
+  gap: 12px;
+  grid-template-columns:1fr 1fr
+}
+
+.full {
+  grid-column: 1/-1
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px
+}

@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Nouveau Client</h2>
+<form [formGroup]="form" (ngSubmit)="save()" class="dialog-form">
+  <mat-form-field appearance="outline" class="w100">
+    <mat-label>Nom</mat-label>
+    <input matInput formControlName="nom" required>
+    <mat-error *ngIf="form.get('nom')?.hasError('required')">Requis</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w100">
+    <mat-label>E-mail</mat-label>
+    <input matInput type="email" formControlName="email" required>
+    <mat-error *ngIf="form.get('email')?.invalid">Requis</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w100">
+    <mat-label>Adresse</mat-label>
+    <input matInput formControlName="adresse">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w100">
+    <mat-label>Téléphone</mat-label>
+    <input matInput formControlName="telephone">
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid">Créer</button>
+  </div>
+</form>

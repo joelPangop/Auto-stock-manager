@@ -17,7 +17,7 @@ public class EntretienMapper {
         e.setCout(dto.getCout());
         e.setDateEntretien(dto.getDateEntretien() != null ? dto.getDateEntretien() : LocalDateTime.now());
         e.setGarage(dto.getGarage());
-//        e.setCommentaire(dto.getCommentaire());
+        e.setDescription(dto.getCommentaire());
         return e;
     }
 
@@ -29,7 +29,7 @@ public class EntretienMapper {
         dto.setCout(e.getCout());
         dto.setDateEntretien(e.getDateEntretien());
         dto.setGarage(e.getGarage());
-//        dto.setCommentaire(e.getCommentaire());
+        dto.setCommentaire(e.getDescription());
         return dto;
     }
 }

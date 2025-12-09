@@ -21,8 +21,10 @@ public class MarqueServiceImp extends AbstractBaseService<Marque, Long, MarqueRe
     @Override
     @Transactional
     public MarqueDto create(MarqueCreateDto dto) {
-        Marque m = new Marque(); m.setNom(dto.nom());
+        Marque m = new Marque();
+        m.setNom(dto.nom());
         m = create(m);
         return new MarqueDto(m.getId(), m.getNom());
     }
+
 }

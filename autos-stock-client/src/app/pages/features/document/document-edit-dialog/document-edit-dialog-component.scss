@@ -1,0 +1,33 @@
+/* voiture-detail.component.scss (complément) */
+.docs-tab .row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.docs {
+  width: 100%;
+  border-spacing: 0 6px;
+}
+
+.docs th, .docs td {
+  padding: 6px 8px;
+}
+
+.docs .r {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap {
+  gap: 12px;
+}
+
+.muted {
+  color: #6b7280;
+}

@@ -22,7 +22,7 @@ public class EntretienController {
     @Autowired
     private EntretienMapper entretienMapper;
 
-    @PostMapping("/voiture/{idVoiture}")
+    @PostMapping("/{idVoiture}")
     public EntretienDto add(@PathVariable Long idVoiture, @RequestBody EntretienCreateDto dto) {
         Entretien e = entretienService.ajouterEntretien(idVoiture, entretienMapper.toEntity(dto));
         return entretienMapper.toDto(e);

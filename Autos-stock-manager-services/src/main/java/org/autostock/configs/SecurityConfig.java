@@ -32,7 +32,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
@@ -68,15 +70,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfiguration()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").permitAll() // ou .authenticated()
-                        .requestMatchers("/api/**/**").authenticated()
+                                .requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/**").permitAll() // ou .authenticated()
+                                .requestMatchers("/api/**/**").authenticated()
 //                        .requestMatchers("/api/mouvements/**").authenticated()
 //                        .requestMatchers("/api/documents/**").authenticated()
-//                        .requestMatchers("/api/entretiens/**").authenticated()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers("/api/entretiens/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/documents/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/documents/**").authenticated()
+                                .requestMatchers(HttpMethod.PATCH, "/api/documents/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/documents/**").authenticated()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/download/**").permitAll()
+                                .anyRequest().authenticated()
                 );
         // H2 console
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
@@ -88,9 +95,9 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfiguration() {
         var cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of(allowedOrigins.split(",")));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        cfg.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         cfg.setAllowCredentials(true);
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);

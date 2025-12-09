@@ -4,6 +4,8 @@ import {Observable} from 'rxjs';
 import {Page} from '../models/page.model';
 import {environment} from "../../environments/environment";
 import {Document} from "../models/document";
+import {DocumentCreateMeta} from "../models/DocumentCreateMeta";
+import {DocumentUpdateMeta} from "../models/DocumentUpdateMeta";
 
 @Injectable({providedIn: 'root'})
 export class DocumentService {
@@ -12,8 +14,8 @@ export class DocumentService {
   constructor(private http: HttpClient) {
   }
 
-  listByVoiture(voitureId: number) {
-    return this.http.get<Document[]>(`${this.base}/voiture/${voitureId}`);
+  listByVoiture(voitureId: number): Observable<Document[]>{
+    return this.http.get<Document[]>(`${this.base}/${voitureId}`);
   }
 
   getPage(page = 0, size = 10, sort = 'id,desc', q?: string): Observable<Page<Document>> {
@@ -22,19 +24,29 @@ export class DocumentService {
     return this.http.get<Page<Document>>(this.base, {params});
   }
 
-  upload(voitureId: number, file: File, type: string, description?: string) {
+  upload(voitureId: number, file: File, meta: DocumentCreateMeta): Observable<Document> {
     const fd = new FormData();
-    fd.append('file', file);
-    fd.append('type', type);
-    if (description) fd.append('description', description);
+    fd.append('file', file, file.name);
+    // envoyer l’objet JSON comme Blob pour rester en multipart
+    fd.append(
+      'meta',
+      new Blob([JSON.stringify(meta)], { type: 'application/json' })
+    );
+
     return this.http.post<Document>(`${this.base}/voiture/${voitureId}`, fd);
   }
 
-  download(id: number) {
-    return this.http.get(`${this.base}/${id}/download`, {responseType: 'blob'});
+  updateMeta(documentId: number, patch: DocumentUpdateMeta): Observable<Document> {
+    return this.http.patch<Document>(`${this.base}/${documentId}`, patch);
   }
 
-  delete(id: number) {
+  download(documentId: number): Observable<Blob> {
+    return this.http.get(`${this.base}/${documentId}/download`, {
+      responseType: 'blob'
+    });
+  }
+
+  delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
 }

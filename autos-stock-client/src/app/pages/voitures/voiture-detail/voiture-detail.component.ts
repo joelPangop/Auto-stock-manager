@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {VoitureDetailDto} from '../../../models/VoitureDetailDto';
 import {Document} from '../../../models/document';
 import {Entretien} from '../../../models/entretien';
@@ -21,6 +21,16 @@ import {Marque} from "../../../models/marque";
 import {Modele} from "../../../models/modele";
 import {MarqueService} from "../../../services/marque.service";
 import {ModeleService} from "../../../services/modele.service";
+import {
+  EntretienEditDialogComponent
+} from "../../features/entretien/entretien-edit-dialog/entretien-edit-dialog.component";
+import {
+  MouvementEditDialogComponent
+} from "../../features/mouvement/mouvement-edit-dialog/mouvement-edit-dialog.component";
+import {
+  DocumentUploadDialogComponent
+} from "../../features/document/document-upload-dialog/document-upload-dialog.component";
+import {DocumentEditDialogComponent} from "../../features/document/document-edit-dialog/document-edit-dialog-component";
 
 @Component({
   selector: 'app-voiture-detail',
@@ -31,16 +41,19 @@ import {ModeleService} from "../../../services/modele.service";
 export class VoitureDetailComponent implements OnInit {
   isEditing = false;
   fournisseurLibelle?: string;
-  marqueLibelle?: string;
-  modeleLibelle?: string;
+  marqueLabelle?: string;
+  modeleLabelle?: string;
   fournisseurs: Fournisseur[] = [];
   marques: Marque[] = [];
   modeles: Modele[] = [];
+  idVoiture?: number;
+  totalCoutEntretien?: number;
 
   // id$ réagit à chaque changement d’URL
   readonly id$ = this.route.paramMap.pipe(
     map(pm => Number(pm.get('id')))
   );
+
 
   ngOnInit(): void {
     // charge les fournisseurs au démarrage
@@ -51,15 +64,18 @@ export class VoitureDetailComponent implements OnInit {
   }
 
   form: FormGroup;
+  private readonly refresh$ = new BehaviorSubject<void>(undefined);
+
   // donnée principale
   // @ts-ignore
-  readonly v$: Observable<VoitureDetailDto> = this.id$.pipe(
-    switchMap(id => this.vSrv.getById(id)),
+  readonly v$: Observable<VoitureDetailDto> = combineLatest([this.id$, this.refresh$]).pipe(
+    switchMap(([id]) => this.vSrv.getById(id)),
     switchMap(voiture => this.marqueSrv.list().pipe(
       map(marques => {
         // Retourner l'objet voiture original mais avec les marques disponibles
         this.marques = marques;
-        this.marqueLibelle = this.marques.find(item => item.id === voiture.idMarque).nom;
+        this.idVoiture = voiture.id;
+        this.marqueLabelle = this.marques.find(item => item.id === voiture.idMarque).nom;
         return voiture;
       })
     )),
@@ -69,7 +85,7 @@ export class VoitureDetailComponent implements OnInit {
         idMarque: [voiture.idMarque ? voiture.idMarque : null, [Validators.required]],
         idModele: [voiture.idModele ? voiture.idModele : null, [Validators.required]],
         annee: [voiture.annee ? voiture.annee : null, [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
-        prixVente: [voiture.prixVente ? voiture.prixVente : null, [Validators.required, Validators.min(0)]],
+        prixVente: [voiture.prixVente ? voiture.prixVente : null, [Validators.min(0)]],
         prixAchat: [voiture.prixAchat ? voiture.prixAchat : null, [Validators.required, Validators.min(0)]],
         vin: [voiture.vin ? voiture.vin : ''],
         couleur: [voiture.couleur ? voiture.couleur : ''],
@@ -79,9 +95,9 @@ export class VoitureDetailComponent implements OnInit {
       });
 
       if (voiture.idMarque) {
-        this.modeleSrv.listByMarque(voiture.idMarque).subscribe(ms =>  {
+        this.modeleSrv.listByMarque(voiture.idMarque).subscribe(ms => {
           this.modeles = ms;
-          this.modeleLibelle = this.modeles.find(item => item.id === voiture.idModele).nom;
+          this.modeleLabelle = this.modeles.find(item => item.id === voiture.idModele).nom;
         });
       }
 
@@ -93,38 +109,36 @@ export class VoitureDetailComponent implements OnInit {
   );
 
   // onglets enfants (chargés à la volée avec l’id)
-  readonly documents$: Observable<Document[]> = this.id$.pipe(
-    switchMap(id => this.dSrv.listByVoiture(id)),
+  readonly documents$: Observable<Document[]> = combineLatest([this.id$, this.refresh$]).pipe(
+    switchMap(([id]) => this.dSrv.listByVoiture(id)),
     shareReplay(1)
   );
 
-  readonly entretiens$: Observable<Entretien[]> = this.id$.pipe(
-    switchMap(id => this.eSrv.listByVoiture(id)),
-    tap(entretien => {
-      if (entretien) {
-        console.log("Entretien", entretien);
+  readonly entretiens$: Observable<Entretien[]> = combineLatest([
+    this.id$,
+    this.refresh$
+  ]).pipe(
+    switchMap(([id]) => this.eSrv.listByVoiture(id)),
+    tap(entretiens => {
+      if (entretiens) {
+        this.calcultotalCoutEntrtien(entretiens);
+        console.log("Entretien", entretiens);
       }
     }),
     shareReplay(1)
   );
 
-  readonly mouvements$: Observable<Mouvement[]> = this.id$.pipe(
-    switchMap(id => this.mSrv.listByVoiture(id)),
+  calcultotalCoutEntrtien(entretiens: Entretien[]) {
+    this.totalCoutEntretien = 0;
+    for (let entretien of entretiens) {
+      this.totalCoutEntretien += entretien.cout;
+    }
+  }
+
+  readonly mouvements$: Observable<Mouvement[]> = combineLatest([this.id$, this.refresh$]).pipe(
+    switchMap(([id]) => this.mSrv.listByVoiture(id)),
     shareReplay(1)
   );
-
-
-  // form: FormGroup = this.fb.group({
-  //   marque: [ this.voitureDetail ? this.voitureDetail.marque : 'test', [Validators.required, Validators.maxLength(60)]],
-  //   modele: ['', [Validators.required, Validators.maxLength(60)]],
-  //   annee: [null, [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
-  //   prixVente: [null, [Validators.required, Validators.min(0)]],
-  //   vin: [''],
-  //   couleur: [''],
-  //   kilometrage: [null, [Validators.min(0)]],
-  //   statut: <StatutVoiture | null> (null),
-  //   idFournisseur: [null, [Validators.min(1)]],
-  // });
 
   constructor(
     private route: ActivatedRoute,
@@ -143,7 +157,12 @@ export class VoitureDetailComponent implements OnInit {
   }
 
   /** Alimente le formulaire quand la voiture est chargée */
-  private patchForm(v: VoitureDetailDto) {
+  private
+
+  patchForm(v
+            :
+            VoitureDetailDto
+  ) {
     this.form.patchValue({
       idMarque: v.idMarque ?? null,
       idModele: v.idModele ?? null,
@@ -157,94 +176,129 @@ export class VoitureDetailComponent implements OnInit {
     }, {emitEvent: false});
   }
 
-  // actions (restent inchangées)
-  ajouterDocument() {
+  // === DOCUMENTS ===
+  openEditDocDialog(d: Document) {
+    const dialogRef = this.dialog.open(DocumentEditDialogComponent, {
+      width: '520px',
+      data: {doc: d}
+    });
+    dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
   }
 
-  planifierEntretien() {
+  deleteDoc(d: Document) {
+    if (!confirm(`Supprimer le document "${d.nomFichier}" ?`)) return;
+    this.dSrv.delete(d.id).subscribe(() => this.refresh$.next());
   }
 
-  nouveauMouvement() {
+  supprimerDocument(d: Document
+  ) {
+    if (!confirm('Supprimer ce document ?')) return;
+    this.dSrv.delete(d.id).subscribe(() => this.refresh$.next());
+  }
+
+  download(d: Document
+  ) {
+    this.dSrv.download(d.id).subscribe(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = d.nomFichier;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // === ENTRETIENS ===
+  planifierEntretien(entretien ?: Entretien) {
+    const ref = this.dialog.open(EntretienEditDialogComponent, {
+      width: '720px',
+      data: {idVoiture: this.idVoiture, entretien}
+    });
+    ref.afterClosed().subscribe
+    ({
+      next: () => this.refresh$.next(),   // <-- recharge les 3 listes
+      error: console.error
+    })
+  }
+
+  supprimerEntretien(e: Entretien) {
+    if (!confirm('Supprimer cet entretien ?')) return;
+    this.eSrv.delete(e.id!).subscribe(() => this.refresh$.next());
+  }
+
+  // === MOUVEMENTS ===
+  nouveauMouvement(mvt ?: Mouvement) {
+    const ref = this.dialog.open(MouvementEditDialogComponent, {
+      width: '720px',
+      data: {idVoiture: this.id$, mvt}
+    });
+    ref.afterClosed().subscribe(res => {
+      if (res) this.refresh$.next();
+    });
+  }
+
+  supprimerMouvement(m: Mouvement) {
+    if (!confirm('Supprimer ce mouvement ?')) return;
+    this.mSrv.delete(m.id!).subscribe(() => this.refresh$.next());
   }
 
   edit() {
     this.isEditing = true;
   }
-  //
-  // nouvelleVente() {
-  //   // récupère la voiture en cours pour prix suggéré
-  //   const sub = this.v$.subscribe(v => {
-  //     const ref = this.dialog.open(VenteCreateDialogComponent, {
-  //       width: '720px',
-  //       data: {
-  //         idVoiture: v.id,
-  //         prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
-  //         vendeurCourantId: undefined // ou l’id de l’utilisateur connecté si tu l’as
-  //       }
-  //     });
-  //
-  //     ref.afterClosed().subscribe(created => {
-  //       if (created) {
-  //         // possibilité : afficher un snack et rafraîchir la vue
-  //         // -> recharger v$, enfants si la vente change le statut
-  //         // Ici v$ est un Observable basé sur l’URL; pour forcer un refresh:
-  //         this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
-  //           this.router.navigate(['/voitures', v.id])
-  //         );
-  //       }
-  //     });
-  //
-  //     sub.unsubscribe();
-  //   });
-  // }
 
-
-nouvelleVente(): void {
-  this.v$               // Observable<VoitureDetailDto>
-    .pipe(
-      take(1),          // ✅ prend 1 valeur et se désabonne (plus besoin de 'sub')
-      switchMap(v => {
-        const ref = this.dialog.open(VenteCreateDialogComponent, {
-          width: '720px',
-          data: {
-            idVoiture: v.id,
-            idMarque:  v.idMarque,
-            idModele:  v.idModele,
-            idFournisseur: v.idFournisseur ?? null,
-            prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
-            vendeurId: undefined // ou l'id de l'utilisateur connecté si tu l’as
-          }
-        });
-        return ref.afterClosed(); // Observable<boolean | any>
-      })
-    )
-    .subscribe((created) => {
-      if (created) {
-        // Rafraîchir la fiche + ses onglets
-        this.vSrv.getById(this.id).subscribe(v => this.vSubject.next(v)); // si tu as un subject
-        this.reloadChildren();
-
-        // OU petit trick de navigation pour forcer un refresh d’Angular :
-        this.router.navigateByUrl('/', { skipLocationChange: true })
-          .then(() => this.router.navigate(['/voitures', this.id]));
-
-        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
-          this.router.navigate(['/voitures', v.id])
-        );
-      }
+  openUploadDialog() {
+    const dialogRef = this.dialog.open(DocumentUploadDialogComponent, {
+      width: '520px',
+      data: { idVoiture: this.idVoiture }
     });
-}
+    dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
+  }
+
+  nouvelleVente(): void {
+    this.v$               // Observable<VoitureDetailDto>
+      .pipe(
+        take(1),          // ✅ prend 1 valeur et se désabonne (plus besoin de 'sub')
+        switchMap(v => {
+          const ref = this.dialog.open(VenteCreateDialogComponent, {
+            width: '720px',
+            data: {
+              idVoiture: v.id,
+              idMarque: v.idMarque,
+              idModele: v.idModele,
+              idFournisseur: v.idFournisseur ?? null,
+              prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
+              vendeurId: undefined // ou l'id de l'utilisateur connecté si tu l’as
+            }
+          });
+          return ref.afterClosed(); // Observable<boolean | any>
+        })
+      )
+      .subscribe((created) => {
+        if (created) {
+          // Rafraîchir la fiche + ses onglets
+          // this.vSrv.getById(this.id$).subscribe(v => this.vSubject.next(v)); // si tu as un subject
+          // // this.reloadChildren();
+          //
+          // // OU petit trick de navigation pour forcer un refresh d’Angular :
+          // this.router.navigateByUrl('/', { skipLocationChange: true })
+          //   .then(() => this.router.navigate(['/voitures', this.id]));
+          //
+          // this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+          //   this.router.navigate(['/voitures', v.id])
+          // );
+        }
+      });
+  }
 
 
-cancel() {
+  cancel() {
     this.isEditing = false;
   }
 
-  download(d: Document) {
-    this.dSrv.download(d.id).subscribe(); // ou déclenche un lien <a>
-  }
-
-  save(id: number) {
+  save(id
+       :
+       number
+  ) {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -264,7 +318,8 @@ cancel() {
     });
   }
 
-  private loadFournisseur(id: number) {
+  private loadFournisseur(id: number
+  ) {
     this.fSrv.getById(id).subscribe({
       next: (f: any) => {
         // adapte selon le DTO de ton service fournisseurs
@@ -276,5 +331,4 @@ cancel() {
     });
   }
 
-  protected readonly status = status;
 }

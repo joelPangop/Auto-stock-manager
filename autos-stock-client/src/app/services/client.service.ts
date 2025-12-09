@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Page} from '../models/page.model';
 import {environment} from "../../environments/environment";
 import {Client} from "../models/client";
 
@@ -18,7 +17,9 @@ export class ClientService {
     return this.http.get<Client[]>(this.base, {params});
   }
 
-  list() { return this.http.get<Client[]>(`${this.base}`); }
+  list(): Observable<Client[]> {
+    return this.http.get<Client[]>(`${this.base}`);
+  }
 
   getById(id: number) {
     return this.http.get<Client>(`${this.base}/${id}`);

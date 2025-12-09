@@ -6,12 +6,14 @@
       <mat-label>Marque</mat-label>
       <mat-select formControlName="idMarque">
         <mat-option *ngFor="let m of marques" [value]="m.id">{{ m.nom }}</mat-option>
+        <mat-divider></mat-divider>
+        <mat-option (click)="addMarque()">➕ Ajouter une marque</mat-option>
       </mat-select>
       <mat-error *ngIf="form.get('idMarque')?.hasError('required')">Obligatoire</mat-error>
     </mat-form-field>
-    <button mat-icon-button type="button" (click)="addMarque()" matTooltip="Ajouter une marque">
-      <mat-icon>add</mat-icon>
-    </button>
+<!--    <button mat-icon-button type="button" (click)="addMarque()" matTooltip="Ajouter une marque">-->
+<!--      <mat-icon>add</mat-icon>-->
+<!--    </button>-->
   </div>
 
   <div class="row-inline">
@@ -19,12 +21,14 @@
       <mat-label>Modèle</mat-label>
       <mat-select formControlName="idModele" [disabled]="!form.value.idMarque">
         <mat-option *ngFor="let mo of modeles" [value]="mo.id">{{ mo.nom }}</mat-option>
+        <mat-divider></mat-divider>
+        <mat-option (click)="addModele()">➕ Nouveau modèle…</mat-option>
       </mat-select>
       <mat-error *ngIf="form.get('idModele')?.hasError('required')">Obligatoire</mat-error>
     </mat-form-field>
-    <button mat-icon-button type="button" (click)="addModele()" [disabled]="!form.value.idMarque" matTooltip="Ajouter un modèle">
-      <mat-icon>add</mat-icon>
-    </button>
+<!--    <button mat-icon-button type="button" (click)="addModele()" [disabled]="!form.value.idMarque" matTooltip="Ajouter un modèle">-->
+<!--      <mat-icon>add</mat-icon>-->
+<!--    </button>-->
   </div>
 
   <mat-form-field appearance="outline">
@@ -71,6 +75,8 @@
       <mat-option *ngFor="let f of fournisseurs" [value]="f.id">
         {{ f.nom }} <span *ngIf="f.type">({{ f.type }})</span>
       </mat-option>
+      <mat-divider></mat-divider>
+      <mat-option [value]="NEW_SUPPLIER">➕ Nouveau fournisseur…</mat-option>
     </mat-select>
   </mat-form-field>
 

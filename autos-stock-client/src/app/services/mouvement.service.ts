@@ -28,4 +28,6 @@ export class MouvementService {
   delete(id: number) {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+
+  update(id: number, dto: Mouvement)  { return this.http.put<Mouvement>(`${this.base}/${id}`, dto); }
 }

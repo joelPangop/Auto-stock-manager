@@ -12,6 +12,10 @@ import {ModeleService} from "../../../../services/modele.service";
 import {MarqueService} from "../../../../services/marque.service";
 import {MarqueCreateDialogComponent} from "../../catalog/marque-create-dialog/marque-create-dialog.component";
 import {ModeleCreateDialogComponent} from "../../catalog/modele-create-dialog/modele-create-dialog.component";
+import {take} from "rxjs/operators";
+import {
+  FournisseurCreateDialogComponent
+} from "../../fournisseur/fournisseur-create-dialog/fournisseur-create-dialog.component";
 
 @Component({
   selector: 'app-voiture-create-dialog',
@@ -19,6 +23,9 @@ import {ModeleCreateDialogComponent} from "../../catalog/modele-create-dialog/mo
   styleUrls: ['./voiture-create-dialog.component.scss']
 })
 export class VoitureCreateDialogComponent implements OnInit {
+
+  readonly NEW_SUPPLIER = -1;
+
   form: FormGroup;
   fournisseurs: Fournisseur[] = [];
   loading = false;
@@ -34,7 +41,7 @@ export class VoitureCreateDialogComponent implements OnInit {
     private ref: MatDialogRef<VoitureCreateDialogComponent>,
     private dlg: MatDialog,
     private marqueSrv: MarqueService,
-    private modeleSrv: ModeleService
+    private modeleSrv: ModeleService,
   ) {
     this.form = this.fb.group({
       idMarque: [null, [Validators.required]],
@@ -67,6 +74,12 @@ export class VoitureCreateDialogComponent implements OnInit {
     this.fournisseursSrv.listAll().subscribe({
       next: f => this.fournisseurs = f,
       error: e => console.error('Erreur chargement fournisseurs', e)
+    });
+
+    this.form.get('idFournisseur')!.valueChanges.subscribe(val => {
+      if (val === this.NEW_SUPPLIER) {
+        this.openNewFournisseur();
+      }
     });
   }
 
@@ -101,6 +114,21 @@ export class VoitureCreateDialogComponent implements OnInit {
         this.modeles = [created, ...this.modeles];
         this.form.get('idModele')!.setValue(created.id);
       }
+    });
+  }
+
+  private openNewFournisseur() {
+    const ref = this.dlg.open(FournisseurCreateDialogComponent, { width: '640px' });
+    ref.afterClosed().pipe(take(1)).subscribe((created?: Fournisseur) => {
+      if (!created) {
+        // remettre la valeur à null si l'utilisateur annule
+        this.form.patchValue({ idFournisseur: null }, { emitEvent: false });
+        return;
+      }
+      // rafraîchir la liste et sélectionner le nouveau
+      const list = [created, ...this.fournisseurs].sort((a,b)=>a.nom.localeCompare(b.nom));
+      this.fournisseurs = list;
+      this.form.patchValue({ idFournisseur: created.id }, { emitEvent: false });
     });
   }
 }

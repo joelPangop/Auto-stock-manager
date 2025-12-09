@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Client} from "../../../../models/client";
 import {User} from "../../../../models/User";
 import {VenteCreateDto} from "../../../../models/VenteCreateDto";
@@ -8,12 +8,9 @@ import {VenteService} from "../../../../services/vente.service";
 import {UserService} from "../../../../services/user.service";
 import {ClientService} from "../../../../services/client.service";
 import {MethodePaiement} from "../../../../models/enums/MethodePaiement";
-
-export interface VenteDialogData {
-  idVoiture: number;
-  prixSuggere?: number; // ex: prixVente actuel
-  vendeurCourantId?: number; // si tu stockes l'utilisateur connecté
-}
+import {ClientCreateDialogComponent} from "../../client/client-create-dialog/client-create-dialog.component";
+import {filter, map, switchMap, tap} from "rxjs/operators";
+import {VenteDialogData} from "../../../../models/VenteDialogData";
 
 @Component({
   selector: 'app-vente-create-dialog',
@@ -38,6 +35,7 @@ export class VenteCreateDialogComponent implements OnInit {
     private ventes: VenteService,
     private clientsSrv: ClientService,
     private usersSrv: UserService,
+    private dialog: MatDialog,
     private ref: MatDialogRef<VenteCreateDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: VenteDialogData
   ) {
@@ -77,4 +75,27 @@ export class VenteCreateDialogComponent implements OnInit {
   }
 
   cancel() { this.ref.close(); }
+
+  openNewClientDialog(): void {
+    const dialogRef = this.dialog.open(ClientCreateDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().pipe(
+      filter(res => !!res), // res = ClientDto créé
+      switchMap((newClient: Client) => {
+        // recharger la liste ou simplement ajouter en local
+        return this.clientsSrv.list().pipe(
+          tap(clients => {
+            // tu pourrais soit recharger complètement
+            // soit mettre à jour localement
+          }),
+          map(() => newClient)
+        );
+      })
+    ).subscribe((newClient) => {
+      // sélectionner le nouveau client
+      this.form.controls['clientId'].setValue(newClient.id);
+    });
+  }
 }

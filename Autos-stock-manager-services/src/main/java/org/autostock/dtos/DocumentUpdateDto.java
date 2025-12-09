@@ -1,4 +1,3 @@
 package org.autostock.dtos;
 
-public class DocumentUpdateDto {
-}
+public record DocumentUpdateDto(String type, String description) {}

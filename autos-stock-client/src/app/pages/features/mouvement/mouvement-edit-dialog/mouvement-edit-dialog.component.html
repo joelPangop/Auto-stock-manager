@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ data?.mvt ? 'Modifier' : 'Nouveau mouvement' }}</h2>
+<form [formGroup]="form" (ngSubmit)="save()" class="dialog-form">
+  <mat-form-field appearance="outline">
+    <mat-label>Type</mat-label>
+    <mat-select formControlName="type" required>
+      <mat-option value="ENTREE">Entrée</mat-option>
+      <mat-option value="SORTIE">Sortie</mat-option>
+      <mat-option value="TRANSFERT">Transfert</mat-option>
+      <mat-option value="VENTE">Vente</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Date</mat-label>
+    <input matInput type="datetime-local" formControlName="dateMouvement" required>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Commentaire</mat-label>
+    <textarea matInput rows="3" formControlName="commentaire"></textarea>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-flat-button color="primary" [disabled]="form.invalid">Enregistrer</button>
+  </div>
+</form>

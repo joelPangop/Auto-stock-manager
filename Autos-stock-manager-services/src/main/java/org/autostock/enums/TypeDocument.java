@@ -9,6 +9,7 @@ public enum TypeDocument {
     INSPECTION("Rapport d'inspection", "INSPECTION"),
     CONTRAT("Contrat de vente", "CONTRACT"),
     AUTRE("Autre document", "OTHER"),
+    CARFAX("Historique du véhicule", "CARFAX"),
     PHOTO("Photo", "PHOTO");
 
     private final String label;

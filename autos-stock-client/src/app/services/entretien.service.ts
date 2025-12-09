@@ -21,8 +21,12 @@ export class EntretienService {
     return this.http.get<Page<Entretien>>(this.base, {params});
   }
 
-  create(e: Partial<Entretien>) {
-    return this.http.post<Entretien>(this.base, e);
+  create(e: Entretien):Observable<Entretien> {
+    return this.http.post<Entretien>(`${this.base}/${e.idVoiture}`, e);
+  }
+
+  update(id: number, dto: Entretien):Observable<Entretien> {
+    return this.http.put<Entretien>(`${this.base}/${id}`, dto);
   }
 
   delete(id: number) {
