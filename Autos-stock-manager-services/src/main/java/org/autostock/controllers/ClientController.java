@@ -10,6 +10,7 @@ import org.autostock.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,7 @@ public class ClientController {
     private ClientMapper clientMapper;
 
     @PostMapping
-    public ClientDto create(@RequestBody ClientCreateDto dto) {
+    public ClientDto create(@RequestBody ClientCreateDto dto) throws AccessDeniedException {
         Client saved = clientService.create(clientMapper.toEntity(dto));
         return clientMapper.toDto(saved);
     }

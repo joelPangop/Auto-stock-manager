@@ -7,6 +7,7 @@ import org.autostock.repositories.MarqueRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -20,7 +21,7 @@ public class MarqueServiceImp extends AbstractBaseService<Marque, Long, MarqueRe
 
     @Override
     @Transactional
-    public MarqueDto create(MarqueCreateDto dto) {
+    public MarqueDto create(MarqueCreateDto dto) throws AccessDeniedException {
         Marque m = new Marque();
         m.setNom(dto.nom());
         m = create(m);

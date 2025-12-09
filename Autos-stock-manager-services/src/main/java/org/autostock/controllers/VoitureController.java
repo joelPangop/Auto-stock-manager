@@ -15,6 +15,7 @@ import org.autostock.services.VoitureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -38,7 +39,7 @@ public class VoitureController {
     private final StockMouvementService stockMouvementService;
 
     @PostMapping
-    public VoitureDetailDto create(@RequestBody VoitureCreateDto dto) {
+    public VoitureDetailDto create(@RequestBody VoitureCreateDto dto) throws AccessDeniedException {
         Modele modele = modeleRepository.findById(dto.getIdModele())
                 .orElseThrow(() -> new EntityNotFoundException("Modèle introuvable"));
         Fournisseur fournisseur = (dto.getIdFournisseur() == null) ? null :
@@ -80,18 +81,18 @@ public class VoitureController {
     }
 
     @PostMapping("/{id}/reserver")
-    public VoitureDetailDto reserver(@PathVariable Long id) {
-        return voitureMapper.toDetailDto(voitureService.reserverVoiture(id));
+    public VoitureDetailDto reserver(@PathVariable Long id) throws AccessDeniedException {
+        return voitureMapper.toDetailDto(voitureService.changerStatut(id, StatutVoiture.RESERVEE));
     }
 
     @PostMapping("/{id}/liberer")
-    public VoitureDetailDto liberer(@PathVariable Long id) {
-        return voitureMapper.toDetailDto(voitureService.libererReservation(id));
+    public VoitureDetailDto liberer(@PathVariable Long id) throws AccessDeniedException {
+        return voitureMapper.toDetailDto(voitureService.changerStatut(id, StatutVoiture.EN_STOCK));
     }
 
     @PostMapping("/{id}/vendue")
-    public VoitureDetailDto marquerVendue(@PathVariable Long id) {
-        return voitureMapper.toDetailDto(voitureService.marquerVendue(id));
+    public VoitureDetailDto marquerVendue(@PathVariable Long id) throws AccessDeniedException {
+        return voitureMapper.toDetailDto(voitureService.changerStatut(id, StatutVoiture.VENDUE));
     }
 
     @GetMapping("/{id}/mouvements")
@@ -114,7 +115,7 @@ public class VoitureController {
     }
 
     @PutMapping("/{id}")
-    public VoitureDetailDto update(@PathVariable Long id, @RequestBody VoitureUpdateDto dto) {
+    public VoitureDetailDto update(@PathVariable Long id, @RequestBody VoitureUpdateDto dto) throws AccessDeniedException {
 
         Modele modele = modeleRepository.findById(dto.getIdModele())
                 .orElseThrow(() -> new EntityNotFoundException("Modèle introuvable"));
@@ -125,6 +126,12 @@ public class VoitureController {
 //        Voiture saved = voitureService.create(voitureMapper.toEntity(dto, modele, fournisseur));
         Voiture updated = voitureService.update(id, voitureMapper.toUpdatedEntity(dto, modele, fournisseur));
         return voitureMapper.toDetailDto(updated);
+    }
+
+    @GetMapping("/mine")
+    public List<VoitureListDto> mine(@RequestParam(required = false) String marque,
+                                     @RequestParam(required = false) StatutVoiture statut) throws AccessDeniedException {
+        return voitureService.listMine().stream().map(voitureMapper::toListDto).toList();
     }
 
 }

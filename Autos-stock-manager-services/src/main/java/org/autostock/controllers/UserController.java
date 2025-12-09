@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -37,14 +38,14 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto create(@RequestBody UserCreateDto dto) {
+    public UserDto create(@RequestBody UserCreateDto dto) throws AccessDeniedException {
         String hash = passwordEncoder != null ? passwordEncoder.encode(dto.getMotDePasse()) : dto.getMotDePasse();
         User saved = utilisateurService.create(utilisateurMapper.toEntity(dto, hash));
         return utilisateurMapper.toDto(saved);
     }
 
     @PutMapping("/{id}")
-    public UserDto update(@PathVariable Long id, @RequestBody UserUpdateDto dto) {
+    public UserDto update(@PathVariable Long id, @RequestBody UserUpdateDto dto) throws AccessDeniedException {
         User u = utilisateurService.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
         utilisateurMapper.updateEntity(u, dto);

@@ -8,6 +8,7 @@ import org.autostock.services.ModeleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class ModeleController {
     }
 
     @PostMapping
-    public ModeleDto create(@RequestBody ModeleCreateDto dto) {
+    public ModeleDto create(@RequestBody ModeleCreateDto dto) throws AccessDeniedException {
         return modeleService.create(dto);
     }
 }

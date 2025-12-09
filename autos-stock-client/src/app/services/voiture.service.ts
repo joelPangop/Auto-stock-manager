@@ -25,6 +25,13 @@ export class VoitureService {
     return this.http.get<VoitureListDto[]>(this.base, { params });
   }
 
+  getMine(marque?: string, statut?: StatutVoiture) {
+    let params = new HttpParams();
+    if (marque && marque.trim().length) params = params.set('marque', marque.trim());
+    if (statut) params = params.set('statut', statut);
+    return this.http.get<VoitureListDto[]>(`${this.base}/mine`, { params });
+  }
+
   /**
    * GET /voitures/{id} -> détail (si exposé côté back)
    */

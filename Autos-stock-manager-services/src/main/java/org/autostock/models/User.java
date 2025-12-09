@@ -27,4 +27,8 @@ public class User extends AbstractEntity {
 
     @OneToMany(mappedBy = "vendeur")
     private List<Vente> ventes = new ArrayList<>();
+
+    public User(Long id){
+       setId(id);
+    }
 }

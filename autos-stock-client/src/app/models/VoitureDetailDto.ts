@@ -1,6 +1,7 @@
 import {StatutVoiture} from "./enums/StatutVoiture";
 
 export interface VoitureDetailDto {
+  owner: number;
   id: number;
   idMarque: number;
   idModele: number;

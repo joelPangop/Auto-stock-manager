@@ -9,6 +9,7 @@ import org.autostock.services.MarqueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class MarqueController {
     }
 
     @PostMapping
-    public MarqueDto create(@RequestBody MarqueCreateDto dto) {
+    public MarqueDto create(@RequestBody MarqueCreateDto dto) throws AccessDeniedException {
         return marqueService.create(dto);
     }
 }

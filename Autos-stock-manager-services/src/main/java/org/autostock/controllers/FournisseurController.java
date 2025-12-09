@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
@@ -30,7 +31,7 @@ public class FournisseurController {
     }
 
     @PostMapping
-    public ResponseEntity<FournisseurDto> createFournisseur(@RequestBody FournisseurDto fournisseurDto) {
+    public ResponseEntity<FournisseurDto> createFournisseur(@RequestBody FournisseurDto fournisseurDto) throws AccessDeniedException {
         FournisseurDto createdFournisseur = fournisseurService.createFournisseur(fournisseurDto);
         return ResponseEntity.ok(createdFournisseur);
     }
@@ -38,7 +39,7 @@ public class FournisseurController {
     @PutMapping("/{id}")
     public ResponseEntity<FournisseurDto> updateFournisseur(
             @PathVariable Long id,
-            @RequestBody FournisseurDto fournisseurDto) {
+            @RequestBody FournisseurDto fournisseurDto) throws AccessDeniedException {
         FournisseurDto updatedFournisseur = fournisseurService.updateFournisseur(id, fournisseurDto);
         return ResponseEntity.ok(updatedFournisseur);
     }

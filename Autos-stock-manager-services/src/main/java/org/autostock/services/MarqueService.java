@@ -4,10 +4,11 @@ import org.autostock.dtos.MarqueCreateDto;
 import org.autostock.dtos.MarqueDto;
 import org.autostock.models.Marque;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface MarqueService extends IService<Marque, Long> {
 
     List<MarqueDto> list();
-    MarqueDto create(MarqueCreateDto dto);
+    MarqueDto create(MarqueCreateDto dto) throws AccessDeniedException;
 }

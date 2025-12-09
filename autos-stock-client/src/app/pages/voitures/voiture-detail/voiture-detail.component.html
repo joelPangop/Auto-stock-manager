@@ -6,19 +6,19 @@
 
   <!-- Boutons selon le mode -->
   <ng-container *ngIf="v$ | async as v">
-    <button *ngIf="!isEditing" mat-flat-button color="primary" (click)="edit()">
+    <button *ngIf="!isEditing && isOwner" mat-flat-button color="primary" (click)="edit()">
       <mat-icon>edit</mat-icon>&nbsp;Modifier
     </button>
     <ng-container *ngIf="isEditing">
-      <button mat-stroked-button color="primary" (click)="cancel()">
+      <button mat-stroked-button color="primary" (click)="cancel()" *ngIf="isOwner">
         <mat-icon>close</mat-icon>&nbsp;Annuler
       </button>
-      <button mat-flat-button color="primary" (click)="save(v.id)" [disabled]="form.invalid">
+      <button mat-flat-button color="primary" (click)="save(v.id)" [disabled]="form.invalid" *ngIf="isOwner">
         <mat-icon>save</mat-icon>&nbsp;Enregistrer
       </button>
     </ng-container>
 
-    <button mat-stroked-button color="primary" (click)="nouvelleVente()">
+    <button mat-stroked-button color="primary"  *ngIf="isOwner" (click)="nouvelleVente()">
       <mat-icon>sell</mat-icon>&nbsp;Nouvelle vente
     </button>
   </ng-container>
@@ -164,7 +164,7 @@
     <mat-tab label="Documents">
       <div class="tab-pad docs-tab">
         <div class="row">
-          <button mat-stroked-button (click)="openUploadDialog()">
+          <button mat-stroked-button (click)="openUploadDialog()" *ngIf="isOwner">
             <mat-icon>upload_file</mat-icon>&nbsp;Ajouter
           </button>
         </div>
@@ -189,8 +189,8 @@
             <td>{{ d.dateUpload | date:'short' }}</td>
             <td class="r">
               <button mat-icon-button (click)="download(d)"><mat-icon>download</mat-icon></button>
-              <button mat-icon-button color="primary" (click)="openEditDocDialog(d)"><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button color="warn" (click)="deleteDoc(d)"><mat-icon>delete</mat-icon></button>
+              <button mat-icon-button color="primary" (click)="openEditDocDialog(d)" *ngIf="isOwner"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button color="warn" (click)="deleteDoc(d)" *ngIf="isOwner"><mat-icon>delete</mat-icon></button>
             </td>
           </tr>
           </tbody>
@@ -206,7 +206,7 @@
     <!-- ENTRETIENS -->
     <mat-tab label="Entretiens">
       <div class="tab-pad">
-        <button mat-stroked-button (click)="planifierEntretien()">
+        <button mat-stroked-button (click)="planifierEntretien()" *ngIf="isOwner">
           <mat-icon>build</mat-icon>&nbsp;Planifier
         </button>
 
@@ -233,7 +233,7 @@
     <!-- MOUVEMENTS -->
     <mat-tab label="Mouvements">
       <div class="tab-pad">
-        <button mat-stroked-button (click)="nouveauMouvement()">
+        <button mat-stroked-button (click)="nouveauMouvement()" *ngIf="isOwner">
           <mat-icon>compare_arrows</mat-icon>&nbsp;Ajouter
         </button>
 

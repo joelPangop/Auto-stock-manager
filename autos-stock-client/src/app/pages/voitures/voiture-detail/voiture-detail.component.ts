@@ -31,6 +31,7 @@ import {
   DocumentUploadDialogComponent
 } from "../../features/document/document-upload-dialog/document-upload-dialog.component";
 import {DocumentEditDialogComponent} from "../../features/document/document-edit-dialog/document-edit-dialog-component";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-voiture-detail',
@@ -48,6 +49,9 @@ export class VoitureDetailComponent implements OnInit {
   modeles: Modele[] = [];
   idVoiture?: number;
   totalCoutEntretien?: number;
+
+  ownerId?: number;
+  currentUserId = this.authSrv.getUserIdFromToken();
 
   // id$ réagit à chaque changement d’URL
   readonly id$ = this.route.paramMap.pipe(
@@ -80,6 +84,8 @@ export class VoitureDetailComponent implements OnInit {
       })
     )),
     tap((voiture) => {
+
+      this.ownerId = voiture.owner;
 
       this.form = this.fb.group({
         idMarque: [voiture.idMarque ? voiture.idMarque : null, [Validators.required]],
@@ -147,6 +153,7 @@ export class VoitureDetailComponent implements OnInit {
     private eSrv: EntretienService,
     private mSrv: MouvementService,
     private fSrv: FournisseurService,
+    private authSrv: AuthService,
     private fb: FormBuilder,
     private snack: MatSnackBar,
     private dialog: MatDialog,
@@ -157,12 +164,7 @@ export class VoitureDetailComponent implements OnInit {
   }
 
   /** Alimente le formulaire quand la voiture est chargée */
-  private
-
-  patchForm(v
-            :
-            VoitureDetailDto
-  ) {
+  private patchForm(v: VoitureDetailDto) {
     this.form.patchValue({
       idMarque: v.idMarque ?? null,
       idModele: v.idModele ?? null,
@@ -174,6 +176,11 @@ export class VoitureDetailComponent implements OnInit {
       statut: (v as any).etat ?? v.statut,   // selon ton DTO
       idFournisseur: v.idFournisseur ?? null
     }, {emitEvent: false});
+  }
+
+
+  get isOwner(): boolean {
+    return !!this.ownerId && !!this.currentUserId && this.ownerId === this.currentUserId;
   }
 
   // === DOCUMENTS ===

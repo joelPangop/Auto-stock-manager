@@ -33,6 +33,8 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
   pageSize = 10;
   pageIndex = 0;
 
+  onlyMine = false;
+
   private destroy$ = new Subject<void>();
   private subAll?: Subscription;
 
@@ -71,7 +73,8 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
     const statut = this.form.controls.statut.value || undefined;
 
     if (this.backendFiltering) {
-      this.voitureService.list(marque, statut).subscribe({
+      const source$ = this.onlyMine ? this.voitureService.getMine() : this.voitureService.list(marque, statut);
+      source$.subscribe({
         next: list => {
           this.data.data = list;
           this.total = list.length;
@@ -80,8 +83,10 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
         error: _ => this.loading = false
       });
     } else {
+      const source$ = this.onlyMine ? this.voitureService.getMine() : this.voitureService.list();
+
       this.subAll?.unsubscribe();
-      this.subAll = this.voitureService.list().subscribe({
+      this.subAll = source$.subscribe({
         next: all => {
           const m = (marque ?? '').toLowerCase();
           const filtered = all.filter(v => {

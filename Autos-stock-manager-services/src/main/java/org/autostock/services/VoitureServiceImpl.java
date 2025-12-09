@@ -1,19 +1,17 @@
 package org.autostock.services;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.autostock.dtos.VoitureUpdateDto;
+import org.autostock.configs.SecurityUtils;
 import org.autostock.enums.StatutVoiture;
 import org.autostock.enums.TypeMouvement;
-import org.autostock.models.Fournisseur;
-import org.autostock.models.Modele;
+import org.autostock.models.User;
 import org.autostock.models.Voiture;
-import org.autostock.repositories.FournisseurRepository;
 import org.autostock.repositories.VoitureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +24,13 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
     private StockMouvementService stockMouvementService;
 
     @Autowired
-    private FournisseurRepository fournisseurRepository;
+    private SecurityUtils sec;
 
     @Override
-    public Voiture create(Voiture voiture) {
+    public Voiture create(Voiture voiture) throws AccessDeniedException {
         voiture.setStatut(StatutVoiture.EN_STOCK);
         voiture.setDateEntreeStock(LocalDateTime.now());
+        voiture.setOwner(new User(sec.currentUserId()));
         Voiture saved = repository.save(voiture);
         stockMouvementService.enregistrerMouvement(saved, TypeMouvement.ENTREE, "Ajout initial au stock");
         return saved;
@@ -49,6 +48,11 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
         return List.of();
     }
 
+    @Transactional(readOnly = true)
+    public List<Voiture> listMine() throws AccessDeniedException {
+        return repository.findByOwner_Id(sec.currentUserId());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Optional<Voiture> trouverParVin(String vin) {
@@ -56,43 +60,36 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
     }
 
     @Override
-    public Voiture reserverVoiture(Long idVoiture) {
+    public Voiture changerStatut(Long idVoiture, StatutVoiture statutVoiture) throws AccessDeniedException {
         Voiture v = repository.findById(idVoiture)
                 .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
-        v.setStatut(StatutVoiture.RESERVEE);
+        if (!sec.isAdmin() && !v.getOwner().getId().equals(sec.currentUserId())) {
+            throw new AccessDeniedException("Vous n’êtes pas propriétaire");
+        }
+        v.setStatut(statutVoiture);
         Voiture saved = repository.save(v);
-        stockMouvementService.enregistrerMouvement(saved, TypeMouvement.RESERVATION, "Réservation du véhicule");
-        return saved;
-    }
+        switch (statutVoiture) {
+            case VENDUE -> stockMouvementService.enregistrerMouvement(saved, TypeMouvement.VENTE, "Vente du véhicule");
+            case RESERVEE ->
+                    stockMouvementService.enregistrerMouvement(saved, TypeMouvement.RESERVATION, "Réservation du véhicule");
+            case EN_STOCK ->
+                    stockMouvementService.enregistrerMouvement(saved, TypeMouvement.RETOUR, "Annulation de la réservation");
+        }
 
-    @Override
-    public Voiture libererReservation(Long idVoiture) {
-        Voiture v = repository.findById(idVoiture)
-                .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
-        v.setStatut(StatutVoiture.EN_STOCK);
-        Voiture saved = repository.save(v);
-        stockMouvementService.enregistrerMouvement(saved, TypeMouvement.RETOUR, "Annulation de la réservation");
-        return saved;
-    }
-
-    @Override
-    public Voiture marquerVendue(Long idVoiture) {
-        Voiture v = repository.findById(idVoiture)
-                .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
-        v.setStatut(StatutVoiture.VENDUE);
-        Voiture saved = repository.save(v);
-        stockMouvementService.enregistrerMouvement(saved, TypeMouvement.VENTE, "Vente du véhicule");
         return saved;
     }
 
     @Transactional
-    public Voiture update(Long id, Voiture v) {
+    public Voiture update(Long id, Voiture v) throws AccessDeniedException {
         Voiture existedVoiture = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));;
-                v.setId(existedVoiture.getId());
-                v.setVente(existedVoiture.getVente());
-                v.setDateEntreeStock(existedVoiture.getDateEntreeStock());
-                v.setVersion(existedVoiture.getVersion());
+                .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
+        if (!sec.isAdmin() && !v.getOwner().getId().equals(sec.currentUserId())) {
+            throw new AccessDeniedException("Vous n’êtes pas propriétaire");
+        }
+        v.setId(existedVoiture.getId());
+        v.setVente(existedVoiture.getVente());
+        v.setDateEntreeStock(existedVoiture.getDateEntreeStock());
+        v.setVersion(existedVoiture.getVersion());
         return repository.save(v);
     }
 

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class ModeleServiceImp extends AbstractBaseService<Modele, Long, ModeleRe
 
     @Override
     @Transactional
-    public ModeleDto create(ModeleCreateDto dto) {
+    public ModeleDto create(ModeleCreateDto dto) throws AccessDeniedException {
         var marque = marqueRepository.findById(dto.idMarque())
                 .orElseThrow(() ->  new EntityNotFoundException("Marque " + dto.idMarque()));
         Modele md = new Modele(); md.setNom(dto.nom()); md.setMarque(marque);

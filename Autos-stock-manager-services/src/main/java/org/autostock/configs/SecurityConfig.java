@@ -81,6 +81,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/documents/**").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "/api/documents/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/api/documents/**").authenticated()
+                                .requestMatchers("/api/voitures/**").authenticated()
+                                .requestMatchers("/api/ventes/**").authenticated()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/download/**").permitAll()
                                 .anyRequest().authenticated()

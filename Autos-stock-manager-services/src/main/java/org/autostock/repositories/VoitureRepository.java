@@ -19,6 +19,10 @@ public interface VoitureRepository extends JpaRepository<Voiture, Long> {
     // Par VIN (unique)
     Optional<Voiture> findByVin(String vin);
 
+    // VoitureRepository.java
+    List<Voiture> findByOwner_Id(Long ownerId);
+    Optional<Voiture> findByIdAndOwner_Id(Long id, Long ownerId);
+
 //    boolean existsByVin(String vin);
 //
 //    // Voitures entrées en stock dans une période donnée (utile pour reporting)

@@ -50,6 +50,7 @@ import { MouvementEditDialogComponent } from './pages/features/mouvement/mouveme
 import { DocumentUploadDialogComponent } from './pages/features/document/document-upload-dialog/document-upload-dialog.component';
 import { ClientCreateDialogComponent } from './pages/features/client/client-create-dialog/client-create-dialog.component';
 import { DocumentEditDialogComponent } from './pages/features/document/document-edit-dialog/document-edit-dialog-component';
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 
 @NgModule({
   declarations: [
@@ -94,7 +95,7 @@ import { DocumentEditDialogComponent } from './pages/features/document/document-
     MatSnackBarModule,
     MatProgressSpinnerModule,
     RouterModule,
-    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule
+    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]

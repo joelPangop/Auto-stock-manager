@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class VenteController {
     private VenteMapper venteMapper;
 
     @PostMapping
-    public VenteDto create(@RequestBody VenteCreateDto dto) {
+    public VenteDto create(@RequestBody VenteCreateDto dto) throws AccessDeniedException {
         Vente v = venteService.creerVente(
                 dto.getIdVoiture(), dto.getIdClient(), dto.getIdVendeur(),
                 dto.getPrixFinal(), dto.getModePaiement()

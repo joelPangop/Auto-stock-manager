@@ -1,17 +1,18 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { TokenStorageService } from './token-storage.service';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {TokenStorageService} from './token-storage.service';
 import {environment} from "../../environments/environment";
 import {AuthResponse, LoginRequest, LoginResponse} from "../models/auth/models";
 import {tap} from "rxjs/operators";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthService {
   private readonly base = `${environment.apiUrl}/auth`;
   private currentUser$ = new BehaviorSubject<LoginResponse['user'] | null>(null);
 
-  constructor(private http: HttpClient, private tokens: TokenStorageService) {}
+  constructor(private http: HttpClient, private tokens: TokenStorageService) {
+  }
 
   login(payload: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.base}/login`, payload).pipe(
@@ -45,7 +46,7 @@ export class AuthService {
   }
 
   refresh(): Observable<{ accessToken: string; tokenType?: string; expiresIn?: number; }> {
-    return this.http.post<any>(`${this.base}/refresh`, { refreshToken: this.tokens.refresh }).pipe(
+    return this.http.post<any>(`${this.base}/refresh`, {refreshToken: this.tokens.refresh}).pipe(
       tap(res => {
         const bearer = res.tokenType ?? 'Bearer';
         this.tokens.save(`${bearer} ${res.accessToken}`, this.tokens.refresh!);
@@ -53,6 +54,20 @@ export class AuthService {
     );
   }
 
-  user$() { return this.currentUser$.asObservable(); }
-  isAuthenticated(): boolean { return !this.tokens.isExpired(this.tokens.access); }
+  user$() {
+    return this.currentUser$.asObservable();
+  }
+
+  isAuthenticated(): boolean {
+    return !this.tokens.isExpired(this.tokens.access);
+  }
+
+// auth.util.ts
+  getUserIdFromToken(): number | null {
+    const raw = localStorage.getItem('access_token'); // adapte si autre storage
+    if (!raw) return null;
+    const payload = JSON.parse(atob(raw.split('.')[1]));
+    return payload?.uid ?? null; // adapte à ta claim
+  }
+
 }

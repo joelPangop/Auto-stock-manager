@@ -1,6 +1,7 @@
 package org.autostock.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.autostock.enums.StatutVoiture;
 import org.autostock.enums.TypeMouvement;
 import org.autostock.models.Client;
 import org.autostock.models.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +38,7 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
 
     @Override
     public Vente creerVente(Long idVoiture, Long idClient, Long idVendeur,
-                            BigDecimal prixFinal, String modePaiement) {
+                            BigDecimal prixFinal, String modePaiement) throws AccessDeniedException {
 
         Voiture voiture = voitureService.findById(idVoiture)
                 .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
@@ -57,7 +59,7 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
 
         Vente saved = repository.save(vente);
 
-        voitureService.marquerVendue(voiture.getId());
+        voitureService.changerStatut(voiture.getId(), StatutVoiture.VENDUE);
         stockMouvementService.enregistrerMouvement(voiture, TypeMouvement.VENTE,
                 "Vente #" + saved.getId() + " au client " + client.getNom());
 

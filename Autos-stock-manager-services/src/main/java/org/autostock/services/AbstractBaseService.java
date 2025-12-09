@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +17,7 @@ public abstract class AbstractBaseService<T, ID, R extends JpaRepository<T, ID>>
     protected R repository;
 
     @Override
-    public T create(T entity) {
+    public T create(T entity) throws AccessDeniedException {
         return repository.save(entity);
     }
 

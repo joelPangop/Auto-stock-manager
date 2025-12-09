@@ -4,6 +4,7 @@ import org.autostock.dtos.VoitureUpdateDto;
 import org.autostock.enums.StatutVoiture;
 import org.autostock.models.Voiture;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,11 +16,9 @@ public interface VoitureService extends IService<Voiture, Long> {
 
     Optional<Voiture> trouverParVin(String vin);
 
-    Voiture reserverVoiture(Long idVoiture);
+    List<Voiture> listMine() throws AccessDeniedException;
 
-    Voiture libererReservation(Long idVoiture);
+    Voiture changerStatut(Long idVoiture, StatutVoiture statutVoiture) throws AccessDeniedException;
 
-    Voiture marquerVendue(Long idVoiture);
-
-    Voiture update(Long id, Voiture voiture);
+    Voiture update(Long id, Voiture voiture) throws AccessDeniedException;
 }

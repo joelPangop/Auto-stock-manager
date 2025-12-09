@@ -8,6 +8,7 @@ import org.autostock.repositories.FournisseurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,13 +31,13 @@ public class FournisseurServiceImp extends AbstractBaseService<Fournisseur, Long
         return fournisseurMapper.toDto(fournisseur);
     }
 
-    public FournisseurDto createFournisseur(FournisseurDto fournisseurDto) {
+    public FournisseurDto createFournisseur(FournisseurDto fournisseurDto) throws AccessDeniedException {
         Fournisseur fournisseur = fournisseurMapper.toEntity(fournisseurDto);
         Fournisseur savedFournisseur = create(fournisseur);
         return fournisseurMapper.toDto(savedFournisseur);
     }
 
-    public FournisseurDto updateFournisseur(Long id, FournisseurDto fournisseurDto) {
+    public FournisseurDto updateFournisseur(Long id, FournisseurDto fournisseurDto) throws AccessDeniedException {
         Fournisseur existingFournisseur = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Fournisseur non trouvé"));
 

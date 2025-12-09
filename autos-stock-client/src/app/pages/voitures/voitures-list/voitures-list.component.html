@@ -2,6 +2,7 @@
   <div class="header">
     <h2>Voitures</h2>
     <span class="spacer"></span>
+    <mat-slide-toggle [(ngModel)]="onlyMine" [ngModelOptions]="{ standalone: true }" (change)="reload()">Mes voitures</mat-slide-toggle>
     <button mat-flat-button color="primary" (click)="nouvelleVoiture()">
       <mat-icon>add</mat-icon>&nbsp;Nouvelle voiture
     </button>

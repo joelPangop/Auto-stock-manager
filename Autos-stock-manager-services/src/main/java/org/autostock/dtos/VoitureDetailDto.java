@@ -22,6 +22,7 @@ public class VoitureDetailDto {
     private String statut;
     private LocalDateTime dateEntreeStock;
     private Long kilometrage;
+    private Long owner;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

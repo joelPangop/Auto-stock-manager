@@ -44,6 +44,11 @@ public class Voiture extends AbstractEntity {
     @OneToMany(mappedBy = "voiture")
     private List<StockMouvement> mouvements = new ArrayList<>();
 
+    // Voiture.java
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_owner", nullable = false)
+    private User owner;
+
     @OneToOne(mappedBy = "voiture")
     private Vente vente;
 
