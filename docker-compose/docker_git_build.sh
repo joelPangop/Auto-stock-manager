@@ -34,9 +34,9 @@ docker build \
 
 # === Build du backend Spring Boot ===
 echo "🧪 Build backend..."
-cd ./autos-stock-manager || exit 1
+cd ./autos-stock-manager-services || exit 1
 chmod +x mvnw
-./mvn clean package -DskipTests || exit 1
+./mvnw clean package -DskipTests || exit 1
 cd ..
 
 # === Docker Compose ===
