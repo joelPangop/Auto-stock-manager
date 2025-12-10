@@ -1,0 +1,92 @@
+// Début du pipeline declarative
+pipeline {
+    // L'agent "any" signifie que le pipeline peut s'exécuter sur n'importe quel agent Jenkins disponible
+    agent any
+
+    // Déclaration de variables d'environnement accessibles dans tout le pipeline
+    environment {
+        BACKEND_DIR = "../school-space-services"                      // Dossier contenant le code backend (Spring Boot)
+        FRONTEND_DIR = "../school-space-client"                    // Dossier contenant le code frontend (React)
+        DOCKER_IMAGE_BACKEND = "schoolSpaceServices" // Nom de l'image Docker backend
+        DOCKER_IMAGE_FRONTEND = "schoolSpaceClient" // Nom de l'image Docker frontend
+    }
+
+    // Définition des différentes étapes (stages) du pipeline
+    stages {
+
+        stage('Checkout') {
+            // Étape pour récupérer le code source depuis le dépôt GitHub
+            steps {
+                git 'https://github.com/joelPangop/school-space.git' // Remplacer par ton vrai lien Git
+            }
+        }
+
+        stage('Build Backend') {
+            // Compilation du code Java avec Maven dans le dossier backend
+            steps {
+                dir("${BACKEND_DIR}") {
+                    sh 'mvn clean install' // Nettoie et compile le projet
+                }
+            }
+        }
+
+        stage('Test Backend') {
+            // Exécution des tests unitaires backend
+            steps {
+                dir("${BACKEND_DIR}") {
+                    sh 'mvn test' // Lance les tests Maven
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            // Construction du frontend React TypeScript
+            steps {
+                dir("${FRONTEND_DIR}") {
+                    sh 'npm install'     // Installe les dépendances Node.js
+                    sh 'npm run build'   // Compile le projet React en production
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            // Création des images Docker pour le backend et le frontend
+            steps {
+                // Crée l'image Docker du backend à partir du Dockerfile
+                sh "docker build -t ${DOCKER_IMAGE_BACKEND} ${BACKEND_DIR}"
+
+                // Crée l'image Docker du frontend à partir du Dockerfile
+                sh "docker build -t ${DOCKER_IMAGE_FRONTEND} ${FRONTEND_DIR}"
+            }
+        }
+
+        stage('Docker Deploy (Local)') {
+            // Déploiement local des conteneurs avec docker-compose
+            steps {
+                sh 'docker-compose down || true' // Arrête les conteneurs existants (ignore l'erreur si aucun conteneur ne tourne)
+                sh 'docker-compose up -d'        // Redémarre les conteneurs en arrière-plan
+            }
+        }
+		
+		stage('Test & Coverage') {
+			steps {
+				dir("${BACKEND_DIR}") {
+					sh 'mvn clean verify'
+				}
+			}
+			post {
+				always {
+					// Archive les résultats de test
+					junit 'target/surefire-reports/*.xml'
+
+					// Archive HTML coverage
+					publishHTML([
+						reportDir: 'target/site/jacoco',
+						reportFiles: 'index.html',
+						reportName: 'JaCoCo Coverage Report'
+					])
+				}
+			}
+		}
+    }
+}

@@ -1,0 +1,33 @@
+<mat-card>
+  <mat-card-header>
+    <div mat-card-avatar>
+      <img *ngIf="user?.avatarUrl; else icon" [src]="user?.avatarUrl" class="avatar">
+      <ng-template #icon><mat-icon>account_circle</mat-icon></ng-template>
+    </div>
+    <mat-card-title>{{ user?.nom || 'Utilisateur' }}</mat-card-title>
+    <mat-card-subtitle>{{ user?.email }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-divider></mat-divider>
+
+  <mat-list>
+    <mat-list-item (click)="gotoProfile()">
+      <mat-icon matListItemIcon>person</mat-icon>
+      <div matListItemTitle>Mon profil</div>
+      <span class="spacer"></span>
+      <div matListItemLine>Informations du compte</div>
+    </mat-list-item>
+
+    <mat-list-item (click)="gotoSettings()">
+      <mat-icon matListItemIcon>settings</mat-icon>
+      <div matListItemTitle>Paramètres</div>
+      <span class="spacer"></span>
+      <div matListItemLine>Préférences</div>
+    </mat-list-item>
+
+    <mat-list-item (click)="logout()">
+      <mat-icon matListItemIcon>logout</mat-icon>
+      <div matListItemTitle>Déconnexion</div>
+    </mat-list-item>
+  </mat-list>
+</mat-card>

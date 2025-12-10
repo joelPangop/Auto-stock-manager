@@ -1,3 +1,5 @@
+import {User} from "../User";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -8,7 +10,7 @@ export interface LoginResponse {
   refreshToken?: string;
   tokenType?: string;         // ex: "Bearer"
   expiresIn?: number;         // en secondes
-  user?: { id: number; nom: string; email: string; role: string; };
+  user?: User;
 }
 
 export interface AuthResponse {
@@ -16,10 +18,5 @@ export interface AuthResponse {
   refreshToken: string;
   tokenType: string;
   expiresIn: number;
-  user: {
-    id: number;
-    nom: string;
-    email: string;
-    role: string;
-  };
+  user: User;
 }

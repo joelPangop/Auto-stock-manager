@@ -75,7 +75,6 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
             case EN_STOCK ->
                     stockMouvementService.enregistrerMouvement(saved, TypeMouvement.RETOUR, "Annulation de la réservation");
         }
-
         return saved;
     }
 
@@ -87,6 +86,7 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
             throw new AccessDeniedException("Vous n’êtes pas propriétaire");
         }
         v.setId(existedVoiture.getId());
+        v.setOwner(existedVoiture.getOwner());
         v.setVente(existedVoiture.getVente());
         v.setDateEntreeStock(existedVoiture.getDateEntreeStock());
         v.setVersion(existedVoiture.getVersion());

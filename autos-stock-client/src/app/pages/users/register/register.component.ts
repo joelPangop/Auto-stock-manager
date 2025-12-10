@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {AuthService} from "../../services/auth.service";
+import {AuthService} from "../../../services/auth.service";
 
 function matchPasswordValidator(group: AbstractControl): ValidationErrors | null {
   const p = group.get('password')?.value;

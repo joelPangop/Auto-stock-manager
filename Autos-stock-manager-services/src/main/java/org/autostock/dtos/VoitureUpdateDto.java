@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class VoitureUpdateDto {
-    Long iMarque;
+    Long idMarque;
     Long idModele;
     Integer annee;
     BigDecimal prixVente;

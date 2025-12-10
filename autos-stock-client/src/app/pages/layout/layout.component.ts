@@ -3,6 +3,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map, shareReplay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {AuthService} from "../../services/auth.service";
+import {MatDialog} from "@angular/material/dialog";
+import {ProfileDialogComponent} from "../features/user/profile-dialog/profile-dialog.component";
 
 type NavItem = { icon: string; label: string; path: string; };
 
@@ -16,6 +18,7 @@ export class LayoutComponent {
   constructor(
     private bp: BreakpointObserver,
     private auth: AuthService,
+    private dialog: MatDialog,
     private router: Router
   ) {}
 
@@ -33,5 +36,13 @@ export class LayoutComponent {
   logout() {
     this.auth.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  openProfileDialog() {
+    this.dialog.open(ProfileDialogComponent, {
+      width: '420px',
+      data: this.auth.currentUser, // optionnel
+      autoFocus: false
+    });
   }
 }

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {AuthService} from "../../services/auth.service";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -12,6 +12,7 @@ import {AuthService} from "../../services/auth.service";
 export class LoginComponent {
   hide = true;
   loading = false;
+  isAdmin = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -23,7 +24,9 @@ export class LoginComponent {
     private auth: AuthService,
     private snack: MatSnackBar,
     private router: Router
-  ) {}
+  ) {
+    this.isAdmin = this.auth.isAdmin();
+  }
 
   submit() {
     if (this.form.invalid) return;

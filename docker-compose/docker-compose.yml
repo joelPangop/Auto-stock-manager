@@ -1,0 +1,105 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: autos_stock_db
+      MYSQL_ROOT_PASSWORD: Abc123...
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pAbc123..."]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql_data:/var/lib/mysql 
+    networks:
+      - backend
+
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - backend
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      
+    networks:
+      - backend
+      
+  autostockmanager:
+    build:
+      context: ../autos-stock-manager-services
+      dockerfile: Dockerfile
+    container_name: autoStockManager
+    image: schoolspaceservices
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/autos_stock_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      #SPRING_DATASOURCE_URL: jdbc:mysql://schoolspace-db.c6f8qe264enx.us-east-1.rds.amazonaws.com:3306/schoolspacedb?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Abc123...
+      #DB_HOST: schoolspace-db.c6f8qe264enx.us-east-1.rds.amazonaws.com
+      DB_USER: root
+      DB_PASSWORD: Abc123...
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: docker
+    env_file:
+      - ../autos-stock-manager-services/.env
+    labels:
+      ARTIFACT_CATEGORY: Computation
+      Replicas: 1
+    networks:
+      - backend
+
+  autostockclient:
+    build:
+      context: ../autos-stock-client
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:8080
+    container_name: autoStockClient
+    ports:
+      - "3000:80"
+    depends_on:
+      - autostockmanager
+    #environment:
+    # - REACT_APP_API_URL=http://schoolspaceservices:8080
+    #  args:
+    #  - VITE_API_URL=http://$(curl http://169.254.169.254/latest/meta-data/public-ipv4):8080
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mysql_data:

@@ -71,7 +71,7 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
   reload(): void {
     this.loading = true;
     this.authSrv.onlyMine = this.onlyMine;
-    
+
     const marque = this.form.controls.marque.value?.trim() || undefined;
     const statut = this.form.controls.statut.value || undefined;
 

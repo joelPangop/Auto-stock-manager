@@ -30,6 +30,10 @@ export class AuthService {
     this.currentUser$.next(null);
   }
 
+  isAdmin() {
+    return this.currentUser?.role === 'ADMIN';
+  }
+
   register(data: { nom: string; email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.base}/register`, data).pipe(
       tap(res => {
@@ -44,6 +48,10 @@ export class AuthService {
     return this.http.get<any>(`${this.base}/me`).pipe(
       tap(user => this.currentUser$.next(user))
     );
+  }
+
+  get currentUser() {
+    return this.currentUser$.value;
   }
 
   refresh(): Observable<{ accessToken: string; tokenType?: string; expiresIn?: number; }> {

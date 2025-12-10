@@ -1,0 +1,86 @@
+mat-card {
+  width: 380px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Header */
+mat-card-header {
+  background-color: #1976d2;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+mat-card-header mat-icon {
+  font-size: 48px;
+  margin-right: 12px;
+}
+
+mat-card-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+mat-card-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Divider */
+mat-divider {
+  margin: 0;
+}
+
+/* List styling */
+mat-list {
+  padding: 0;
+}
+
+mat-list-item {
+  cursor: pointer;
+  padding: 14px 20px;
+  transition: background-color 0.2s ease-in-out;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+mat-list-item:last-child {
+  border-bottom: none;
+}
+
+mat-list-item:hover {
+  background-color: #e3f2fd;
+}
+
+mat-list-item mat-icon {
+  color: #1976d2;
+  margin-right: 16px;
+}
+
+mat-list-item div[matListItemTitle] {
+  font-weight: 500;
+  color: #222;
+}
+
+mat-list-item div[matListItemLine] {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Animation douce à l’ouverture */
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.spacer { flex: 1 1 auto; }

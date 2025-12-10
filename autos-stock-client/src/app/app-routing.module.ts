@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {LoginComponent} from "./pages/login/login.component";
+import {LoginComponent} from "./pages/users/login/login.component";
 import {DashboardComponent} from "./pages/dashboard/dashboard.component";
 import {AuthGuard} from "./services/auth.guard";
 import {LayoutComponent} from "./pages/layout/layout.component";
-import {RegisterComponent} from "./pages/register/register.component";
+import {RegisterComponent} from "./pages/users/register/register.component";
 import {VoituresListComponent} from "./pages/voitures/voitures-list/voitures-list.component";
 import {VoitureDetailComponent} from "./pages/voitures/voiture-detail/voiture-detail.component";
 import {VentesComponent} from "./pages/ventes/ventes.component";
@@ -13,10 +13,13 @@ import {EntretiensComponent} from "./pages/entretiens/entretiens.component";
 import {DocumentsComponent} from "./pages/documents/documents.component";
 import {MouvementsComponent} from "./pages/mouvements/mouvements.component";
 import {PaiementsComponent} from "./pages/paiements/paiements.component";
+import {ProfileComponent} from "./pages/users/profile/profile.component";
+import {SettingsComponent} from "./pages/users/settings/settings.component";
+import {AdminGuard} from "./services/AdminGuard";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },   // ⬅️ ajouté
+  { path: 'register', component: RegisterComponent, canActivate: [AdminGuard] },   // ⬅️ ajouté
   {
     path: '',
     component: LayoutComponent,
@@ -33,6 +36,8 @@ const routes: Routes = [
       { path: 'documents', component: DocumentsComponent },
       { path: 'mouvements', component: MouvementsComponent },
       { path: 'paiements', component: PaiementsComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'parametres', component: SettingsComponent },
     ]
   },
   { path: '**', redirectTo: '' }

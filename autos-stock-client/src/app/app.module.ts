@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './pages/login/login.component';
+import { LoginComponent } from './pages/users/login/login.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatCardModule} from "@angular/material/card";
@@ -22,7 +22,7 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatMenuModule} from "@angular/material/menu";
-import { RegisterComponent } from './pages/register/register.component';
+import { RegisterComponent } from './pages/users/register/register.component';
 import { VoituresListComponent } from './pages/voitures/voitures-list/voitures-list.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSortModule} from "@angular/material/sort";
@@ -51,6 +51,9 @@ import { DocumentUploadDialogComponent } from './pages/features/document/documen
 import { ClientCreateDialogComponent } from './pages/features/client/client-create-dialog/client-create-dialog.component';
 import { DocumentEditDialogComponent } from './pages/features/document/document-edit-dialog/document-edit-dialog-component';
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import { ProfileDialogComponent } from './pages/features/user/profile-dialog/profile-dialog.component';
+import { ProfileComponent } from './pages/users/profile/profile.component';
+import { SettingsComponent } from './pages/users/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +79,10 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
     MouvementEditDialogComponent,
     DocumentUploadDialogComponent,
     ClientCreateDialogComponent,
-    DocumentEditDialogComponent
+    DocumentEditDialogComponent,
+    ProfileDialogComponent,
+    ProfileComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

@@ -31,7 +31,7 @@
         <span></span>
         <a routerLink="/forgot">Mot de passe oublié ?</a>
       </div>
-      <div class="meta">
+      <div class="meta" *ngIf="isAdmin">
         <span>Nouveau ?</span>
         <a routerLink="/register">Créer un compte</a>
       </div>
