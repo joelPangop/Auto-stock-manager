@@ -18,4 +18,5 @@ public class VoitureUpdateDto {
     Long kilometrage;
     String statut;       // ou enum StatutVoiture
     Long idFournisseur;
+    private boolean needsRemark;
 }

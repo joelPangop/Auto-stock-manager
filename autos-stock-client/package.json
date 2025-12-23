@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve -o",
-    "build": "ng build",
+    "build": "set NODE_OPTIONS=--max_old_space_size=4096 && ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

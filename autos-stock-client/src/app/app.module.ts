@@ -54,6 +54,8 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import { ProfileDialogComponent } from './pages/features/user/profile-dialog/profile-dialog.component';
 import { ProfileComponent } from './pages/users/profile/profile.component';
 import { SettingsComponent } from './pages/users/settings/settings.component';
+import { UsersComponent } from './pages/users/admin/users/users.component';
+import {MatChipsModule} from "@angular/material/chips";
 
 @NgModule({
   declarations: [
@@ -82,7 +84,8 @@ import { SettingsComponent } from './pages/users/settings/settings.component';
     DocumentEditDialogComponent,
     ProfileDialogComponent,
     ProfileComponent,
-    SettingsComponent
+    SettingsComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
@@ -101,7 +104,7 @@ import { SettingsComponent } from './pages/users/settings/settings.component';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     RouterModule,
-    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule
+    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule, MatChipsModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]

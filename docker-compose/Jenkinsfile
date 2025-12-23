@@ -5,10 +5,10 @@ pipeline {
 
     // Déclaration de variables d'environnement accessibles dans tout le pipeline
     environment {
-        BACKEND_DIR = "../school-space-services"                      // Dossier contenant le code backend (Spring Boot)
-        FRONTEND_DIR = "../school-space-client"                    // Dossier contenant le code frontend (React)
-        DOCKER_IMAGE_BACKEND = "schoolSpaceServices" // Nom de l'image Docker backend
-        DOCKER_IMAGE_FRONTEND = "schoolSpaceClient" // Nom de l'image Docker frontend
+        BACKEND_DIR = "../autos-stock-manager-services"                      // Dossier contenant le code backend (Spring Boot)
+        FRONTEND_DIR = "../autos-stock-client"                    // Dossier contenant le code frontend (React)
+        DOCKER_IMAGE_BACKEND = "autostockmanager" // Nom de l'image Docker backend
+        DOCKER_IMAGE_FRONTEND = "autostockclient" // Nom de l'image Docker frontend
     }
 
     // Définition des différentes étapes (stages) du pipeline
@@ -17,7 +17,7 @@ pipeline {
         stage('Checkout') {
             // Étape pour récupérer le code source depuis le dépôt GitHub
             steps {
-                git 'https://github.com/joelPangop/school-space.git' // Remplacer par ton vrai lien Git
+                git 'https://github.com/joelPangop/Auto-stock-manager.git' // Remplacer par ton vrai lien Git
             }
         }
 

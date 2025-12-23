@@ -12,6 +12,8 @@ import org.autostock.mappers.UserMapper;
 import org.autostock.models.User;
 import org.autostock.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto create(@RequestBody UserCreateDto dto) throws AccessDeniedException {
         String hash = passwordEncoder != null ? passwordEncoder.encode(dto.getMotDePasse()) : dto.getMotDePasse();
         User saved = utilisateurService.create(utilisateurMapper.toEntity(dto, hash));
@@ -45,6 +48,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto update(@PathVariable Long id, @RequestBody UserUpdateDto dto) throws AccessDeniedException {
         User u = utilisateurService.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
@@ -53,6 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto get(@PathVariable Long id) {
         return utilisateurService.findById(id)
                 .map(utilisateurMapper::toDto)
@@ -60,6 +65,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserListDto> list(@RequestParam(required = false) String role) {
         var list = (role == null || role.isBlank())
                 ? utilisateurService.findAll()
@@ -68,6 +74,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         utilisateurService.deleteById(id);
     }

@@ -5,6 +5,7 @@ import {TokenStorageService} from './token-storage.service';
 import {environment} from "../../environments/environment";
 import {AuthResponse, LoginRequest, LoginResponse} from "../models/auth/models";
 import {tap} from "rxjs/operators";
+import {User} from "../models/User";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.base}/login`, payload).pipe(
       tap(res => {
         const bearer = res.tokenType ?? 'Bearer';
-        this.tokens.save(`${bearer} ${res.accessToken}`, res.refreshToken);
+        this.tokens.save(`${bearer} ${res.accessToken}`, res.refreshToken, res.user);
         this.currentUser$.next(res.user ?? null);
       })
     );
@@ -37,21 +38,30 @@ export class AuthService {
   register(data: { nom: string; email: string; password: string }) {
     return this.http.post<AuthResponse>(`${this.base}/register`, data).pipe(
       tap(res => {
-        localStorage.setItem('accessToken', res.accessToken);
-        localStorage.setItem('refreshToken', res.refreshToken);
-        this.currentUser$.next(res.user);
+        // localStorage.setItem('access_token', res.accessToken);
+        // localStorage.setItem('refresh_token', res.refreshToken);
+        // this.currentUser$.next(res.user);
       })
     );
   }
 
   me(): Observable<any> {
     return this.http.get<any>(`${this.base}/me`).pipe(
-      tap(user => this.currentUser$.next(user))
+      tap(user => {
+        this.currentUser$.next(user)
+      })
     );
   }
 
   get currentUser() {
+    const user = localStorage.getItem('user_token');
+    this.currentUser$.next(JSON.parse(user));
     return this.currentUser$.value;
+  }
+
+  set currentUser(value: User) {
+    this.currentUser$.next(value);
+    this.tokens.save(this.tokens.access, this.tokens.refresh, value);
   }
 
   refresh(): Observable<{ accessToken: string; tokenType?: string; expiresIn?: number; }> {

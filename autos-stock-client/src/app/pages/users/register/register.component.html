@@ -1,8 +1,15 @@
-<div class="auth-wrapper">
-  <mat-card class="auth-card" appearance="outlined">
-    <h1>Créer un compte</h1>
+<div class="register-container">
+<form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
 
-    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="header">
+    <button mat-stroked-button color="primary" (click)="backToList()">
+      <mat-icon>arrow_back</mat-icon>
+      Retour à la liste
+    </button>
+    <h1>Créer un compte</h1>
+  </div>
+
+  <mat-card class="card">
       <!-- Nom -->
       <mat-form-field appearance="outline" class="field">
         <mat-label>Nom complet</mat-label>
@@ -20,7 +27,7 @@
       </mat-form-field>
 
       <!-- Password -->
-      <div formGroupName="passwords">
+      <div formGroupName="passwords" *ngIf="!user">
         <mat-form-field appearance="outline" class="field">
           <mat-label>Mot de passe</mat-label>
           <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" autocomplete="new-password" />
@@ -42,15 +49,20 @@
         </mat-form-field>
       </div>
 
-      <button mat-raised-button color="primary" class="btn" [disabled]="loading || form.invalid">
+      <button mat-raised-button color="primary" class="btn" [disabled]="loading || form.invalid" *ngIf="!user">
         <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
         <span *ngIf="!loading">Créer mon compte</span>
       </button>
+      <button mat-raised-button color="primary" class="btn" [disabled]="loading" *ngIf="user">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">Modifier</span>
+      </button>
 
-      <div class="meta">
-        <span>Déjà inscrit ?</span>
-        <a routerLink="/login">Se connecter</a>
-      </div>
-    </form>
+<!--      <div class="meta">-->
+<!--        <span>Déjà inscrit ?</span>-->
+<!--        <a routerLink="/login">Se connecter</a>-->
+<!--      </div>-->
   </mat-card>
+<!--</div>-->
+</form>
 </div>

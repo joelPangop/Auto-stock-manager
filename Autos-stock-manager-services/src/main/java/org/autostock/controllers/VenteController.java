@@ -55,6 +55,14 @@ public class VenteController {
         return venteMapper.toDto(v, total, reste);
     }
 
+    @GetMapping("/voiture/{id}")
+    public VenteDto getByVoiture(@PathVariable Long id) {
+        Vente v = venteService.findByVoitureId(id).orElseThrow(() -> new EntityNotFoundException("Vente introuvable"));
+        BigDecimal total = paiementService.totalPaye(id);
+        BigDecimal reste = v.getPrixFinal().subtract(total);
+        return venteMapper.toDto(v, total, reste);
+    }
+
     @GetMapping("/client/{idClient}")
     public List<VenteDto> ventesClient(@PathVariable Long idClient) {
         return venteService.ventesDuClient(idClient).stream().map(v -> {

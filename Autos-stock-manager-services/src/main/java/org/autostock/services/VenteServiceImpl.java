@@ -89,4 +89,10 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
     public List<Vente> ventesEntre(LocalDateTime debut, LocalDateTime fin) {
         return repository.findByDateVenteBetween(debut, fin);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Vente> findByVoitureId(Long id){
+        return Optional.ofNullable(repository.findByVoiture_Id(id));
+    }
 }

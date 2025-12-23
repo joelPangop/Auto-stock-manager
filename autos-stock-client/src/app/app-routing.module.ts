@@ -16,10 +16,10 @@ import {PaiementsComponent} from "./pages/paiements/paiements.component";
 import {ProfileComponent} from "./pages/users/profile/profile.component";
 import {SettingsComponent} from "./pages/users/settings/settings.component";
 import {AdminGuard} from "./services/AdminGuard";
+import {UsersComponent} from "./pages/users/admin/users/users.component";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent, canActivate: [AdminGuard] },   // ⬅️ ajouté
   {
     path: '',
     component: LayoutComponent,
@@ -38,6 +38,9 @@ const routes: Routes = [
       { path: 'paiements', component: PaiementsComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'parametres', component: SettingsComponent },
+      { path: 'users', component: UsersComponent, canActivate: [AdminGuard] },
+      { path: 'register', component: RegisterComponent, canActivate: [AdminGuard] },   // ⬅️ ajouté
+      { path: 'register/:id', component: RegisterComponent, canActivate: [AdminGuard] },   // ⬅️ ajouté
     ]
   },
   { path: '**', redirectTo: '' }

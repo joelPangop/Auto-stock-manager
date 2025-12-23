@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {AuthService} from "../../../services/auth.service";
@@ -9,15 +9,12 @@ import {AuthService} from "../../../services/auth.service";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   hide = true;
   loading = false;
   isAdmin = false;
 
-  form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-  });
+  form: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -27,6 +24,14 @@ export class LoginComponent {
   ) {
     this.isAdmin = this.auth.isAdmin();
   }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+        throw new Error("Method not implemented.");
+    }
 
   submit() {
     if (this.form.invalid) return;

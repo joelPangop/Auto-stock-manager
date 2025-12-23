@@ -26,6 +26,10 @@ export class VenteService {
     return this.http.get<Vente>(`${this.base}/${id}`);
   }
 
+  getVenteByIdVoiture(id: number): Observable<Vente> {
+    return this.http.get<Vente>(`${this.base}/voiture/${id}`);
+  }
+
   create(dto: VenteCreateDto): Observable<VenteDto> {
     return this.http.post<VenteDto>(this.base, dto);
   }

@@ -15,12 +15,17 @@ type NavItem = { icon: string; label: string; path: string; };
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LayoutComponent {
+
+  isAdmin = false;
+
   constructor(
     private bp: BreakpointObserver,
     private auth: AuthService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) {
+    this.isAdmin = this.auth.isAdmin();
+  }
 
   isHandset$ = this.bp.observe([Breakpoints.Handset, Breakpoints.Tablet])
     .pipe(map(r => r.matches), shareReplay(1));
@@ -45,4 +50,5 @@ export class LayoutComponent {
       autoFocus: false
     });
   }
+
 }

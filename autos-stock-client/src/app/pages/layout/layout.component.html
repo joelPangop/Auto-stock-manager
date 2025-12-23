@@ -22,6 +22,7 @@
       <a mat-list-item routerLink="/documents"><mat-icon matListItemIcon>description</mat-icon><span matListItemTitle>Documents</span></a>
       <a mat-list-item routerLink="/mouvements"><mat-icon matListItemIcon>compare_arrows</mat-icon><span matListItemTitle>Mouvements</span></a>
       <a mat-list-item routerLink="/paiements"><mat-icon matListItemIcon>payments</mat-icon><span matListItemTitle>Paiements</span></a>
+      <a mat-list-item routerLink="/users" *ngIf="isAdmin"><mat-icon matListItemIcon>group</mat-icon><span matListItemTitle>Utilisateurs</span></a>
     </mat-nav-list>
 
     <div class="grow"></div>

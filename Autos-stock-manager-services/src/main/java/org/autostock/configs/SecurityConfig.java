@@ -41,29 +41,6 @@ public class SecurityConfig {
         return cfg.getAuthenticationManager();
     }
 
-//    @Bean
-//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable()) // pratique pour API REST (sinon gère un token)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/",                 // page d’accueil
-//                                "/index.html",
-//                                "/favicon.ico",
-//                                "/error",
-//                                "/assets/**",        // static (adapter selon ton projet)
-//                                "/css/**", "/js/**", "/images/**",
-//                                "/swagger-ui/**", "/v3/api-docs/**"
-//                        ).permitAll()
-//                        .requestMatchers("/api/**").permitAll() // ou .authenticated() si tu veux protéger l’API
-//                        .anyRequest().authenticated()
-//                )
-//                .httpBasic(Customizer.withDefaults())   // optionnel (API)
-//                .formLogin(form -> form.disable());     // désactive la page de login par défaut
-//
-//        return http.build();
-//    }
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -96,6 +73,7 @@ public class SecurityConfig {
 
     private CorsConfigurationSource corsConfiguration() {
         var cfg = new CorsConfiguration();
+        String[] origins = new String[] {allowedOrigins, "http://localhost:4200"};
         cfg.setAllowedOrigins(List.of(allowedOrigins.split(",")));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));

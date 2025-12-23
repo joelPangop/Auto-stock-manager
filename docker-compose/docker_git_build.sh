@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 cd .. || exit 1
 
 echo "📥 Pull Git..."
-git pull origin master
+#git pull origin master
 
 echo "⛔️ Arrêt des conteneurs..."
 docker-compose down
@@ -41,6 +41,6 @@ cd ..
 
 # === Docker Compose ===
 echo "🐳 Lancement des conteneurs..."
-docker-compose up -d
+docker-compose up -buil
 
 echo "✅ Déploiement terminé avec succès !"

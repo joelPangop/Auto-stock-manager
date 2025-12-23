@@ -2,13 +2,14 @@
   <div class="header">
     <h2>Voitures</h2>
     <span class="spacer"></span>
-    <mat-slide-toggle [(ngModel)]="onlyMine" [ngModelOptions]="{ standalone: true }" (change)="reload()">Mes voitures</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="onlyMine" [ngModelOptions]="{ standalone: true }" (change)="reload()">Mes voitures
+    </mat-slide-toggle>
     <button mat-flat-button color="primary" (click)="nouvelleVoiture()">
       <mat-icon>add</mat-icon>&nbsp;Nouvelle voiture
     </button>
     <mat-form-field appearance="outline" class="flt">
       <mat-label>Marque</mat-label>
-      <input matInput placeholder="ex: Toyota" formControlName="marque" />
+      <input matInput placeholder="ex: Toyota" formControlName="marque"/>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="flt">
@@ -30,10 +31,10 @@
     <div class="table-wrap" [class.loading]="loading">
       <table mat-table [dataSource]="data" matSort (matSortChange)="reload()">
         <!-- colonnes (inchangées) -->
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
-          <td mat-cell *matCellDef="let v">{{ v.id }}</td>
-        </ng-container>
+        <!--        <ng-container matColumnDef="id">-->
+        <!--          <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>-->
+        <!--          <td mat-cell *matCellDef="let v">{{ v.id }}</td>-->
+        <!--        </ng-container>-->
 
         <ng-container matColumnDef="marque">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Marque</th>
@@ -68,12 +69,18 @@
         <ng-container matColumnDef="statut">
           <th mat-header-cell *matHeaderCellDef>Statut</th>
           <td mat-cell *matCellDef="let v">
-            <span class="badge"
-                  [class.ok]="v.statut==='EN_STOCK'"
+            <span class="badge" [matTooltipPosition]="v.statut === 'EN_STOCK' && v.needsRemark ? 'above' : ''"
+                  [matTooltip]="v.statut === 'EN_STOCK' && v.needsRemark ? 'En stock depuis plus de 3 mois' : ''"
+                  [class.ok]="v.statut === 'EN_STOCK' && !v.needsRemark"
+                  [class.bad]="v.statut === 'EN_STOCK' && v.needsRemark"
                   [class.warn]="v.statut==='RESERVEE'"
                   [class.muted]="v.statut==='VENDUE'">
               {{ v.statut }}
             </span>
+            <!--            <span class="spacer"></span>&nbsp;-->
+            <!--            <mat-chip class="chip-warn" color="warn" *ngIf="v.needsRemark" selected>-->
+            <!--              +3 mois en stock-->
+            <!--            </mat-chip>-->
           </td>
         </ng-container>
 

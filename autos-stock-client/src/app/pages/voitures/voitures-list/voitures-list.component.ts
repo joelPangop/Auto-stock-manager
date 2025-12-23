@@ -21,7 +21,7 @@ import {AuthService} from "../../../services/auth.service";
   styleUrls: ['./voitures-list.component.scss']
 })
 export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
-  displayedColumns = ['id', 'marque', 'modele', 'annee', 'couleur', 'vin', 'prixVente', 'statut', 'actions'];
+  displayedColumns = ['marque', 'modele', 'annee', 'couleur', 'vin', 'prixVente', 'statut', 'actions'];
   data = new MatTableDataSource<VoitureListDto>([]);
   loading = false;
 
@@ -79,8 +79,11 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
       const source$ = this.onlyMine ? this.voitureService.getMine() : this.voitureService.list(marque, statut);
       source$.subscribe({
         next: list => {
-          this.data.data = list;
-          this.total = list.length;
+          this.data.data = list.sort((a, b) => {
+            // true en haut, false en bas
+            return Number(b.needsRemark) - Number(a.needsRemark);
+          });
+          this.total = Math.ceil(list.length/this.pageSize);
           this.loading = false;
         },
         error: _ => this.loading = false
@@ -97,8 +100,11 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
             const okS = statut ? v.statut === statut : true;
             return okM && okS;
           });
-          this.data.data = filtered;
-          this.total = filtered.length;
+          this.data.data = filtered.sort((a, b) => {
+            // true en haut, false en bas
+            return Number(b.needsRemark) - Number(a.needsRemark);
+          });
+          this.total = Math.ceil(filtered.length/this.pageSize);
           this.data.paginator = this.paginator;
           this.data.sort = this.sort;
           this.loading = false;

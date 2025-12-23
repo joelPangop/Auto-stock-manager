@@ -1,20 +1,56 @@
 <!-- profile-page.component.html -->
+
+<div class="top-bar">
+  <mat-slide-toggle [(ngModel)]="edit" (change)="load()">
+    Modifier
+  </mat-slide-toggle>
+</div>
 <mat-card>
   <mat-card-title>Mon profil</mat-card-title>
   <mat-card-content>
     <form [formGroup]="form">
       <div class="grid">
-        <mat-form-field appearance="outline">
+        <div *ngIf="!edit"><strong>Nom</strong>
+          <div>{{ user.nom }}</div>
+        </div>
+        <div *ngIf="!edit"><strong>Email</strong>
+          <div>{{ user.email }}</div>
+        </div>
+        <mat-form-field appearance="outline" *ngIf="edit">
           <mat-label>Nom complet</mat-label>
           <input matInput formControlName="fullName">
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" *ngIf="edit">
           <mat-label>Email</mat-label>
           <input matInput formControlName="email">
         </mat-form-field>
-      </div>
 
+        <div formGroupName="passwords" *ngIf="edit">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" autocomplete="new-password"/>
+            <button mat-icon-button matSuffix type="button" (click)="hide = !hide" aria-label="Afficher/Masquer">
+              <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="pw.password.hasError('required')">Requis</mat-error>
+            <mat-error *ngIf="pw.password.hasError('minlength')">6 caractères min.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Confirmer le mot de passe</mat-label>
+            <input matInput [type]="hide2 ? 'password' : 'text'" formControlName="confirm" autocomplete="new-password"/>
+            <button mat-icon-button matSuffix type="button" (click)="hide2 = !hide2" aria-label="Afficher/Masquer">
+              <mat-icon>{{ hide2 ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="pw.confirm.hasError('required')">Requis</mat-error>
+            <mat-error *ngIf="mismatch">Les mots de passe ne correspondent pas</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <br/>
+      <br/>
+      <br/>
       <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid">
         <mat-icon>save</mat-icon>&nbsp;Enregistrer
       </button>

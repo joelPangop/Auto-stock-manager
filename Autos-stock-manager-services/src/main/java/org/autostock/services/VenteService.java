@@ -21,4 +21,6 @@ public interface VenteService extends IService<Vente, Long> {
     List<Vente> ventesEntre(LocalDateTime debut, LocalDateTime fin);
 
     Optional<Vente> findById(Long idVente);
+
+    Optional<Vente> findByVoitureId(Long idVoiture);
 }

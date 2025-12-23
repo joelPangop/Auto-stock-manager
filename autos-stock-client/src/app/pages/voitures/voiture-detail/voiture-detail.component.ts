@@ -32,6 +32,8 @@ import {
 } from "../../features/document/document-upload-dialog/document-upload-dialog.component";
 import {DocumentEditDialogComponent} from "../../features/document/document-edit-dialog/document-edit-dialog-component";
 import {AuthService} from "../../../services/auth.service";
+import {VenteService} from "../../../services/vente.service";
+import {Vente} from "../../../models/vente";
 
 @Component({
   selector: 'app-voiture-detail',
@@ -49,15 +51,16 @@ export class VoitureDetailComponent implements OnInit {
   modeles: Modele[] = [];
   idVoiture?: number;
   totalCoutEntretien?: number;
-
   ownerId?: number;
+  entretiensList: Entretien[];
   currentUserId = this.authSrv.getUserIdFromToken();
+  vente: Vente;
+  benefice: number;
 
   // id$ réagit à chaque changement d’URL
   readonly id$ = this.route.paramMap.pipe(
     map(pm => Number(pm.get('id')))
   );
-
 
   ngOnInit(): void {
     // charge les fournisseurs au démarrage
@@ -70,9 +73,24 @@ export class VoitureDetailComponent implements OnInit {
   form: FormGroup;
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
+  readonly entretiens$: Observable<Entretien[]> = combineLatest([
+    this.id$,
+    this.refresh$
+  ]).pipe(
+    switchMap(([id]) => this.eSrv.listByVoiture(id)),
+    tap(entretiens => {
+      if (entretiens) {
+        this.calcultotalCoutEntrtien(entretiens);
+        console.log("Entretien", entretiens);
+        this.entretiensList = entretiens;
+      }
+    }),
+    shareReplay(1)
+  );
+
   // donnée principale
   // @ts-ignore
-  readonly v$: Observable<VoitureDetailDto> = combineLatest([this.id$, this.refresh$]).pipe(
+  readonly v$: Observable<VoitureDetailDto> = combineLatest([this.id$, this.entretiens$, this.refresh$]).pipe(
     switchMap(([id]) => this.vSrv.getById(id)),
     switchMap(voiture => this.marqueSrv.list().pipe(
       map(marques => {
@@ -86,6 +104,14 @@ export class VoitureDetailComponent implements OnInit {
     tap((voiture) => {
 
       this.ownerId = voiture.owner;
+      this.vtSrv.getVenteByIdVoiture(voiture.id).subscribe(vente => {
+        if (vente) {
+          console.log("Vente", vente);
+          this.vente = vente;
+          this.benefice = voiture.prixVente - (this.totalCoutEntretien + voiture.prixAchat);
+
+        }
+      });
 
       this.form = this.fb.group({
         idMarque: [voiture.idMarque ? voiture.idMarque : null, [Validators.required]],
@@ -120,17 +146,15 @@ export class VoitureDetailComponent implements OnInit {
     shareReplay(1)
   );
 
-  readonly entretiens$: Observable<Entretien[]> = combineLatest([
-    this.id$,
-    this.refresh$
-  ]).pipe(
-    switchMap(([id]) => this.eSrv.listByVoiture(id)),
-    tap(entretiens => {
-      if (entretiens) {
-        this.calcultotalCoutEntrtien(entretiens);
-        console.log("Entretien", entretiens);
-      }
-    }),
+  readonly ventes$: Observable<Vente> = combineLatest([this.id$, this.refresh$]).pipe(
+    switchMap(([id]) =>
+      this.vtSrv.getVenteByIdVoiture(id)),
+        tap(vente => {
+          if(vente){
+            console.log("Vente", vente);
+            // this.vente = vente;
+          }
+        }),
     shareReplay(1)
   );
 
@@ -150,6 +174,7 @@ export class VoitureDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private vSrv: VoitureService,
     private dSrv: DocumentService,
+    private vtSrv: VenteService,
     private eSrv: EntretienService,
     private mSrv: MouvementService,
     private fSrv: FournisseurService,
@@ -256,7 +281,7 @@ export class VoitureDetailComponent implements OnInit {
   openUploadDialog() {
     const dialogRef = this.dialog.open(DocumentUploadDialogComponent, {
       width: '520px',
-      data: { idVoiture: this.idVoiture }
+      data: {idVoiture: this.idVoiture}
     });
     dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
   }
@@ -296,7 +321,6 @@ export class VoitureDetailComponent implements OnInit {
         }
       });
   }
-
 
   cancel() {
     this.isEditing = false;

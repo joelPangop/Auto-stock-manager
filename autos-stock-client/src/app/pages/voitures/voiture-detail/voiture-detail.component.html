@@ -1,3 +1,4 @@
+<!--<script src="voiture-detail.component.ts"></script>-->
 <div class="header">
   <button mat-stroked-button color="primary" routerLink="/voitures">
     <mat-icon>arrow_back</mat-icon>&nbsp;Retour
@@ -18,7 +19,7 @@
       </button>
     </ng-container>
 
-    <button mat-stroked-button color="primary"  *ngIf="isOwner" (click)="nouvelleVente()">
+    <button mat-stroked-button color="primary" *ngIf="isOwner" (click)="nouvelleVente()">
       <mat-icon>sell</mat-icon>&nbsp;Nouvelle vente
     </button>
   </ng-container>
@@ -30,9 +31,13 @@
     <div class="sub">VIN: {{ v.vin || '—' }} • Couleur: {{ v.couleur || '—' }} • Km: {{ v.kilometrage || '—' }}</div>
     <div class="price">{{ v.prixVente | number:'1.0-0' }} $</div>
     <div class="status">
-      <span class="chip" [class.success]="v.statut==='EN_STOCK'" [class.warn]="v.statut==='VENDUE'">
+      <span class="chip" [class.ok]="v.statut === 'EN_STOCK' && !v.needsRemark"
+            [class.bad]="v.statut === 'EN_STOCK' && v.needsRemark" [class.warn]="v.statut==='VENDUE'">
         {{ v.statut || v.statut }}
-      </span>
+      </span>&nbsp;
+      <mat-chip class="chip-warn" color="warn" *ngIf="v.needsRemark" selected>
+        +3 mois en stock
+      </mat-chip>
     </div>
   </div>
 
@@ -75,6 +80,7 @@
 
   <mat-tab-group>
     <!-- Onglet Détails -->
+    a
     <mat-tab label="Détails">
       <div class="tab-pad">
         <ng-container *ngIf="!isEditing; else editDetails">
@@ -109,11 +115,17 @@
             <div><strong>Fournisseur</strong>
               <div>{{ fournisseurLibelle || '—' }}</div>
             </div>
-            <div><strong>Créée le</strong>
-              <div>{{ v.createdAt | date:'short' }}</div>
+            <div><strong>Date d'entrée en stock</strong>
+              <div>{{ v.dateEntreeStock | date:'short' }}</div>
             </div>
             <div><strong>Modifiée le</strong>
               <div>{{ v.updatedAt | date:'short' }}</div>
+            </div>
+            <div *ngIf="v.statut === 'VENDUE'"><strong>Paiement</strong>
+              <div>{{ vente.modePaiement }}</div>
+            </div>
+            <div *ngIf="v.statut === 'VENDUE'" style="background-color: #dcfce7"><strong>Benefice</strong>
+              <div>{{ benefice }}$</div>
             </div>
           </div>
         </ng-container>
@@ -182,15 +194,23 @@
           </thead>
           <tbody>
           <tr *ngFor="let d of docs">
-            <td><mat-icon>description</mat-icon></td>
+            <td>
+              <mat-icon>description</mat-icon>
+            </td>
             <td>{{ d.type }}</td>
             <td>{{ d.description || '—' }}</td>
             <td>{{ d.nomFichier }}</td>
             <td>{{ d.dateUpload | date:'short' }}</td>
             <td class="r">
-              <button mat-icon-button (click)="download(d)"><mat-icon>download</mat-icon></button>
-              <button mat-icon-button color="primary" (click)="openEditDocDialog(d)" *ngIf="isOwner"><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button color="warn" (click)="deleteDoc(d)" *ngIf="isOwner"><mat-icon>delete</mat-icon></button>
+              <button mat-icon-button (click)="download(d)">
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="openEditDocDialog(d)" *ngIf="isOwner">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteDoc(d)" *ngIf="isOwner">
+                <mat-icon>delete</mat-icon>
+              </button>
             </td>
           </tr>
           </tbody>
@@ -214,13 +234,13 @@
           <mat-list-item *ngFor="let e of entretiens">
             <mat-icon matListItemIcon>build</mat-icon>
             <div matListItemTitle>{{ e.typeLabel }} — {{ e.dateEntretien | date }}</div>
-            <div matListItemLine> {{ ' — '+e.commentaire || '—' }}</div>
+            <div matListItemLine> {{ ' — ' + e.commentaire || '—' }}</div>
             <div class="right">{{ e.cout | number:'1.0-0' }} $</div>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <div><p>Total Cout:  </p> </div>
-            <div>{{totalCoutEntretien}} $</div>
+            <div><p>Total Cout: </p></div>
+            <div>{{ totalCoutEntretien }} $</div>
           </mat-list-item>
           <div *ngIf="entretiens.length === 0" class="muted">Aucun entretien.</div>
         </mat-list>

@@ -25,4 +25,5 @@ public class VoitureDetailDto {
     private Long owner;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean needsRemark;
 }

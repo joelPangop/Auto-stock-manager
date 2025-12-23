@@ -10,6 +10,8 @@ import org.autostock.models.Modele;
 import org.autostock.models.Voiture;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class VoitureMapper {
 
@@ -28,6 +30,8 @@ public class VoitureMapper {
 
     public VoitureListDto toListDto(Voiture v) {
         VoitureListDto dto = new VoitureListDto();
+        LocalDate threshold = LocalDate.now().minusMonths(3);
+        boolean needsRemark = v.getDateEntreeStock() != null && !v.getDateEntreeStock().isAfter(threshold.atStartOfDay());
         dto.setId(v.getId());
         dto.setMarque(v.getModele().getMarque().getNom());
         dto.setModele(v.getModele().getNom());
@@ -37,11 +41,15 @@ public class VoitureMapper {
         dto.setPrixVente(v.getPrixVente());
         dto.setOwner(v.getOwner().getId());
         dto.setStatut(v.getStatut().name());
+        dto.setNeedsRemark(needsRemark);
         return dto;
     }
 
     public VoitureDetailDto toDetailDto(Voiture v) {
         VoitureDetailDto dto = new VoitureDetailDto();
+        LocalDate threshold = LocalDate.now().minusMonths(3);
+        boolean needsRemark = v.getDateEntreeStock() != null && !v.getDateEntreeStock().isAfter(threshold.atStartOfDay());
+
         dto.setId(v.getId());
         dto.setIdModele(v.getModele().getId());
         dto.setIdFournisseur(
@@ -58,6 +66,7 @@ public class VoitureMapper {
         dto.setPrixVente(v.getPrixVente());
         dto.setStatut(v.getStatut().name());
         dto.setOwner(v.getOwner().getId());
+        dto.setNeedsRemark(needsRemark);
         dto.setDateEntreeStock(v.getDateEntreeStock());
         return dto;
     }

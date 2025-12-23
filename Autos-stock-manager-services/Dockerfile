@@ -5,7 +5,7 @@ COPY pom.xml .
 # Charger les dépendances en cache
 RUN mvn -q -DskipTests dependency:go-offline
 COPY src ./src
-RUN mvn -q -DskipTests package
+RUN mvn -q -DskipTests package clean
 
 # ===== Runtime =====
 FROM ubuntu:22.04
@@ -23,11 +23,11 @@ ENV JAVA_HOME=/usr/lib/jvm/jdk-21
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 # 🔧 Activer debug remote
-ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+#ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
 WORKDIR /app
 
-COPY target/auto-stock-manager-0.0.1-SNAPSHOT.jar app.jar
+COPY target/Autos-stock-manager-1.0-SNAPSHOT.jar app.jar
 COPY entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
 
@@ -35,4 +35,5 @@ EXPOSE 8080
 EXPOSE 5005
 
 #ENTRYPOINT ["./entrypoint.sh"]
-ENTRYPOINT ["java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]
+#ENTRYPOINT ["java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005","-jar","/app/app.jar"]

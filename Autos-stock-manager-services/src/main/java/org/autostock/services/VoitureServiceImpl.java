@@ -6,6 +6,7 @@ import org.autostock.enums.StatutVoiture;
 import org.autostock.enums.TypeMouvement;
 import org.autostock.models.User;
 import org.autostock.models.Voiture;
+import org.autostock.repositories.UserRepository;
 import org.autostock.repositories.VoitureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,17 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
     @Autowired
     private SecurityUtils sec;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
+    @Transactional
     public Voiture create(Voiture voiture) throws AccessDeniedException {
         voiture.setStatut(StatutVoiture.EN_STOCK);
         voiture.setDateEntreeStock(LocalDateTime.now());
-        voiture.setOwner(new User(sec.currentUserId()));
+        Optional<User> user = Optional.of(userRepository.getReferenceById(sec.currentUserId()));
+        System.out.println("owner id=" + user.get().getId() + " version=" + user.get().getVersion());
+        voiture.setOwner(user.get());
         Voiture saved = repository.save(voiture);
         stockMouvementService.enregistrerMouvement(saved, TypeMouvement.ENTREE, "Ajout initial au stock");
         return saved;

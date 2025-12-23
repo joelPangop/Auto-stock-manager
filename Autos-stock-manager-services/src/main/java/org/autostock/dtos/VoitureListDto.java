@@ -18,6 +18,8 @@ public class VoitureListDto {
     private BigDecimal prixVente;
     private Long owner;
     private String statut; // "EN_STOCK", "VENDUE", etc.
+    // Champ calculé, pas stocké en base
+    private boolean needsRemark;
 
     // getters / setters
 }

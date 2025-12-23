@@ -8,8 +8,14 @@
   align-items: center;
   gap: 12px;
 
-  .spacer { flex: 1; }
-  .flt { width: 200px; max-width: 40vw; }
+  .spacer {
+    flex: 1;
+  }
+
+  .flt {
+    width: 200px;
+    max-width: 40vw;
+  }
 }
 
 .card {
@@ -20,7 +26,10 @@
   position: relative;
   overflow: auto;
 
-  &.loading { pointer-events: none; opacity: .7; }
+  &.loading {
+    pointer-events: none;
+    opacity: .7;
+  }
 
   table {
     width: 100%;
@@ -34,9 +43,26 @@
   font-size: 12px;
   line-height: 18px;
   background: #e5e7eb;
-  &.ok    { background: #dcfce7; color: #166534; }
-  &.warn  { background: #fef9c3; color: #854d0e; }
-  &.muted { background: #e5e7eb; color: #374151; }
+
+  &.ok {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &.warn {
+    background: #fef9c3;
+    color: #854d0e;
+  }
+
+  &.muted {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  &.bad {
+    background: #dc2626;
+    color: #fee2e2;
+  }
 }
 
 .overlay {
@@ -44,5 +70,12 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.warn-icon {
+  font-size: 16px;
+  margin-left: 6px;
+  vertical-align: middle;
+  cursor: help;
 }

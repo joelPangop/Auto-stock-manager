@@ -15,4 +15,6 @@ export interface VoitureDetailDto {
   statut: StatutVoiture;
   createdAt?: string;
   updatedAt?: string;
+  dateEntreeStock?: string;
+  needsRemark: boolean;
 }
