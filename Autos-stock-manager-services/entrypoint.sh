@@ -13,8 +13,6 @@ done
 
 echo "✅ MySQL est prêt. Lancement de l'application Spring Boot..."
 
-echo "Kafka Bootstrap: $SPRING_KAFKA_BOOTSTRAP_SERVERS"
-
 echo "🧪 Build backend..."
 cd ../autos-stock-manager-services || exit 1
 chmod +x mvnw
