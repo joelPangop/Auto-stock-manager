@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-// @ts-ignore
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, from, defer  } from 'rxjs';
 import {  catchError, switchMap } from 'rxjs/operators';
 import { TokenStorageService } from './token-storage.service';
 import { AuthService } from './auth.service';
 
-// @ts-ignore
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   constructor(private tokens: TokenStorageService, private auth: AuthService) {}
@@ -21,13 +19,36 @@ export class JwtInterceptor implements HttpInterceptor {
     }
 
     return next.handle(cloned).pipe(
-      catchError((err: any) => {
-        if (err instanceof HttpErrorResponse && err.status === 401 && !isAuthEndpoint) {
-          // tentative de refresh
+      catchError((err: HttpErrorResponse) => {
+
+        let message = 'Erreur inconnue';
+
+        if (err.error instanceof Blob) {
+          // cas backend qui renvoie un Blob (Spring Boot fréquent)
+          return from(err.error.text()).pipe(
+            switchMap(text => {
+              try {
+                const json: any = JSON.parse(text);
+                message = json.message ?? message;
+              } catch {
+                message = text;
+              }
+              return throwError(() => new Error(message));
+            })
+          );
+        }
+
+        if (err.error?.message) {
+          message = err.error.message;
+        }
+
+        if (err.status === 401 && !isAuthEndpoint) {
           return this.auth.refresh().pipe(
             switchMap(r => {
               const refreshedReq = req.clone({
-                setHeaders: { Authorization: `${r.tokenType ?? 'Bearer'} ${r.accessToken}` }
+                setHeaders: {
+                  Authorization: `${r.tokenType ?? 'Bearer'} ${r.accessToken}`
+                }
               });
               return next.handle(refreshedReq);
             }),
@@ -37,7 +58,14 @@ export class JwtInterceptor implements HttpInterceptor {
             })
           );
         }
-        return throwError(() => err);
+
+        return throwError(() =>
+          new HttpErrorResponse({
+            status: err.status,
+            statusText: err.statusText,
+            url: err.url ?? undefined,
+            error: { message }
+          }));
       })
     );
   }

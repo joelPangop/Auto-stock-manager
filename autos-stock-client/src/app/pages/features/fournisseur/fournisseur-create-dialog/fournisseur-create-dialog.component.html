@@ -9,9 +9,9 @@
   <mat-form-field appearance="outline" class="w100">
     <mat-label>Type</mat-label>
     <mat-select formControlName="type" required>
-      <mat-option value="CONCESSION">Concession</mat-option>
-      <mat-option value="PARTICULIER">Particulier</mat-option>
-      <mat-option value="AUTRE">Autre</mat-option>
+      <mat-option *ngFor="let type of typeFournisseurOptions" [value]="type">
+        {{ typeFournisseurLabels[type] }}
+      </mat-option>
     </mat-select>
     <mat-error *ngIf="form.get('type')?.invalid">Requis</mat-error>
   </mat-form-field>

@@ -13,8 +13,12 @@ public class EntretienDto {
     private String type;
     private String typeLabel;
     private BigDecimal cout;
+    private Long idVoiture;
+    private String voitureLabel;
     private LocalDateTime dateEntretien;
     private String garage;
     private String commentaire;
+    // ✅ optionnel : si présent => crée Depense
+    private DepenseCreateDto depense;
 
 }

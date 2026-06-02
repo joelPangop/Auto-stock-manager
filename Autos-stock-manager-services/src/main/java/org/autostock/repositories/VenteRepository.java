@@ -4,6 +4,7 @@ import org.autostock.models.Vente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface VenteRepository extends JpaRepository<Vente, Long> {
 
 //    @Query("SELECT FROM Vente as v where v.id_voiture = :voitureId")
     Vente findByVoiture_Id(Long voitureId);
+
+//    void updatePrixFinal(Long venteId, BigDecimal bigDecimal);
 }

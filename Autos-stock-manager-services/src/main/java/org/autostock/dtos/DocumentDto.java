@@ -3,6 +3,7 @@ package org.autostock.dtos;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,4 +15,5 @@ public class DocumentDto {
     private String urlFichier;
     private LocalDateTime dateUpload;
     private String description;
+    private BigDecimal montant;
 }

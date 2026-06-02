@@ -6,6 +6,7 @@ export interface VenteCreateDto {
   idVendeur: number;
   dateVente: string;       // ISO (ex: 2025-11-26T15:00:00Z) ou 'YYYY-MM-DD'
   prixFinal: number;
+  prixVente: number;
   modePaiement: MethodePaiement;
   acompteMontant?: number; // optionnel, pour un paiement initial
 }

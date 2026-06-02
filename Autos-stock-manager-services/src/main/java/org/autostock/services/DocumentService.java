@@ -4,6 +4,7 @@ import org.autostock.dtos.DocumentCreateDto;
 import org.autostock.dtos.DocumentDto;
 import org.autostock.dtos.DocumentUpdateDto;
 import org.autostock.models.Document;
+import org.autostock.models.Paiement;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,4 +21,7 @@ public interface DocumentService extends IService<Document, Long> {
     Resource loadAsResource(Long id);
 
     void delete(Long id);
+
+    void saveReceiptForPaiement(Paiement paiementId, byte[] pdf);
+
 }

@@ -1,5 +1,6 @@
 package org.autostock.repositories;
 
+import org.autostock.enums.TypeFournisseur;
 import org.autostock.models.Fournisseur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface FournisseurRepository extends JpaRepository<Fournisseur, Long> {
 
     // Recherche par type (Concessionnaire, Particulier, etc.)
-    List<Fournisseur> findByTypeIgnoreCase(String type);
+//    List<Fournisseur> findByTypeIgnoreCase(TypeFournisseur type);
 
     // Recherche par nom partiel
     List<Fournisseur> findByNomContainingIgnoreCase(String nom);

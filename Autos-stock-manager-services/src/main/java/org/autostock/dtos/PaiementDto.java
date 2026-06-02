@@ -12,6 +12,8 @@ public class PaiementDto {
     private Long id;
     private BigDecimal montant;
     private String methode;
+    private String voitureLabel;
+    private Long idVoiture;
     private String methodeLabel; // "Carte bancaire"...
     private LocalDateTime datePaiement;
 }

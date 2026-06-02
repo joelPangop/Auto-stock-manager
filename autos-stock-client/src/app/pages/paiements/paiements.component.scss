@@ -1,0 +1,43 @@
+.page { display: grid; gap: 14px; padding: 12px; }
+
+.header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.title h1 { margin:0; font-size:22px; font-weight:700; }
+.title p { margin:4px 0 0; opacity:.75; font-size:13px; }
+
+.actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.search { width: min(420px, 92vw); }
+
+.card { border-radius:14px; overflow:hidden; }
+.table-wrap { padding: 10px; }
+
+.topline { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:rgba(0,0,0,.04); font-size:13px; }
+
+table { width:100%; }
+.row:hover { background: rgba(0,0,0,.03); }
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 13px; }
+.money { font-weight: 800; }
+.right { text-align: right; }
+
+.badge {
+  display:inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(63,81,181,.10);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.badge.voiture {
+  background: rgba(0, 150, 136, 0.12);
+  color: #00695c;
+}
+
+.empty-row td { padding: 22px 12px; }
+.empty { display:flex; gap:10px; align-items:center; justify-content:center; opacity:.75; }
+.empty mat-icon { font-size:34px; width:34px; height:34px; }
+.empty-title { font-weight:800; margin-bottom:2px; }
+.empty-text { font-size:13px; }
+
+.loading { display:grid; place-items:center; gap:10px; padding:28px 0; opacity:.85; }

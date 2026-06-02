@@ -17,6 +17,7 @@ public class DocumentMapper {
         d.setUrlFichier(dto.getUrlFichier());
         d.setDateUpload(dto.getDateUpload() != null ? dto.getDateUpload() : LocalDateTime.now());
         d.setDescription(dto.getDescription());
+        d.setMontant(dto.getMontant());
         return d;
     }
 
@@ -28,6 +29,7 @@ public class DocumentMapper {
         dto.setUrlFichier(d.getUrlFichier());
         dto.setDateUpload(d.getDateUpload());
         dto.setDescription(d.getDescription());
+        dto.setMontant(d.getMontant());
         return dto;
     }
 }

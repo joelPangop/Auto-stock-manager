@@ -2,6 +2,7 @@ package org.autostock.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.autostock.dtos.ApiError;
 import org.autostock.dtos.VenteCreateDto;
 import org.autostock.dtos.VenteDto;
 import org.autostock.mappers.VenteMapper;
@@ -10,12 +11,16 @@ import org.autostock.services.PaiementService;
 import org.autostock.services.VenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/ventes")
@@ -56,11 +61,17 @@ public class VenteController {
     }
 
     @GetMapping("/voiture/{id}")
-    public VenteDto getByVoiture(@PathVariable Long id) {
-        Vente v = venteService.findByVoitureId(id).orElseThrow(() -> new EntityNotFoundException("Vente introuvable"));
-        BigDecimal total = paiementService.totalPaye(id);
-        BigDecimal reste = v.getPrixFinal().subtract(total);
-        return venteMapper.toDto(v, total, reste);
+    public ResponseEntity<?> getByVoiture(@PathVariable Long id) {
+        return venteService.findByVoitureId(id)
+                .map(v -> {
+                    BigDecimal total = Optional.ofNullable(paiementService.totalPaye(id)).orElse(BigDecimal.ZERO);
+                    BigDecimal prixFinal = Optional.ofNullable(v.getPrixFinal()).orElse(BigDecimal.ZERO);
+                    BigDecimal reste = prixFinal.subtract(total);
+                    VenteDto dto = venteMapper.toDto(v, total, reste);
+                    return ResponseEntity.ok((Object) dto);
+                })
+                .orElseGet(() ->  ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Aucune vente pour cette voiture")));
     }
 
     @GetMapping("/client/{idClient}")

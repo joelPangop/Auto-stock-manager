@@ -73,7 +73,6 @@
   color: #991b1b;
 }
 
-
 .details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -113,4 +112,46 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
+}
+
+.depenses-grid{
+  display:grid;
+  gap:12px;
+  grid-template-columns: 280px 1fr;
+}
+
+.dep-card{
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.dep-card .h{ font-weight: 800; margin-bottom: 6px; }
+.dep-card .v{ font-size: 22px; font-weight: 900; }
+.dep-card .s{ opacity:.75; margin-top: 4px; }
+
+.dep-card.chart{
+  min-height: 280px;
+}
+
+.dep-form{
+  display:grid;
+  gap:12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.dep-form .span-2{ grid-column: 1 / -1; }
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+.mt{ margin-top: 12px; }
+
+.button_delete {
+  background: #fee2e2;
+  color: #991b1b;
+  border-block-end-style: none;
+  border-block-end: none;
 }

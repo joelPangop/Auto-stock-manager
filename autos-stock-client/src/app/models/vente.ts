@@ -8,7 +8,6 @@ export interface Vente {
   nomVendeur: number;
   prixFinal: number;
   modele: number;
-  modePaiement: string; // ton enum côté backend
   statut?: string;
   marque: string;
 }

@@ -5,4 +5,7 @@ export interface Paiement {
   datePaiement: string;   // ISO
   methode: string;        // ex: "CASH", "CARTE", ...
   reference?: string;
+  voitureLabel: string;
+  idVoiture: number;
+
 }

@@ -8,4 +8,5 @@ export interface Document {
   url?: string;         // si exposé
   nomFichier?: string;         // si exposé
   createdAt?: string;
+  montant?: number;
 }

@@ -28,6 +28,8 @@ public class EntretienMapper {
         dto.setTypeLabel(e.getType().getLabel());
         dto.setCout(e.getCout());
         dto.setDateEntretien(e.getDateEntretien());
+        dto.setIdVoiture(e.getVoiture().getId());
+        dto.setVoitureLabel(e.getVoiture().getModele().getMarque().getNom() + " " + e.getVoiture().getModele().getNom() + " " + e.getVoiture().getAnnee());
         dto.setGarage(e.getGarage());
         dto.setCommentaire(e.getDescription());
         return dto;

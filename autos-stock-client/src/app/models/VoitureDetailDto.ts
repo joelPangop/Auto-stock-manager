@@ -8,6 +8,7 @@ export interface VoitureDetailDto {
   annee: number;
   prixAchat: number;
   prixVente: number;
+  depenseDivers: number;
   idFournisseur: number;
   vin?: string;
   couleur?: string;

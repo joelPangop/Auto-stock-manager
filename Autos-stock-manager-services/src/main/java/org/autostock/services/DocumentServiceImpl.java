@@ -8,7 +8,10 @@ import org.autostock.enums.TypeDocument;
 import org.autostock.mappers.DocumentMapper;
 import org.autostock.mappers.VoitureMapper;
 import org.autostock.models.Document;
+import org.autostock.models.DocumentPaiement;
+import org.autostock.models.Paiement;
 import org.autostock.models.Voiture;
+import org.autostock.repositories.DocumentPaiementRepository;
 import org.autostock.repositories.DocumentRepository;
 import org.autostock.repositories.VoitureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,9 @@ public class DocumentServiceImpl extends AbstractBaseService<Document, Long, Doc
 
     @Autowired
     private VoitureMapper voitureMapper;
+
+    @Autowired
+    private DocumentPaiementRepository documentPaiementRepository;
 
     private final Path root;
 
@@ -115,5 +121,21 @@ public class DocumentServiceImpl extends AbstractBaseService<Document, Long, Doc
         try { Files.deleteIfExists(root.resolve(doc.getNomFichier())); } catch (IOException ignored) {}
         repository.delete(doc);
     }
+
+    @Transactional
+    public void saveReceiptForPaiement(Paiement paiement, byte[] pdf) {
+        DocumentPaiement docPaiement = new DocumentPaiement();
+        Document doc = new Document();
+        doc.setMontant(paiement.getMontant());
+        doc.setType(TypeDocument.RECU_PAIEMENT);
+        doc.setNomFichier(UUID.randomUUID() + "_recu_paiement_" + LocalDateTime.now());
+        docPaiement.setDocument(doc);
+        docPaiement.setPaiement(paiement);
+        docPaiement.setContent(pdf);
+        docPaiement.setMimeType("application/pdf");
+
+        documentPaiementRepository.save(docPaiement);
+    }
+
 
 }

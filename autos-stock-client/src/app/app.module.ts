@@ -56,6 +56,13 @@ import { ProfileComponent } from './pages/users/profile/profile.component';
 import { SettingsComponent } from './pages/users/settings/settings.component';
 import { UsersComponent } from './pages/users/admin/users/users.component';
 import {MatChipsModule} from "@angular/material/chips";
+import { DepenseMonthlyChartComponent } from './pages/depense-monthly-chart/depense-monthly-chart.component';
+import {ChartsModule} from "ng2-charts";
+import { VoitureDepensesComponent } from './pages/voitures/voiture-depenses/voiture-depenses.component';
+import { VoitureDepenseDialogComponent } from './pages/features/voitures/voiture-depense-dialog/voiture-depense-dialog.component';
+import { EntretiensListComponent } from './pages/entretiens/entretiens-list/entretiens-list.component';
+import { EntretienViewDialogComponent } from './pages/features/entretien/entretien-view-dialog/entretien-view-dialog.component';
+import { PaiementViewDialogComponent } from './pages/features/paiement-view-dialog/paiement-view-dialog.component';
 
 @NgModule({
   declarations: [
@@ -85,7 +92,13 @@ import {MatChipsModule} from "@angular/material/chips";
     ProfileDialogComponent,
     ProfileComponent,
     SettingsComponent,
-    UsersComponent
+    UsersComponent,
+    DepenseMonthlyChartComponent,
+    VoitureDepensesComponent,
+    VoitureDepenseDialogComponent,
+    EntretiensListComponent,
+    EntretienViewDialogComponent,
+    PaiementViewDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -104,6 +117,7 @@ import {MatChipsModule} from "@angular/material/chips";
     MatSnackBarModule,
     MatProgressSpinnerModule,
     RouterModule,
+    ChartsModule,
     HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule, MatChipsModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],

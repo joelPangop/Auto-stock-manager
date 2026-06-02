@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.autostock.enums.TypeDocument;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,4 +34,6 @@ public class Document extends AbstractEntity {
 
     @Column(columnDefinition = "TEXT")
     private String description;  // notes libres sur le document
+
+    private BigDecimal montant;
 }

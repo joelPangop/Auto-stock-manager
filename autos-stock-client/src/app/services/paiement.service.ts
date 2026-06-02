@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {Page} from '../models/page.model';
 import {Paiement} from "../models/paiement";
 import {environment} from "../../environments/environment";
+import {PageVm} from "../models/PageVm";
 
 @Injectable({providedIn: 'root'})
 export class PaiementService {
@@ -12,20 +13,29 @@ export class PaiementService {
   constructor(private http: HttpClient) {
   }
 
-  getPage(page = 0, size = 10, sort = 'datePaiement,desc'): Observable<Page<Paiement>> {
-    const params = new HttpParams().set('page', String(page)).set('size', String(size)).set('sort', sort);
-    return this.http.get<Page<Paiement>>(this.base, {params});
+  getPage(page = 0, size = 10, sort = 'datePaiement,desc', onlyMine = false) {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('size', String(size))
+      .set('sort', sort)
+      .set('onlyMine', String(onlyMine));
+
+    return this.http.get<PageVm<Paiement>>(this.base, { params });
   }
 
   listByVente(venteId: number) {
     return this.http.get<Paiement[]>(`${this.base}/vente/${venteId}`);
   }
 
-  create(p: Partial<Paiement>) {
-    return this.http.post<Paiement>(this.base, p);
+  create(p: Paiement):Observable<Paiement> {
+    return this.http.post<Paiement>(`${this.base}/${p.venteId}`, p);
   }
 
   delete(id: number) {
     return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  getById(id: number) {
+    return this.http.get<Paiement>(`${this.base}/${id}`);
   }
 }

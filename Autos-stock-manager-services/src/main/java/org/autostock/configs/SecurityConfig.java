@@ -49,8 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/**").permitAll() // ou .authenticated()
-                                .requestMatchers("/api/**/**").authenticated()
+                                .requestMatchers("/api/**").permitAll()
 //                        .requestMatchers("/api/mouvements/**").authenticated()
 //                        .requestMatchers("/api/documents/**").authenticated()
                                 .requestMatchers("/api/entretiens/**").authenticated()
@@ -60,6 +59,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/documents/**").authenticated()
                                 .requestMatchers("/api/voitures/**").authenticated()
                                 .requestMatchers("/api/ventes/**").authenticated()
+                                .requestMatchers("/api/paiements/**").authenticated()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/download/**").permitAll()
                                 .anyRequest().authenticated()
@@ -73,10 +73,8 @@ public class SecurityConfig {
 
     private CorsConfigurationSource corsConfiguration() {
         var cfg = new CorsConfiguration();
-        String[] origins = new String[] {allowedOrigins, "http://localhost:4200"};
         cfg.setAllowedOrigins(List.of(allowedOrigins.split(",")));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         cfg.setAllowCredentials(true);
         var source = new UrlBasedCorsConfigurationSource();

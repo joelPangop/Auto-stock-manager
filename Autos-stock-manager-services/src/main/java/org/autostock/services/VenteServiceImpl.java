@@ -95,4 +95,10 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
     public Optional<Vente> findByVoitureId(Long id){
         return Optional.ofNullable(repository.findByVoiture_Id(id));
     }
+
+//    @Override
+//    @Transactional
+//    public void updateTotalPaye(Long venteId, BigDecimal bigDecimal){
+//
+//    }
 }

@@ -18,4 +18,5 @@ public class EntretienCreateDto {
 
     private String garage;
     private String commentaire;
+    private DepenseCreateDto depense;
 }

@@ -17,6 +17,7 @@ import {ProfileComponent} from "./pages/users/profile/profile.component";
 import {SettingsComponent} from "./pages/users/settings/settings.component";
 import {AdminGuard} from "./services/AdminGuard";
 import {UsersComponent} from "./pages/users/admin/users/users.component";
+import {EntretiensListComponent} from "./pages/entretiens/entretiens-list/entretiens-list.component";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -32,7 +33,7 @@ const routes: Routes = [
         runGuardsAndResolvers: 'always'},
       { path: 'ventes', component: VentesComponent },
       { path: 'clients', component: ClientsComponent },
-      { path: 'entretiens', component: EntretiensComponent },
+      { path: 'entretiens', component: EntretiensListComponent },
       { path: 'documents', component: DocumentsComponent },
       { path: 'mouvements', component: MouvementsComponent },
       { path: 'paiements', component: PaiementsComponent },

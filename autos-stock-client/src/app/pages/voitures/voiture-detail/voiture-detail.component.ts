@@ -34,6 +34,7 @@ import {DocumentEditDialogComponent} from "../../features/document/document-edit
 import {AuthService} from "../../../services/auth.service";
 import {VenteService} from "../../../services/vente.service";
 import {Vente} from "../../../models/vente";
+import {PaiementService} from "../../../services/paiement.service";
 
 @Component({
   selector: 'app-voiture-detail',
@@ -44,6 +45,7 @@ import {Vente} from "../../../models/vente";
 export class VoitureDetailComponent implements OnInit {
   isEditing = false;
   fournisseurLibelle?: string;
+  paiementLibelle?: string;
   marqueLabelle?: string;
   modeleLabelle?: string;
   fournisseurs: Fournisseur[] = [];
@@ -72,6 +74,7 @@ export class VoitureDetailComponent implements OnInit {
 
   form: FormGroup;
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
+  readonly refreshTrigger$ = this.refresh$.asObservable();
 
   readonly entretiens$: Observable<Entretien[]> = combineLatest([
     this.id$,
@@ -104,12 +107,32 @@ export class VoitureDetailComponent implements OnInit {
     tap((voiture) => {
 
       this.ownerId = voiture.owner;
-      this.vtSrv.getVenteByIdVoiture(voiture.id).subscribe(vente => {
-        if (vente) {
-          console.log("Vente", vente);
-          this.vente = vente;
-          this.benefice = voiture.prixVente - (this.totalCoutEntretien + voiture.prixAchat);
 
+      this.vtSrv.getVenteByIdVoiture(voiture.id).subscribe({
+        next: (vente) => {
+          if (vente) {
+            console.log("Vente", vente);
+            this.vente = vente;
+            this.pSrv.listByVente(vente.id).subscribe({
+              next: (paiements) => {
+                if (paiements.length > 0) {
+                  console.log("Paiements", paiements);
+                  this.paiementLibelle = paiements[0].methode;
+                  let paie = paiements[0].methode;
+                  for (let p of paiements) {
+                    if (paie !== p.methode) {
+                      this.paiementLibelle += p.methode + " ";
+                      paie = p.methode;
+                    }
+                  }
+                }
+              }
+            })
+            this.benefice = voiture.prixVente - (this.totalCoutEntretien + voiture.prixAchat);
+          }
+        }, error: (err: any) => {
+          const msg = err?.error?.message ?? err?.message ?? 'Erreur inconnue';
+          console.log(msg);
         }
       });
 
@@ -149,14 +172,18 @@ export class VoitureDetailComponent implements OnInit {
   readonly ventes$: Observable<Vente> = combineLatest([this.id$, this.refresh$]).pipe(
     switchMap(([id]) =>
       this.vtSrv.getVenteByIdVoiture(id)),
-        tap(vente => {
-          if(vente){
-            console.log("Vente", vente);
-            // this.vente = vente;
-          }
-        }),
+    tap(vente => {
+      if (vente) {
+        console.log("Vente", vente);
+        // this.vente = vente;
+      }
+    }),
     shareReplay(1)
   );
+
+  triggerRefresh() {
+    this.refresh$.next(undefined);
+  }
 
   calcultotalCoutEntrtien(entretiens: Entretien[]) {
     this.totalCoutEntretien = 0;
@@ -175,6 +202,7 @@ export class VoitureDetailComponent implements OnInit {
     private vSrv: VoitureService,
     private dSrv: DocumentService,
     private vtSrv: VenteService,
+    private pSrv: PaiementService,
     private eSrv: EntretienService,
     private mSrv: MouvementService,
     private fSrv: FournisseurService,
@@ -211,15 +239,24 @@ export class VoitureDetailComponent implements OnInit {
   // === DOCUMENTS ===
   openEditDocDialog(d: Document) {
     const dialogRef = this.dialog.open(DocumentEditDialogComponent, {
+      disableClose: true,
       width: '520px',
       data: {doc: d}
     });
-    dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
+    dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(
+      () => {
+        this.triggerRefresh();
+        this.refresh$.next()
+      }
+    );
   }
 
   deleteDoc(d: Document) {
     if (!confirm(`Supprimer le document "${d.nomFichier}" ?`)) return;
-    this.dSrv.delete(d.id).subscribe(() => this.refresh$.next());
+    this.dSrv.delete(d.id).subscribe(() => {
+      this.triggerRefresh()
+      this.refresh$.next()
+    });
   }
 
   supprimerDocument(d: Document
@@ -242,13 +279,18 @@ export class VoitureDetailComponent implements OnInit {
 
   // === ENTRETIENS ===
   planifierEntretien(entretien ?: Entretien) {
-    const ref = this.dialog.open(EntretienEditDialogComponent, {
-      width: '720px',
-      data: {idVoiture: this.idVoiture, entretien}
-    });
+    const ref = this.dialog.open(EntretienEditDialogComponent,
+      {
+        disableClose: true,
+        width: '720px',
+        data: {idVoiture: this.idVoiture, entretien}
+      });
     ref.afterClosed().subscribe
     ({
-      next: () => this.refresh$.next(),   // <-- recharge les 3 listes
+      next: () => {
+        this.triggerRefresh()
+        this.refresh$.next()
+      },   // <-- recharge les 3 listes
       error: console.error
     })
   }
@@ -260,10 +302,12 @@ export class VoitureDetailComponent implements OnInit {
 
   // === MOUVEMENTS ===
   nouveauMouvement(mvt ?: Mouvement) {
-    const ref = this.dialog.open(MouvementEditDialogComponent, {
-      width: '720px',
-      data: {idVoiture: this.id$, mvt}
-    });
+    const ref = this.dialog.open(MouvementEditDialogComponent,
+      {
+        disableClose: true,
+        width: '720px',
+        data: {idVoiture: this.id$, mvt}
+      });
     ref.afterClosed().subscribe(res => {
       if (res) this.refresh$.next();
     });
@@ -279,10 +323,12 @@ export class VoitureDetailComponent implements OnInit {
   }
 
   openUploadDialog() {
-    const dialogRef = this.dialog.open(DocumentUploadDialogComponent, {
-      width: '520px',
-      data: {idVoiture: this.idVoiture}
-    });
+    const dialogRef = this.dialog.open(DocumentUploadDialogComponent,
+      {
+        disableClose: true,
+        width: '520px',
+        data: {idVoiture: this.idVoiture}
+      });
     dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
   }
 
@@ -354,7 +400,7 @@ export class VoitureDetailComponent implements OnInit {
     this.fSrv.getById(id).subscribe({
       next: (f: any) => {
         // adapte selon le DTO de ton service fournisseurs
-        this.fournisseurLibelle = f?.nom ? `${f.nom} (#${id})` : `#${id}`;
+        this.fournisseurLibelle = f?.nom ? `${f.nom} (${f.type})` : `#${id}`;
       },
       error: () => {
         this.fournisseurLibelle = `#${id}`;

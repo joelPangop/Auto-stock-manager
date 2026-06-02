@@ -44,9 +44,9 @@ public class VenteMapper {
         dto.setNomClient(v.getClient().getNom());
         dto.setIdVendeur(v.getVendeur().getId());
         dto.setNomVendeur(v.getVendeur().getNom());
+        dto.setModePaiement(v.getModePaiement());
         dto.setDateVente(v.getDateVente());
         dto.setPrixFinal(v.getPrixFinal());
-        dto.setModePaiement(v.getModePaiement());
         return dto;
     }
 }

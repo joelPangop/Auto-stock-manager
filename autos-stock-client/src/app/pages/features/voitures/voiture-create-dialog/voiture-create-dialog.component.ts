@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Fournisseur} from "../../../../models/fournisseur";
 import {StatutVoiture} from "../../../../models/enums/StatutVoiture";
@@ -32,7 +32,7 @@ export class VoitureCreateDialogComponent implements OnInit {
   marques: Marque[] = [];
   modeles: Modele[] = [];
 
-  statuts: StatutVoiture[] = ['EN_STOCK','DISPONIBLE','RESERVEE','VENDUE'];
+  statuts: StatutVoiture[] = ['EN_STOCK', 'DISPONIBLE', 'RESERVEE', 'VENDUE'];
 
   constructor(
     private fb: FormBuilder,
@@ -46,7 +46,7 @@ export class VoitureCreateDialogComponent implements OnInit {
     this.form = this.fb.group({
       idMarque: [null, [Validators.required]],
       idModele: [null, [Validators.required]],
-      annee: [new Date().getFullYear(), [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear()+1)]],
+      annee: [new Date().getFullYear(), [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
       vin: [''],
       couleur: [''],
       kilometrage: [null, [Validators.min(0)]],
@@ -54,7 +54,7 @@ export class VoitureCreateDialogComponent implements OnInit {
       prixVente: [null, [Validators.min(0)]],
       statut: ['EN_STOCK' as StatutVoiture, Validators.required],
       idFournisseur: [null],
-      dateEntreeStock: [new Date().toISOString().substring(0,10)],
+      dateEntreeStock: [new Date().toISOString().substring(0, 10)],
       creerMouvementEntree: [true]
     });
   }
@@ -64,7 +64,7 @@ export class VoitureCreateDialogComponent implements OnInit {
     this.marqueSrv.list().subscribe(m => this.marques = m);
 
     this.form.get('idMarque')!.valueChanges.subscribe((idMarque: number | null) => {
-      this.form.get('idModele')!.setValue(null, { emitEvent: false });
+      this.form.get('idModele')!.setValue(null, {emitEvent: false});
       this.modeles = [];
       if (idMarque) {
         this.modeleSrv.listByMarque(idMarque).subscribe(ms => this.modeles = ms);
@@ -84,19 +84,30 @@ export class VoitureCreateDialogComponent implements OnInit {
   }
 
   save() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.loading = true;
     const dto: VoitureCreateDto = this.form.value;
     this.voitures.create(dto).subscribe({
-      next: v => { this.loading = false; this.ref.close(v); },
-      error: _ => { this.loading = false; this.form.setErrors({ api: true }); }
+      next: v => {
+        this.loading = false;
+        this.ref.close(v);
+      },
+      error: _ => {
+        this.loading = false;
+        this.form.setErrors({api: true});
+      }
     });
   }
 
-  cancel() { this.ref.close(); }
+  cancel() {
+    this.ref.close();
+  }
 
   addMarque() {
-    const ref = this.dlg.open(MarqueCreateDialogComponent, { width: '420px' });
+    const ref = this.dlg.open(MarqueCreateDialogComponent, {width: '420px'});
     ref.afterClosed().subscribe((created?: Marque) => {
       if (created) {
         this.marques = [created, ...this.marques];
@@ -107,8 +118,10 @@ export class VoitureCreateDialogComponent implements OnInit {
 
   addModele() {
     const idMarque = this.form.value.idMarque;
-    if (!idMarque) { return; }
-    const ref = this.dlg.open(ModeleCreateDialogComponent, { width: '420px', data: { idMarque } });
+    if (!idMarque) {
+      return;
+    }
+    const ref = this.dlg.open(ModeleCreateDialogComponent, {width: '420px', data: {idMarque}});
     ref.afterClosed().subscribe((created?: Modele) => {
       if (created) {
         this.modeles = [created, ...this.modeles];
@@ -118,17 +131,20 @@ export class VoitureCreateDialogComponent implements OnInit {
   }
 
   private openNewFournisseur() {
-    const ref = this.dlg.open(FournisseurCreateDialogComponent, { width: '640px' });
+    const ref = this.dlg.open(FournisseurCreateDialogComponent, {
+      disableClose: true,
+      width: '640px'
+    });
     ref.afterClosed().pipe(take(1)).subscribe((created?: Fournisseur) => {
       if (!created) {
         // remettre la valeur à null si l'utilisateur annule
-        this.form.patchValue({ idFournisseur: null }, { emitEvent: false });
+        this.form.patchValue({idFournisseur: null}, {emitEvent: false});
         return;
       }
       // rafraîchir la liste et sélectionner le nouveau
-      const list = [created, ...this.fournisseurs].sort((a,b)=>a.nom.localeCompare(b.nom));
+      const list = [created, ...this.fournisseurs].sort((a, b) => a.nom.localeCompare(b.nom));
       this.fournisseurs = list;
-      this.form.patchValue({ idFournisseur: created.id }, { emitEvent: false });
+      this.form.patchValue({idFournisseur: created.id}, {emitEvent: false});
     });
   }
 }

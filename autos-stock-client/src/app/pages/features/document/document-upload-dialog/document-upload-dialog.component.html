@@ -19,6 +19,11 @@
       <textarea matInput rows="3" formControlName="description"></textarea>
     </mat-form-field>
 
+    <mat-form-field appearance="outline">
+      <mat-label>Montant</mat-label>
+      <input matInput type="number" formControlName="montant"/>
+    </mat-form-field>
+
     <input type="file" (change)="onFileChange($event)" />
   </form>
 </mat-dialog-content>

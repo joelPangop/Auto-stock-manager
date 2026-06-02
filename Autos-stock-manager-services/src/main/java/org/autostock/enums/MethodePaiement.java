@@ -6,8 +6,8 @@ public enum MethodePaiement {
     COMPTANT("Comptant", "CASH"),
     CARTE("Carte bancaire", "CARD"),
     CHEQUE("Chèque", "CHEQUE"),
-    VIREMENT("Virement bancaire", "TRANSFER"),
-    FINANCEMENT("Financement", "LOAN");
+    VIREMENT("Virement bancaire", "VIREMENT"),
+    FINANCEMENT("Financement", "FINANCEMENT");
 
     private final String label;   // lisible (frontend / UI)
     private final String value;   // technique (BD / API)

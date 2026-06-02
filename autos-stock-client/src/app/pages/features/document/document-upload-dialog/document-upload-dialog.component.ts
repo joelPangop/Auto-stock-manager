@@ -13,7 +13,8 @@ export class DocumentUploadDialogComponent implements OnInit {
   file?: File;
   form = this.fb.group({
     type: ['', Validators.required],
-    description: ['']
+    description: [''],
+    montant: ['']
   });
   uploading = false;
 

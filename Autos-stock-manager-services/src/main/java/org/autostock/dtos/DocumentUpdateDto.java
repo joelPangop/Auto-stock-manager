@@ -1,3 +1,5 @@
 package org.autostock.dtos;
 
-public record DocumentUpdateDto(String type, String description) {}
+import java.math.BigDecimal;
+
+public record DocumentUpdateDto(String type, String description, BigDecimal montant) {}

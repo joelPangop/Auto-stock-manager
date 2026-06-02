@@ -10,7 +10,8 @@ public enum TypeDocument {
     CONTRAT("Contrat de vente", "CONTRACT"),
     AUTRE("Autre document", "OTHER"),
     CARFAX("Historique du véhicule", "CARFAX"),
-    PHOTO("Photo", "PHOTO");
+    PHOTO("Photo", "PHOTO"),
+    RECU_PAIEMENT("Recu du Paiement", "RECU_PAIEMENT");
 
     private final String label;
     private final String value;

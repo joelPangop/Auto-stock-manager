@@ -1,1 +1,1 @@
-export type TypeDocument = 'FACTURE' | 'CARFAX' | 'PHOTO' | 'IMMATRICULATION' | 'INSPECTION' | 'AUTRE';
+export type TypeDocument = 'FACTURE' | 'CARFAX' | 'PHOTO' | 'IMMATRICULATION' | 'INSPECTION' | 'ASSURANCE' | 'AUTRE';

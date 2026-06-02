@@ -16,7 +16,7 @@ jobs:
         image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: Abc123...
-          MYSQL_DATABASE: studentdb
+          MYSQL_DATABASE: autos_stock_db
         ports:
           - 3306:3306
         options: >-
@@ -37,11 +37,11 @@ jobs:
  
 
       - name: Build JAR
-        working-directory: school-space-services
+        working-directory: autos-stock-manager-services
         run: mvn clean package -DskipTests
         
       - name: Build and run tests
-        working-directory: school-space-services
+        working-directory: autos-stock-manager-services
         run: mvn test -Dspring.profiles.active=test -Dspring.datasource.driver-class-name=org.h2.Driver
 
   docker-build:
@@ -62,27 +62,27 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           
       - name: Make mvnw executable
-        run: chmod +x ./school-space-services/mvnw
+        run: chmod +x ./autos-stock-manager-services/mvnw
 
       - name: Build JAR file
-        working-directory: ./school-space-services
+        working-directory: ./autos-stock-manager-services
         run: ./mvnw clean package -DskipTests
 
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
-          context: ./school-space-services
-          file: ./school-space-services/Dockerfile
+          context: ./autos-stock-manager-services
+          file: ./autos-stock-manager-services/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/schoolspaceservices:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/autostockmanager:latest
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
-          context: ./school-space-client
-          file: ./school-space-client/Dockerfile
+          context: ./autos-stock-client
+          file: ./autos-stock-client/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/schoolspaceclient:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/autostockclient:latest
           
   deploy-to-ec2:
     runs-on: ubuntu-latest
@@ -101,7 +101,7 @@ jobs:
       - name: 🚀 Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            cd /home/ec2-user/school-space
+            cd /home/ec2-user/autos-stock-manager
             chmod +x docker-compose/docker_git_build.sh
             ./docker-compose/docker_git_build.sh
           EOF
