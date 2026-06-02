@@ -14,9 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         String allowedOrigin = (frontendUrl != null) ? frontendUrl : "http://localhost:3000";
-        System.out.println("✅ CORS Config actif pour: " + allowedOrigin);
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:4200", "ws://localhost:8080", allowedOrigin)
+                .allowedOriginPatterns(allowedOrigin)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

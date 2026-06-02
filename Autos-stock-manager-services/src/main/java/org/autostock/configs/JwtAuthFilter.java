@@ -34,13 +34,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             if (jwt.isTokenValid(token)) {
-                String username = jwt.extractUsername(token);
-                var userDetails = uds.loadUserByUsername(username);
-
-                var auth = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                try {
+                    String username = jwt.extractUsername(token);
+                    var userDetails = uds.loadUserByUsername(username);
+                    var auth = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } catch (Exception ignored) {
+                    // token valide mais utilisateur supprimé → continuer sans authentification
+                }
             }
         }
         chain.doFilter(req, res);
