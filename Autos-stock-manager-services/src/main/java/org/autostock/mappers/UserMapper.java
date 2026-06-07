@@ -26,6 +26,7 @@ public class UserMapper {
         dto.setNom(u.getNom());
         dto.setEmail(u.getEmail());
         dto.setRole(u.getRole().name());
+        dto.setPhoneNumber(u.getPhoneNumber());
         dto.setCreatedAt(u.getCreatedAt() != null ? u.getCreatedAt().toString() : null);
         dto.setUpdatedAt(u.getUpdatedAt() != null ? u.getUpdatedAt().toString() : null);
         return dto;
@@ -43,6 +44,9 @@ public class UserMapper {
     public void updateEntity(User u, UserUpdateDto dto) {
         u.setNom(dto.getNom());
         u.setEmail(dto.getEmail());
-        u.setRole(Role.valueOf(dto.getRole().toUpperCase()));
+        if (dto.getRole() != null && !dto.getRole().isBlank()) {
+            u.setRole(Role.valueOf(dto.getRole().toUpperCase()));
+        }
+        u.setPhoneNumber(dto.getPhoneNumber());
     }
 }

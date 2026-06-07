@@ -10,6 +10,7 @@ public class UserDto {
     private String nom;
     private String email;
     private String role;
+    private String phoneNumber;
     private String createdAt;
     private String updatedAt;
 }

@@ -5,6 +5,8 @@ import {DashboardComponent} from "./pages/dashboard/dashboard.component";
 import {AuthGuard} from "./services/auth.guard";
 import {LayoutComponent} from "./pages/layout/layout.component";
 import {RegisterComponent} from "./pages/users/register/register.component";
+import {ForgotPasswordComponent} from "./pages/users/forgot-password/forgot-password.component";
+import {ResetPasswordComponent} from "./pages/users/reset-password/reset-password.component";
 import {VoituresListComponent} from "./pages/voitures/voitures-list/voitures-list.component";
 import {VoitureDetailComponent} from "./pages/voitures/voiture-detail/voiture-detail.component";
 import {VentesComponent} from "./pages/ventes/ventes.component";
@@ -21,6 +23,8 @@ import {EntretiensListComponent} from "./pages/entretiens/entretiens-list/entret
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'forgot', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   {
     path: '',
     component: LayoutComponent,

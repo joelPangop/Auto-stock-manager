@@ -79,11 +79,13 @@ export class VenteCreateDialogComponent implements OnInit {
       next: v => {
         this.loading = false;
         let paiement: Paiement = {
+          id: 0,
           venteId: v.id,
           datePaiement: v.dateVente,
           methode: v.modePaiement,
           montant: v.prixVente,
-          idVoiture: v.idVoiture
+          idVoiture: v.idVoiture,
+          voitureLabel: ''
         };
         // paiement.venteId = v.id;
         // paiement.datePaiement = v.dateVente;

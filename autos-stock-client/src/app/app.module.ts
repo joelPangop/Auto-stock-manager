@@ -63,6 +63,8 @@ import { VoitureDepenseDialogComponent } from './pages/features/voitures/voiture
 import { EntretiensListComponent } from './pages/entretiens/entretiens-list/entretiens-list.component';
 import { EntretienViewDialogComponent } from './pages/features/entretien/entretien-view-dialog/entretien-view-dialog.component';
 import { PaiementViewDialogComponent } from './pages/features/paiement-view-dialog/paiement-view-dialog.component';
+import { ForgotPasswordComponent } from './pages/users/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/users/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -98,7 +100,9 @@ import { PaiementViewDialogComponent } from './pages/features/paiement-view-dial
     VoitureDepenseDialogComponent,
     EntretiensListComponent,
     EntretienViewDialogComponent,
-    PaiementViewDialogComponent
+    PaiementViewDialogComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,

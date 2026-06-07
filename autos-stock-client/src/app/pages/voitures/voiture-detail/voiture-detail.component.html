@@ -171,6 +171,49 @@
       </div>
     </mat-tab>
 
+    <!-- PHOTOS -->
+    <mat-tab label="Photos">
+      <div class="tab-pad">
+        <div class="photos-header">
+          <button mat-flat-button color="primary" (click)="openPhotoUploadDialog()" *ngIf="isOwner">
+            <mat-icon>add_a_photo</mat-icon>&nbsp;Ajouter une photo
+          </button>
+        </div>
+
+        <ng-container *ngIf="photos$ | async as photos">
+          <div *ngIf="photos.length === 0" class="muted" style="margin-top:16px">Aucune photo.</div>
+          <div class="photo-grid">
+            <div class="photo-card" *ngFor="let p of photos">
+              <div class="photo-img-wrap">
+                <img *ngIf="photoUrlMap[p.id]; else photoLoading"
+                     [src]="photoUrlMap[p.id]"
+                     class="photo-thumb"
+                     (click)="openPhotoFull(p)"
+                     alt="{{ p.description || p.nomFichier }}" />
+                <ng-template #photoLoading>
+                  <div class="photo-placeholder">
+                    <mat-spinner diameter="28"></mat-spinner>
+                  </div>
+                </ng-template>
+                <button *ngIf="isOwner" mat-icon-button color="warn" class="photo-delete-btn"
+                        (click)="deleteDoc(p)" title="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <div class="photo-caption">{{ p.description || '' }}</div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="lightbox-overlay" *ngIf="lightboxPhoto" (click)="closeLightbox()">
+        <img [src]="photoUrlMap[lightboxPhoto.id]" class="lightbox-img" (click)="$event.stopPropagation()" />
+        <button mat-icon-button class="lightbox-close" (click)="closeLightbox()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-tab>
+
     <!-- DOCUMENTS -->
     <mat-tab label="Documents">
       <div class="tab-pad docs-tab">

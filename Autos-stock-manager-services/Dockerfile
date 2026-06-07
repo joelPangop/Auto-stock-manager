@@ -5,7 +5,7 @@ COPY pom.xml .
 # Charger les dépendances en cache
 RUN mvn -q -DskipTests dependency:go-offline
 COPY src ./src
-RUN mvn -q -DskipTests package clean
+RUN mvn -q -DskipTests clean package
 
 # ===== Runtime =====
 FROM ubuntu:22.04
@@ -27,7 +27,7 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 
 WORKDIR /app
 
-COPY target/Autos-stock-manager-1.0-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/target/Autos-stock-manager-1.0-SNAPSHOT.jar app.jar
 COPY entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
 

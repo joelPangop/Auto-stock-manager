@@ -28,6 +28,7 @@ export class RegisterComponent implements OnInit {
   form: FormGroup = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
+    phoneNumber: [''],
     passwords: this.fb.group({
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirm: ['', [Validators.required]]
@@ -67,7 +68,8 @@ export class RegisterComponent implements OnInit {
         // mode édition: on remplit le form
         this.form.patchValue({
           nom: user.nom ?? '',
-          email: user.email ?? ''
+          email: user.email ?? '',
+          phoneNumber: user.phoneNumber ?? ''
         });
 
         // en édition, souvent on ne veut pas forcer le password
@@ -84,10 +86,10 @@ export class RegisterComponent implements OnInit {
     if (!this.id) {
       if (this.form.invalid) return;
       this.loading = true;
-      const {nom, email} = this.form.value;
+      const {nom, email, phoneNumber} = this.form.value;
       const password = this.form.value.passwords?.password as string;
 
-      this.auth.register({nom: nom!, email: email!, password}).subscribe({
+      this.auth.register({nom: nom!, email: email!, password, phoneNumber}).subscribe({
         next: () => {
           this.loading = false;
           this.snack.open('Compte créé ✔', 'OK', {duration: 2000});

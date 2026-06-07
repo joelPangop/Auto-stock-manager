@@ -22,6 +22,9 @@ public class User extends AbstractEntity {
     @Column(nullable = false)
     private String motDePasseHash;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {VoitureDetailDto} from '../../../models/VoitureDetailDto';
 import {Document} from '../../../models/document';
 import {Entretien} from '../../../models/entretien';
@@ -42,7 +42,7 @@ import {PaiementService} from "../../../services/paiement.service";
   styleUrls: ['./voiture-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class VoitureDetailComponent implements OnInit {
+export class VoitureDetailComponent implements OnInit, OnDestroy {
   isEditing = false;
   fournisseurLibelle?: string;
   paiementLibelle?: string;
@@ -59,17 +59,27 @@ export class VoitureDetailComponent implements OnInit {
   vente: Vente;
   benefice: number;
 
+  // === PHOTOS ===
+  photoUrlMap: { [id: number]: string } = {};
+  lightboxPhoto: Document | null = null;
+  private _photoSub?: Subscription;
+
   // id$ réagit à chaque changement d’URL
   readonly id$ = this.route.paramMap.pipe(
     map(pm => Number(pm.get('id')))
   );
 
   ngOnInit(): void {
-    // charge les fournisseurs au démarrage
     this.fSrv.listAll().subscribe({
       next: f => (this.fournisseurs = f),
       error: e => console.error('Erreur chargement fournisseurs', e)
     });
+    this._photoSub = this.photos$.subscribe(photos => this.loadPhotoUrls(photos));
+  }
+
+  ngOnDestroy(): void {
+    Object.values(this.photoUrlMap).forEach(url => URL.revokeObjectURL(url));
+    this._photoSub?.unsubscribe();
   }
 
   form: FormGroup;
@@ -169,6 +179,10 @@ export class VoitureDetailComponent implements OnInit {
     shareReplay(1)
   );
 
+  readonly photos$: Observable<Document[]> = this.documents$.pipe(
+    map(docs => docs.filter(d => d.type === "PHOTO"))
+  );
+
   readonly ventes$: Observable<Vente> = combineLatest([this.id$, this.refresh$]).pipe(
     switchMap(([id]) =>
       this.vtSrv.getVenteByIdVoiture(id)),
@@ -212,7 +226,8 @@ export class VoitureDetailComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private marqueSrv: MarqueService,
-    private modeleSrv: ModeleService
+    private modeleSrv: ModeleService,
+    private cdr: ChangeDetectorRef
   ) {
   }
 
@@ -330,6 +345,35 @@ export class VoitureDetailComponent implements OnInit {
         data: {idVoiture: this.idVoiture}
       });
     dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
+  }
+
+  openPhotoUploadDialog(): void {
+    const dialogRef = this.dialog.open(DocumentUploadDialogComponent, {
+      disableClose: true,
+      width: '520px',
+      data: {idVoiture: this.idVoiture, defaultType: 'PHOTO'}
+    });
+    dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
+  }
+
+  openPhotoFull(p: Document): void {
+    this.lightboxPhoto = p;
+  }
+
+  closeLightbox(): void {
+    this.lightboxPhoto = null;
+  }
+
+  private loadPhotoUrls(photos: Document[]): void {
+    Object.values(this.photoUrlMap).forEach(url => URL.revokeObjectURL(url));
+    this.photoUrlMap = {};
+    this.cdr.markForCheck();
+    photos.forEach(photo => {
+      this.dSrv.download(photo.id).subscribe(blob => {
+        this.photoUrlMap = {...this.photoUrlMap, [photo.id]: URL.createObjectURL(blob)};
+        this.cdr.markForCheck();
+      });
+    });
   }
 
   nouvelleVente(): void {

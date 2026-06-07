@@ -35,7 +35,7 @@ export class AuthService {
     return this.currentUser?.role === 'ADMIN';
   }
 
-  register(data: { nom: string; email: string; password: string }) {
+  register(data: { nom: string; email: string; password: string; phoneNumber?: string }) {
     return this.http.post<AuthResponse>(`${this.base}/register`, data).pipe(
       tap(res => {
         // localStorage.setItem('access_token', res.accessToken);
@@ -87,6 +87,14 @@ export class AuthService {
     if (!raw) return null;
     const payload = JSON.parse(atob(raw.split('.')[1]));
     return payload?.uid ?? null; // adapte à ta claim
+  }
+
+  forgotPassword(payload: { identifier: string; deliveryMethod: 'EMAIL' | 'SMS' }) {
+    return this.http.post<void>(`${this.base}/forgot-password`, payload);
+  }
+
+  resetPassword(payload: { identifier: string; code: string; newPassword: string }) {
+    return this.http.post<void>(`${this.base}/reset-password`, payload);
   }
 
   get onlyMine(): boolean {

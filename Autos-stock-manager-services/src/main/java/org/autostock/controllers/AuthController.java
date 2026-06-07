@@ -1,9 +1,7 @@
 package org.autostock.controllers;
 
 import jakarta.validation.Valid;
-import org.autostock.dtos.auth.AuthResponse;
-import org.autostock.dtos.auth.LoginRequest;
-import org.autostock.dtos.auth.RegisterRequest;
+import org.autostock.dtos.auth.*;
 import org.autostock.repositories.UserRepository;
 import org.autostock.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +45,17 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse.UserView(
                 u.getId(), u.getNom(), u.getEmail(), u.getRole().name()
         ));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
+        authService.forgotPassword(req);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
+        authService.resetPassword(req);
+        return ResponseEntity.ok().build();
     }
 }

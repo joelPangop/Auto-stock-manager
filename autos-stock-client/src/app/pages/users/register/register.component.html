@@ -26,6 +26,14 @@
         <mat-error *ngIf="f.email.hasError('email')">Email invalide</mat-error>
       </mat-form-field>
 
+      <!-- Téléphone -->
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Téléphone (optionnel)</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput type="tel" formControlName="phoneNumber" placeholder="+237 6XX XXX XXX" />
+        <mat-hint>Utilisé pour la récupération par SMS</mat-hint>
+      </mat-form-field>
+
       <!-- Password -->
       <div formGroupName="passwords" *ngIf="!user">
         <mat-form-field appearance="outline" class="field">

@@ -30,8 +30,7 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
-        throw new Error("Method not implemented.");
-    }
+  }
 
   submit() {
     if (this.form.invalid) return;

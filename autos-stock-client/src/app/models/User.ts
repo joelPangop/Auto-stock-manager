@@ -7,5 +7,5 @@ export interface User {
   password?: string;
   role: Role;
   avatarUrl?: string;
-
+  phoneNumber?: string;
 }

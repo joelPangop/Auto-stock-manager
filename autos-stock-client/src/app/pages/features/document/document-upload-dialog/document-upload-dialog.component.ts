@@ -19,15 +19,17 @@ export class DocumentUploadDialogComponent implements OnInit {
   uploading = false;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { idVoiture: number },
+    @Inject(MAT_DIALOG_DATA) public data: { idVoiture: number; defaultType?: string },
     private fb: FormBuilder,
     private docs: DocumentService,
     private dialogRef: MatDialogRef<DocumentUploadDialogComponent>
   ) {}
 
   ngOnInit(): void {
-        // throw new Error("Method not implemented.");
+    if (this.data.defaultType) {
+      this.form.patchValue({type: this.data.defaultType});
     }
+  }
 
   onFileChange(e: Event) {
     const input = e.target as HTMLInputElement;

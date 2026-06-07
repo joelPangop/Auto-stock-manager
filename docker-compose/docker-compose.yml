@@ -57,6 +57,7 @@ services:
       DB_PASSWORD: Abc123...
       SPRING_PROFILES_ACTIVE: docker
       APP_CORS_ALLOWED_ORIGINS: "http://localhost:3000"
+    # Les variables MAIL_*, TWILIO_*, SECURITY_JWT_* sont chargees depuis .env
     env_file:
       - ../autos-stock-manager-services/.env
     labels:
