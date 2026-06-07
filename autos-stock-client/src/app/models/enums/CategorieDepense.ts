@@ -1,0 +1,9 @@
+export enum CategorieDepense {
+  ENTRETIEN = 'ENTRETIEN',
+  FRAIS_ADMIN = 'FRAIS_ADMIN',
+  ASSURANCE = 'ASSURANCE',
+  ESSENCE = 'ESSENCE',
+  AMENDE = 'AMENDE',
+  PARKING = 'PARKING',
+  AUTRE = 'AUTRE'
+}

@@ -1,0 +1,78 @@
+<div class="dialog">
+
+  <div class="header">
+    <div class="title">
+      <h2>Détails du paiement</h2>
+      <div class="sub">#{{ data.paiementId }}</div>
+    </div>
+    <button mat-icon-button (click)="close()" aria-label="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <ng-container *ngIf="paiement$ | async as p; else loading">
+    <ng-container *ngIf="p; else errorTpl">
+
+      <div class="grid">
+
+        <div class="field">
+          <div class="label">Voiture</div>
+          <div class="value">
+            <span class="badge voiture">{{ p.voitureLabel || ('Vente #' + p.venteId) }}</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Date</div>
+          <div class="value mono">{{ p.datePaiement | date:'yyyy-MM-dd' }}</div>
+        </div>
+
+        <div class="field">
+          <div class="label">Montant</div>
+          <div class="value money">{{ money(p.montant) }}</div>
+        </div>
+
+        <div class="field">
+          <div class="label">Méthode</div>
+          <div class="value">
+            <span class="badge">{{ p.methode }}</span>
+          </div>
+        </div>
+
+        <div class="field full">
+          <div class="label">Référence</div>
+          <div class="value box">{{ p.reference || '—' }}</div>
+        </div>
+
+      </div>
+
+      <div class="footer">
+        <button mat-stroked-button (click)="close()">Fermer</button>
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="loading">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <div>Chargement…</div>
+    </div>
+  </ng-template>
+
+  <ng-template #errorTpl>
+    <div class="error">
+      <mat-icon>error</mat-icon>
+      <div>
+        <div class="error-title">Erreur</div>
+        <div class="error-text">{{ errorMsg }}</div>
+      </div>
+    </div>
+    <div class="footer">
+      <button mat-stroked-button (click)="close()">Fermer</button>
+    </div>
+  </ng-template>
+
+</div>

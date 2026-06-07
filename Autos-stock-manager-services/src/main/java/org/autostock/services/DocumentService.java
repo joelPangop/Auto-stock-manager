@@ -20,6 +20,10 @@ public interface DocumentService extends IService<Document, Long> {
 
     Resource loadAsResource(Long id);
 
+    String getDocumentFilename(Long id);
+
+    String getAccessUrl(Long id);
+
     void delete(Long id);
 
     void saveReceiptForPaiement(Paiement paiementId, byte[] pdf);

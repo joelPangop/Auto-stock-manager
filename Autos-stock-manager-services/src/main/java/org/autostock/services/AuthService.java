@@ -123,11 +123,13 @@ public class AuthService {
     }
 
     private User findByIdentifier(String identifier) {
-        if (identifier.contains("@")) {
-            return repo.findByEmail(identifier)
+        String trimmed = identifier.trim();
+        if (trimmed.contains("@")) {
+            return repo.findByEmailIgnoreCase(trimmed)
                     .orElseThrow(() -> new EntityNotFoundException("Aucun compte trouvé avec cet email"));
         }
-        return repo.findByPhoneNumber(identifier)
+        String normalized = trimmed.replaceAll("\\s+", "");
+        return repo.findByPhoneNumber(normalized)
                 .orElseThrow(() -> new EntityNotFoundException("Aucun compte trouvé avec ce numéro de téléphone"));
     }
 

@@ -174,8 +174,10 @@
     <!-- PHOTOS -->
     <mat-tab label="Photos">
       <div class="tab-pad">
-        <div class="photos-header">
-          <button mat-flat-button color="primary" (click)="openPhotoUploadDialog()" *ngIf="isOwner">
+
+        <!-- Bouton upload uniquement en mode édition -->
+        <div class="photos-header" *ngIf="isEditing && isOwner">
+          <button mat-flat-button color="primary" (click)="openPhotoUploadDialog()">
             <mat-icon>add_a_photo</mat-icon>&nbsp;Ajouter une photo
           </button>
         </div>
@@ -195,8 +197,9 @@
                     <mat-spinner diameter="28"></mat-spinner>
                   </div>
                 </ng-template>
-                <button *ngIf="isOwner" mat-icon-button color="warn" class="photo-delete-btn"
-                        (click)="deleteDoc(p)" title="Supprimer">
+                <!-- Bouton suppression uniquement en mode édition -->
+                <button *ngIf="isEditing && isOwner" mat-icon-button color="warn"
+                        class="photo-delete-btn" (click)="deleteDoc(p)" title="Supprimer">
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
@@ -206,6 +209,7 @@
         </ng-container>
       </div>
 
+      <!-- Lightbox -->
       <div class="lightbox-overlay" *ngIf="lightboxPhoto" (click)="closeLightbox()">
         <img [src]="photoUrlMap[lightboxPhoto.id]" class="lightbox-img" (click)="$event.stopPropagation()" />
         <button mat-icon-button class="lightbox-close" (click)="closeLightbox()">

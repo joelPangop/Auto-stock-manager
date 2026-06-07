@@ -1,0 +1,61 @@
+:host { display:block; }
+
+.dialog {
+  width: 100%;
+  max-width: 760px;
+  box-sizing: border-box;
+  padding: 12px 14px 10px;
+  overflow-x: hidden;
+}
+
+.header { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding-bottom:8px; }
+.title h2 { margin:0; font-size:18px; font-weight:800; }
+.sub { margin-top:2px; opacity:.7; font-size:12px; }
+
+.grid {
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 14px;
+  padding: 14px 2px 6px;
+  min-width: 0;
+}
+
+.field, .value, .box { min-width: 0; }
+.full { grid-column: 1 / -1; }
+
+.label { font-size:12px; opacity:.75; margin-bottom:4px; }
+.value { font-size:14px; font-weight:600; }
+
+.box {
+  font-weight:500;
+  background: rgba(0,0,0,.04);
+  border-radius: 12px;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+}
+
+.badge {
+  display:inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(63,81,181,.10);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.badge.voiture {
+  background: rgba(0, 150, 136, 0.12);
+  color: #00695c;
+}
+
+.money { font-weight: 900; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:13px; }
+
+.footer { display:flex; justify-content:flex-end; gap:8px; padding-top:10px; }
+
+.loading { display:grid; place-items:center; gap:10px; padding:26px 0; opacity:.85; }
+.error { display:flex; gap:10px; align-items:center; padding:16px 2px 4px; opacity:.85; }
+.error-title { font-weight:800; }
+.error-text { font-size:13px; }
+
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }

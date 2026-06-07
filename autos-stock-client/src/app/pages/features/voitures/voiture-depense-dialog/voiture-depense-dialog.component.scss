@@ -1,0 +1,41 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+.api-error { color: #b91c1c; margin-top: 6px; }
+.card {
+  border-radius: 14px;
+  padding: 12px;
+}
+.spacer { flex: 1 1 auto; }
+.mt { margin-top: 12px; }
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+
+  > div {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 10px
+  }
+
+  strong {
+    display: block;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px
+  }
+}
+.tab-pad {
+  padding: 12px
+}
+
+.card {
+  padding: 12px;
+  border-radius: 14px;
+}
+

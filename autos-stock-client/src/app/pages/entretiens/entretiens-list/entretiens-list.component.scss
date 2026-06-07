@@ -1,0 +1,150 @@
+.page {
+  display: grid;
+  gap: 14px;
+  padding: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.title p {
+  margin: 4px 0 0;
+  opacity: 0.75;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search {
+  width: min(420px, 92vw);
+}
+
+.card {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px 0;
+  flex-wrap: wrap;
+}
+
+.stats .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  font-size: 13px;
+}
+
+.table-wrap {
+  padding: 6px 0 0;
+}
+
+table {
+  width: 100%;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(63, 81, 181, 0.10);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.muted {
+  opacity: 0.8;
+  display: inline-block;
+  max-width: 520px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+}
+
+.money {
+  font-weight: 700;
+}
+
+.right {
+  text-align: right;
+}
+
+.empty-row td {
+  padding: 22px 12px;
+}
+
+.empty {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+}
+
+.empty mat-icon {
+  font-size: 34px;
+  width: 34px;
+  height: 34px;
+}
+
+.empty-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.empty-text {
+  font-size: 13px;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 28px 0;
+  opacity: 0.85;
+}
+
+.link {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 600;
+}
+.link:hover { text-decoration: underline; }

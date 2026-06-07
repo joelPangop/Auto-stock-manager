@@ -1,0 +1,97 @@
+<div class="dialog">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="title">
+      <h2>Détails de l’entretien</h2>
+      <div class="sub" *ngIf="data?.entretien.id">#{{ data.entretien.id }}</div>
+    </div>
+
+    <button mat-icon-button (click)="close()" aria-label="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Content -->
+  <ng-container *ngIf="entretien$ as e; else loading">
+
+    <ng-container *ngIf="e; else errorTpl">
+
+      <div class="grid">
+
+        <!-- Voiture -->
+        <div class="field">
+          <div class="label">Voiture</div>
+          <div class="value">
+            <a class="link" [routerLink]="['/voitures', e.idVoiture]" mat-dialog-close>
+              {{ e.voitureLabel || ('Voiture #' + e.idVoiture) }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="field">
+          <div class="label">Date</div>
+          <div class="value mono">{{ e.dateEntretien | date:'yyyy-MM-dd' }}</div>
+        </div>
+
+        <!-- Type -->
+        <div class="field">
+          <div class="label">Type</div>
+          <div class="value">
+            <span class="badge">{{ e.typeLabel || e.type }}</span>
+          </div>
+        </div>
+
+        <!-- Coût -->
+        <div class="field">
+          <div class="label">Coût</div>
+          <div class="value money">{{ formatMoney(e.cout) }}</div>
+        </div>
+
+        <!-- Commentaire (pleine largeur) -->
+        <div class="field full">
+          <div class="label">Commentaire</div>
+          <div class="value box">
+            {{ e.commentaire || '—' }}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer">
+        <button mat-stroked-button (click)="close()">
+          Fermer
+        </button>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+  <!-- Loading -->
+  <ng-template #loading>
+    <div class="loading">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <div>Chargement…</div>
+    </div>
+  </ng-template>
+
+  <!-- Error -->
+  <ng-template #errorTpl>
+    <div class="error">
+      <mat-icon>error</mat-icon>
+      <div>
+        <div class="error-title">Erreur</div>
+        <div class="error-text">{{ errorMsg || 'Une erreur est survenue.' }}</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <button mat-stroked-button (click)="close()">Fermer</button>
+    </div>
+  </ng-template>
+
+</div>

@@ -78,7 +78,6 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    Object.values(this.photoUrlMap).forEach(url => URL.revokeObjectURL(url));
     this._photoSub?.unsubscribe();
   }
 
@@ -365,13 +364,22 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
   }
 
   private loadPhotoUrls(photos: Document[]): void {
-    Object.values(this.photoUrlMap).forEach(url => URL.revokeObjectURL(url));
     this.photoUrlMap = {};
     this.cdr.markForCheck();
     photos.forEach(photo => {
-      this.dSrv.download(photo.id).subscribe(blob => {
-        this.photoUrlMap = {...this.photoUrlMap, [photo.id]: URL.createObjectURL(blob)};
-        this.cdr.markForCheck();
+      this.dSrv.download(photo.id).subscribe({
+        next: blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.photoUrlMap = {
+              ...this.photoUrlMap,
+              [photo.id]: reader.result as string
+            };
+            this.cdr.markForCheck();
+          };
+          reader.readAsDataURL(blob);
+        },
+        error: err => console.error(`Erreur chargement photo ${photo.id}`, err)
       });
     });
   }

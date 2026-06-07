@@ -80,14 +80,18 @@ public DocumentDto updateMeta(@PathVariable Long id, @RequestBody DocumentUpdate
 public ResponseEntity<Resource> download(@PathVariable Long id) {
 
     Resource resource = documentService.loadAsResource(id);
-    String filename = Paths.get(Objects.requireNonNull(resource.getFilename())).getFileName().toString();
-    // Deviner le content-type
+
+    // getFilename() peut être null (ByteArrayResource depuis S3) — on récupère le nom depuis la BDD
+    String rawFilename = resource.getFilename();
+    String filename = (rawFilename != null)
+            ? Paths.get(rawFilename).getFileName().toString()
+            : documentService.getDocumentFilename(id);
+
     MediaType contentType = MediaTypeFactory.getMediaType(filename)
             .orElse(MediaType.APPLICATION_OCTET_STREAM);
 
-    // Nom de fichier
     ContentDisposition cd = ContentDisposition.attachment()
-            .filename(filename.toString(), StandardCharsets.UTF_8)
+            .filename(filename, StandardCharsets.UTF_8)
             .build();
 
     return ResponseEntity.ok()

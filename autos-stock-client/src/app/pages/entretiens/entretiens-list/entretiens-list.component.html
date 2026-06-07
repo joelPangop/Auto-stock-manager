@@ -1,0 +1,169 @@
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="title">
+      <h1>Entretiens</h1>
+      <p>Historique des opérations d’entretien pour vos véhicules.</p>
+    </div>
+
+    <div class="actions">
+      <mat-slide-toggle
+        [checked]="onlyMine"
+        (change)="toggleOnlyMine($event.checked)">
+        Mes entretiens
+      </mat-slide-toggle>
+
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Rechercher</mat-label>
+        <input
+          matInput
+          placeholder="Type, commentaire, coût…"
+          [value]="searchText"
+          (input)="onSearch($any($event.target).value)" />
+        <button
+          *ngIf="searchText"
+          mat-icon-button
+          matSuffix
+          aria-label="Effacer"
+          (click)="onSearch('')">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+<!--      <button mat-flat-button color="primary" (click)="openCreate()">-->
+<!--        <mat-icon>add</mat-icon>-->
+<!--        Nouvel entretien-->
+<!--      </button>-->
+    </div>
+  </div>
+
+  <!-- Content -->
+  <mat-card class="card">
+
+    <div class="card-header">
+      <div class="stats" *ngIf="pageVm$ | async as vm">
+        <span class="chip">
+          <mat-icon>list</mat-icon>
+          {{ vm.totalElements }} entrée(s)
+        </span>
+      </div>
+
+      <div class="tools">
+        <button mat-stroked-button (click)="reload()">
+          <mat-icon>refresh</mat-icon>
+          Rafraîchir
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap" *ngIf="pageVm$ | async as vm; else loading">
+      <table mat-table [dataSource]="vm.items" matSort (matSortChange)="onSort($event)">
+
+        <!-- Date -->
+        <ng-container matColumnDef="dateEntretien">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let e">
+            <span class="mono">{{ e.dateEntretien | date:'yyyy-MM-dd' }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="voiture">
+          <th mat-header-cell *matHeaderCellDef>Voiture</th>
+
+          <td mat-cell *matCellDef="let e">
+            <a class="link" [routerLink]="['/voitures', e.idVoiture]">
+              {{ e.voitureLabel }}
+            </a>
+          </td>
+        </ng-container>
+
+
+        <!-- Type -->
+        <ng-container matColumnDef="typeLabel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let e">
+            <div class="type">
+              <span class="badge">{{ e.typeLabel || e.type }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Commentaire -->
+        <ng-container matColumnDef="commentaire">
+          <th mat-header-cell *matHeaderCellDef>Commentaire</th>
+          <td mat-cell *matCellDef="let e">
+            <span class="muted" [title]="e.commentaire || ''">
+              {{ e.commentaire || '—' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Coût -->
+        <ng-container matColumnDef="cout">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="right">Coût</th>
+          <td mat-cell *matCellDef="let e" class="right">
+            <span class="money" *ngIf="e.cout != null; else noCout">
+              {{ e.cout | number:'1.0-2' }} $
+            </span>
+            <ng-template #noCout>—</ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions" *ngIf="isAdmin">
+          <th mat-header-cell *matHeaderCellDef class="right">Actions</th>
+          <td mat-cell *matCellDef="let e" class="right">
+            <button mat-icon-button (click)="openView(e)" matTooltip="Visualiser">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button (click)="openEdit(e.id)" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="confirmDelete(e)" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"
+            class="row"
+            (dblclick)="openEdit(row.id)">
+        </tr>
+
+        <!-- Empty -->
+        <tr class="empty-row" *ngIf="vm.content?.length === 0">
+          <td [attr.colspan]="displayedColumns.length">
+            <div class="empty">
+              <mat-icon>inbox</mat-icon>
+              <div>
+                <div class="empty-title">Aucun entretien</div>
+                <div class="empty-text">Ajoutez un entretien ou modifiez vos filtres.</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+      <mat-paginator
+        [length]="vm.totalElements"
+        [pageIndex]="vm.number"
+        [pageSize]="vm.size"
+        [pageSizeOptions]="[5,10,20,50]"
+        (page)="onPage($event)">
+      </mat-paginator>
+    </div>
+
+    <ng-template #loading>
+      <div class="loading">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <div>Chargement…</div>
+      </div>
+    </ng-template>
+
+  </mat-card>
+</div>

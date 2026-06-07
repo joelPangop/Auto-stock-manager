@@ -1,0 +1,110 @@
+<div class="wrap" *ngIf="voitureId != null; else noId">
+
+  <!-- Résumé + Chart -->
+  <div class="top" *ngIf="dashboard$ | async as dash; else loadingDash">
+    <mat-card class="card">
+      <div class="h">Total dépenses</div>
+      <div class="v">{{ dash.total | number:'1.2-2' }} $</div>
+      <div class="s">Période: {{ depStart }} → {{ depEnd }}</div>
+    </mat-card>
+
+    <mat-card class="card chart">
+      <div class="h">Dépenses mensuelles</div>
+      <canvas baseChart
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [legend]="barChartLegend"
+              [chartType]="barChartType">
+      </canvas>
+    </mat-card>
+  </div>
+
+  <ng-template #loadingDash>
+    <div class="muted">Chargement…</div>
+  </ng-template>
+
+  <!-- Actions -->
+  <div class="row">
+    <button mat-stroked-button color="primary" (click)="toggleForm()" *ngIf="isOwner">
+      <mat-icon>add</mat-icon>&nbsp;Ajouter une dépense
+    </button>
+
+    <span class="spacer"></span>
+
+    <mat-slide-toggle [checked]="onlyUnjustified"
+                      (change)="setOnlyUnjustified($event.checked)">
+      Non justifiées
+    </mat-slide-toggle>
+  </div>
+
+  <!-- Liste -->
+  <mat-card class="card mt" *ngIf="pageVm$ | async as pageVm">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="pageVm.items" class="mat-elevation-z0">
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let d">{{ d.dateDepense }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="categorie">
+          <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+          <td mat-cell *matCellDef="let d">{{ d.categorie }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef>Montant</th>
+          <td mat-cell *matCellDef="let d">{{ d.montant | number:'1.2-2' }} $</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fournisseur">
+          <th mat-header-cell *matHeaderCellDef>Fournisseur</th>
+
+          <td mat-cell *matCellDef="let d">
+            <ng-container *ngIf="getFournisseur$(d.fournisseurId) | async as f">
+              {{ f.nom }} ({{f.type}})
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="justif">
+          <th mat-header-cell *matHeaderCellDef>Justif</th>
+          <td mat-cell *matCellDef="let d">
+          <span
+            [matTooltip]="(d.documentId ? 'Document #' + d.documentId : 'Document: —') + ' | ' + (d.entretienId ? 'Entretien #' + d.entretienId : 'Entretien: —')"
+            matTooltipPosition="above">
+            {{ (d.documentId || d.entretienId) ? 'OK' : 'Aucun' }}
+          </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let d">
+            <button mat-icon-button color="primary" (click)="toggleForm(d.id)" *ngIf="isOwner" matTooltip="Visualiser">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="remove(d.id)" *ngIf="isOwner" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+<!--        &nbsp-->
+        <tr mat-header-row *matHeaderRowDef="depColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: depColumns;"></tr>
+      </table>
+    </div>
+    <mat-paginator
+      [length]="pageVm.totalElements"
+      [pageIndex]="pageVm.page"
+      [pageSize]="pageVm.size"
+      [pageSizeOptions]="[5,10,20]"
+      (page)="pageChange($event.pageIndex, $event.pageSize)">
+    </mat-paginator>
+  </mat-card>
+
+</div>
+
+<ng-template #noId>
+  <div class="muted">VoitureId non disponible…</div>
+</ng-template>
