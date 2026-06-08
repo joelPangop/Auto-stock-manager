@@ -12,6 +12,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {RouterModule} from "@angular/router";
@@ -120,6 +121,7 @@ import { ResetPasswordComponent } from './pages/users/reset-password/reset-passw
     MatIconModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     RouterModule,
     ChartsModule,
     HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule, MatChipsModule

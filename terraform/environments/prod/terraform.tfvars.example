@@ -1,0 +1,36 @@
+# ============================================================
+# Exemple de configuration PROD
+# Copiez ce fichier en terraform.tfvars et remplissez les valeurs.
+# NE JAMAIS COMMITTER terraform.tfvars (contient des secrets)
+# ============================================================
+
+project    = "autostock"
+aws_region = "us-east-1"
+
+# Réseau
+vpc_cidr              = "10.0.0.0/16"
+availability_zones    = ["us-east-1a", "us-east-1b"]
+bastion_allowed_cidrs = ["YOUR_PUBLIC_IP/32"]   # ex: ["203.0.113.5/32"]
+
+# SSH (contenu de votre clé publique)
+ssh_public_key = "ssh-rsa AAAA... votre-email@exemple.com"
+
+# Base de données
+db_name             = "autostockdb"
+db_username         = "autostock"
+db_password         = "MotDePasseSecurise123!"
+db_instance_class   = "db.t3.micro"
+db_allocated_storage = 20
+
+# Services AWS
+s3_bucket_name  = "autostock-docs-prod"
+ses_from_email  = "noreply@votre-domaine.com"
+jwt_secret_value = "votre-cle-jwt-tres-secrete-256-bits"
+domain_name     = "autostock.votre-domaine.com"
+
+# ECS
+image_tag          = "1.0.0"
+ecs_backend_cpu    = "512"
+ecs_backend_memory = "1024"
+ecs_backend_count  = 1
+ecs_frontend_count = 1

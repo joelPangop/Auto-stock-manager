@@ -16,4 +16,6 @@ public class DocumentDto {
     private LocalDateTime dateUpload;
     private String description;
     private BigDecimal montant;
+    private String nomFichier;
+    private boolean principale;
 }

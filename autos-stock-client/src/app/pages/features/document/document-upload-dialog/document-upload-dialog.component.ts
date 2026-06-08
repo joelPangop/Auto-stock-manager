@@ -1,7 +1,13 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {DocumentService} from "../../../../services/document.service";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {FormBuilder, Validators} from "@angular/forms";
+import { Component, Inject, OnInit } from '@angular/core';
+import { DocumentService } from '../../../../services/document.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+
+export interface FilePreview {
+  file: File;
+  previewUrl: string | null;
+}
 
 @Component({
   selector: 'app-document-upload-dialog',
@@ -10,13 +16,15 @@ import {FormBuilder, Validators} from "@angular/forms";
 })
 export class DocumentUploadDialogComponent implements OnInit {
 
-  file?: File;
+  filePreviews: FilePreview[] = [];
+  uploading = false;
+  uploadProgress = 0;   // 0-100
+
   form = this.fb.group({
     type: ['', Validators.required],
     description: [''],
     montant: ['']
   });
-  uploading = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { idVoiture: number; defaultType?: string },
@@ -27,21 +35,78 @@ export class DocumentUploadDialogComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data.defaultType) {
-      this.form.patchValue({type: this.data.defaultType});
+      this.form.patchValue({ type: this.data.defaultType });
     }
+  }
+
+  get isPhotoType(): boolean {
+    return this.form.get('type')?.value === 'PHOTO';
   }
 
   onFileChange(e: Event) {
     const input = e.target as HTMLInputElement;
-    if (input.files && input.files.length) {
-      this.file = input.files[0];
-    }
+    if (!input.files || !input.files.length) return;
+
+    const newFiles = Array.from(input.files);
+    const existing = new Set(this.filePreviews.map(fp => fp.file.name + fp.file.size));
+
+    newFiles.forEach(file => {
+      const key = file.name + file.size;
+      if (existing.has(key)) return; // éviter les doublons
+
+      const isImage = file.type.startsWith('image/');
+      const preview: FilePreview = { file, previewUrl: null };
+
+      if (isImage) {
+        const reader = new FileReader();
+        reader.onloadend = () => { preview.previewUrl = reader.result as string; };
+        reader.readAsDataURL(file);
+      }
+
+      this.filePreviews.push(preview);
+    });
+
+    // Reset l'input pour permettre de re-sélectionner les mêmes fichiers si besoin
+    input.value = '';
+  }
+
+  removeFile(index: number) {
+    this.filePreviews.splice(index, 1);
   }
 
   save() {
-    if (!this.file || this.form.invalid) return;
+    if (!this.filePreviews.length || this.form.invalid) return;
     this.uploading = true;
-    const meta = { type: this.form.value.type, description: this.form.value.description };
-    this.docs.upload(this.data.idVoiture, this.file, meta).subscribe((res) => this.dialogRef.close(res));
+    this.uploadProgress = 0;
+
+    const meta = {
+      type: this.form.value.type,
+      description: this.form.value.description
+    };
+
+    const total = this.filePreviews.length;
+    let done = 0;
+
+    const uploads$ = this.filePreviews.map(fp =>
+      new Promise<void>((resolve) => {
+        this.docs.upload(this.data.idVoiture, fp.file, meta).subscribe({
+          next: () => {
+            done++;
+            this.uploadProgress = Math.round((done / total) * 100);
+            resolve();
+          },
+          error: () => {
+            done++;
+            this.uploadProgress = Math.round((done / total) * 100);
+            resolve(); // on continue même si un fichier échoue
+          }
+        });
+      })
+    );
+
+    Promise.all(uploads$).then(() => {
+      this.uploading = false;
+      this.dialogRef.close(true);
+    });
   }
 }

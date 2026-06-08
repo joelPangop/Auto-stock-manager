@@ -106,4 +106,10 @@ public ResponseEntity<Resource> download(@PathVariable Long id) {
 public void delete(@PathVariable Long id) {
     documentService.delete(id);
 }
+
+/** Définit la photo principale du véhicule (dé-sélectionne les autres). */
+@PutMapping("/{id}/principale")
+public DocumentDto setPhotoPrincipale(@PathVariable Long id) {
+    return documentService.setPhotoPrincipale(id);
+}
 }

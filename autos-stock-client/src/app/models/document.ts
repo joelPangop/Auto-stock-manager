@@ -5,8 +5,10 @@ export interface Document {
   voitureId: number;
   type: TypeDocument;         // ex: "FACTURE", "ATTESTATION", ...
   description?: string;
-  url?: string;         // si exposé
-  nomFichier?: string;         // si exposé
+  url?: string;
+  nomFichier?: string;
+  dateUpload?: string;
   createdAt?: string;
   montant?: number;
+  principale?: boolean;       // photo principale du véhicule
 }

@@ -49,4 +49,9 @@ export class DocumentService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+
+  /** Définit la photo principale du véhicule (dé-sélectionne les autres). */
+  setPhotoPrincipale(documentId: number): Observable<Document> {
+    return this.http.put<Document>(`${this.base}/${documentId}/principale`, {});
+  }
 }

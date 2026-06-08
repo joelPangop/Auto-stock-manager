@@ -1,6 +1,12 @@
-<h2 mat-dialog-title>Ajouter un document</h2>
-<mat-dialog-content>
+<h2 mat-dialog-title>
+  <mat-icon style="vertical-align:middle;margin-right:6px">upload_file</mat-icon>
+  Ajouter {{ filePreviews.length > 1 ? filePreviews.length + ' fichiers' : 'un document' }}
+</h2>
+
+<mat-dialog-content style="min-width:480px;max-width:600px">
   <form [formGroup]="form" class="col gap">
+
+    <!-- Type -->
     <mat-form-field appearance="outline">
       <mat-label>Type</mat-label>
       <mat-select formControlName="type" required>
@@ -14,22 +20,81 @@
       <mat-error *ngIf="form.get('type')?.hasError('required')">Obligatoire</mat-error>
     </mat-form-field>
 
+    <!-- Description (facultatif) -->
     <mat-form-field appearance="outline">
       <mat-label>Description</mat-label>
-      <textarea matInput rows="3" formControlName="description"></textarea>
+      <textarea matInput rows="2" formControlName="description"></textarea>
     </mat-form-field>
 
+    <!-- Montant (facultatif) -->
     <mat-form-field appearance="outline">
       <mat-label>Montant</mat-label>
-      <input matInput type="number" formControlName="montant"/>
+      <input matInput type="number" formControlName="montant" />
     </mat-form-field>
 
-    <input type="file" (change)="onFileChange($event)" />
+    <!-- Zone de sélection de fichiers -->
+    <div class="drop-zone" (click)="fileInput.click()">
+      <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
+      <span class="drop-label">
+        Cliquez pour sélectionner
+        <ng-container *ngIf="isPhotoType"> plusieurs photos</ng-container>
+      </span>
+      <span class="drop-hint">
+        {{ isPhotoType ? 'PNG, JPG, WEBP · sélection multiple possible' : 'PDF, JPG, PNG…' }}
+      </span>
+      <input
+        #fileInput
+        type="file"
+        style="display:none"
+        [multiple]="isPhotoType"
+        [accept]="isPhotoType ? 'image/*' : '*'"
+        (change)="onFileChange($event)"
+      />
+    </div>
+
+    <!-- Grille de prévisualisation -->
+    <div *ngIf="filePreviews.length" class="preview-grid">
+      <div *ngFor="let fp of filePreviews; let i = index" class="preview-item">
+        <!-- Miniature si image -->
+        <img *ngIf="fp.previewUrl" [src]="fp.previewUrl" class="preview-thumb" [alt]="fp.file.name" />
+        <!-- Icône si non-image -->
+        <div *ngIf="!fp.previewUrl" class="preview-icon-box">
+          <mat-icon>insert_drive_file</mat-icon>
+        </div>
+        <!-- Nom -->
+        <span class="preview-name" [title]="fp.file.name">{{ fp.file.name }}</span>
+        <!-- Taille -->
+        <span class="preview-size">{{ (fp.file.size / 1024) | number:'1.0-0' }} Ko</span>
+        <!-- Bouton supprimer -->
+        <button mat-icon-button class="preview-remove" (click)="removeFile(i)" type="button" [disabled]="uploading">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <mat-progress-bar
+      *ngIf="uploading"
+      mode="determinate"
+      [value]="uploadProgress"
+      style="margin-top:8px;border-radius:4px">
+    </mat-progress-bar>
+
+    <span *ngIf="uploading" style="font-size:12px;color:#888;text-align:center">
+      Upload en cours… {{ uploadProgress }}%
+    </span>
+
   </form>
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Annuler</button>
-  <button mat-flat-button color="primary" (click)="save()" [disabled]="uploading || form.invalid || !file">
-    <mat-icon>upload</mat-icon>&nbsp;Uploader
+  <button mat-button mat-dialog-close [disabled]="uploading">Annuler</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+    [disabled]="uploading || form.invalid || !filePreviews.length">
+    <mat-icon>cloud_upload</mat-icon>&nbsp;
+    {{ uploading ? 'Upload…' : ('Uploader ' + (filePreviews.length > 1 ? filePreviews.length + ' fichiers' : '')) }}
   </button>
 </mat-dialog-actions>

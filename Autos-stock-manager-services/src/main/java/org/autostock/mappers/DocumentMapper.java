@@ -30,6 +30,8 @@ public class DocumentMapper {
         dto.setDateUpload(d.getDateUpload());
         dto.setDescription(d.getDescription());
         dto.setMontant(d.getMontant());
+        dto.setNomFichier(d.getNomFichier());
+        dto.setPrincipale(d.isPrincipale());
         return dto;
     }
 }

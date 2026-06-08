@@ -1,0 +1,15 @@
+# Fichiers d'état Terraform (contiennent des secrets en clair)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Fichiers de variables (contiennent les mots de passe)
+terraform.tfvars
+*.auto.tfvars
+
+# Plans
+*.tfplan
+
+# Crash logs
+crash.log

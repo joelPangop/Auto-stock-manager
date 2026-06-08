@@ -47,11 +47,19 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfiguration()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                                // ── Routes totalement publiques ──────────────────────────────
                                 .requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/download/**").permitAll()
+                                // Auth interne (back-office)
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/**").permitAll()
-//                        .requestMatchers("/api/mouvements/**").authenticated()
-//                        .requestMatchers("/api/documents/**").authenticated()
+                                // Portail client : auth + catalogue public
+                                .requestMatchers("/api/client/auth/register").permitAll()
+                                .requestMatchers("/api/client/auth/login").permitAll()
+                                .requestMatchers("/api/public/**").permitAll()
+                                // ── Routes protégées : CLIENT ────────────────────────────────
+                                .requestMatchers("/api/client/**").hasRole("CLIENT")
+                                // ── Routes protégées : personnel interne ─────────────────────
                                 .requestMatchers("/api/entretiens/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/documents/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/api/documents/**").authenticated()
@@ -60,8 +68,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/voitures/**").authenticated()
                                 .requestMatchers("/api/ventes/**").authenticated()
                                 .requestMatchers("/api/paiements/**").authenticated()
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/download/**").permitAll()
+                                // Tout le reste du back-office
+                                .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         // H2 console

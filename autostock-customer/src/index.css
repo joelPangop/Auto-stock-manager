@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-red: #dc2626;
+  --color-brand-red-dark: #b91c1c;
+  --color-brand-dark: #0a0a0a;
+  --color-brand-dark-2: #111111;
+  --color-brand-dark-3: #1a1a1a;
+  --color-brand-gray: #2a2a2a;
+}
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .text-red-brand    { color: #dc2626; }
+  .bg-red-brand      { background-color: #dc2626; }
+  .border-red-brand  { border-color: #dc2626; }
+
+  .section-dark      { background-color: #0a0a0a; }
+  .section-dark-2    { background-color: #111111; }
+  .section-dark-3    { background-color: #1a1a1a; }
+
+  /* Ligne décorative rouge Ted Auto */
+  .red-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .red-divider::before,
+  .red-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #dc2626;
+  }
+
+  /* Texte avec dégradé métallique */
+  .text-metallic {
+    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #e2e8f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

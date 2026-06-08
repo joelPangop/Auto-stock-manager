@@ -197,6 +197,22 @@
                     <mat-spinner diameter="28"></mat-spinner>
                   </div>
                 </ng-template>
+                <!-- Étoile principale — visible uniquement en mode édition -->
+                <ng-container *ngIf="isEditing && isOwner">
+                  <!-- Étoile pleine : déjà principale (non cliquable, juste indicateur) -->
+                  <button *ngIf="p.principale" mat-icon-button
+                          class="photo-star-btn photo-star-btn--active"
+                          title="Photo principale" disabled>
+                    <mat-icon>star</mat-icon>
+                  </button>
+                  <!-- Étoile vide : cliquer pour définir comme principale -->
+                  <button *ngIf="!p.principale" mat-icon-button
+                          class="photo-star-btn" (click)="setPhotoPrincipale(p)"
+                          title="Définir comme photo principale">
+                    <mat-icon>star_border</mat-icon>
+                  </button>
+                </ng-container>
+
                 <!-- Bouton suppression uniquement en mode édition -->
                 <button *ngIf="isEditing && isOwner" mat-icon-button color="warn"
                         class="photo-delete-btn" (click)="deleteDoc(p)" title="Supprimer">

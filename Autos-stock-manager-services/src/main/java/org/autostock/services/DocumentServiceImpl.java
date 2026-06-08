@@ -187,6 +187,22 @@ public class DocumentServiceImpl extends AbstractBaseService<Document, Long, Doc
     }
 
     @Transactional
+    public DocumentDto setPhotoPrincipale(Long documentId) {
+        Document doc = repository.findById(documentId)
+                .orElseThrow(() -> new EntityNotFoundException("Document introuvable : " + documentId));
+
+        Long voitureId = doc.getVoiture().getId();
+
+        // 1. Retirer le flag principale de toutes les photos de ce véhicule
+        repository.findByVoiture_IdAndPrincipaleTrue(voitureId)
+                .forEach(d -> { d.setPrincipale(false); repository.save(d); });
+
+        // 2. Marquer ce document comme principale
+        doc.setPrincipale(true);
+        return documentMapper.toDto(repository.save(doc));
+    }
+
+    @Transactional
     public void saveReceiptForPaiement(Paiement paiement, byte[] pdf) {
         DocumentPaiement docPaiement = new DocumentPaiement();
         Document doc = new Document();

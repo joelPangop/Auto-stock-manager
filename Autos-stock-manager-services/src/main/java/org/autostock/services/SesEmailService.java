@@ -2,6 +2,8 @@ package org.autostock.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.time.LocalDate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ses.SesClient;
@@ -38,6 +40,31 @@ public class SesEmailService {
     public void sendAlertStockBas(String to, String modele, int quantite) {
         send(to, "⚠️ Alerte stock bas – Auto Stock",
                 buildStockAlertHtml(modele, quantite));
+    }
+
+    /** Confirmation de réservation pour le client du portail Ted Auto. */
+    public void sendReservationConfirmation(String to, String nomClient, String voitureLabel, LocalDate dateVisite) {
+        send(to, "Confirmation de votre réservation – Ted Auto",
+                buildReservationHtml(nomClient, voitureLabel, dateVisite));
+    }
+
+    /** Email de contact reçu depuis le formulaire Ted Auto. */
+    public void sendContactMessage(String adminEmail, String nomContact, String emailContact,
+                                   String telephone, String sujet, String message) {
+        String body = """
+                <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
+                  <h2 style="color:#dc2626">📬 Nouveau message de contact – Ted Auto</h2>
+                  <table style="width:100%%">
+                    <tr><td style="padding:6px 0;color:#6b7280;width:120px">Nom</td><td><strong>%s</strong></td></tr>
+                    <tr><td style="padding:6px 0;color:#6b7280">Email</td><td><a href="mailto:%s">%s</a></td></tr>
+                    <tr><td style="padding:6px 0;color:#6b7280">Téléphone</td><td>%s</td></tr>
+                    <tr><td style="padding:6px 0;color:#6b7280">Sujet</td><td><strong>%s</strong></td></tr>
+                  </table>
+                  <hr style="margin:16px 0;border-color:#e5e7eb"/>
+                  <p style="white-space:pre-wrap;color:#374151">%s</p>
+                </div>
+                """.formatted(nomContact, emailContact, emailContact, telephone, sujet, message);
+        send(adminEmail, "Contact Ted Auto : " + sujet, body);
     }
 
     // -------------------------------------------------------------------------
@@ -88,6 +115,20 @@ public class SesEmailService {
                   <p style="color:#6b7280;font-size:14px">Merci de votre confiance – Auto Stock</p>
                 </div>
                 """.formatted(nomClient, modele, montant);
+    }
+
+    private String buildReservationHtml(String nomClient, String voitureLabel, LocalDate dateVisite) {
+        String dateStr = dateVisite != null ? dateVisite.toString() : "à confirmer";
+        return """
+                <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;background:#0a0a0a;color:#fff;border-radius:10px">
+                  <h2 style="color:#dc2626">Ted Auto — Réservation confirmée</h2>
+                  <p>Bonjour <strong>%s</strong>,</p>
+                  <p>Votre demande de visite pour le véhicule <strong>%s</strong> a bien été enregistrée.</p>
+                  <p style="font-size:18px">📅 Date souhaitée : <strong>%s</strong></p>
+                  <p style="color:#9ca3af;font-size:13px">Notre équipe vous contactera sous 24h pour confirmer le rendez-vous.</p>
+                  <p style="color:#9ca3af;font-size:13px">— L'équipe Ted Auto</p>
+                </div>
+                """.formatted(nomClient, voitureLabel, dateStr);
     }
 
     private String buildStockAlertHtml(String modele, int quantite) {

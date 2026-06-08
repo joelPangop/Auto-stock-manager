@@ -82,19 +82,21 @@ services:
       DB_USER: root
       DB_PASSWORD: Abc123...
       SPRING_PROFILES_ACTIVE: docker
-      APP_CORS_ALLOWED_ORIGINS: "http://localhost:3000"
+      APP_CORS_ALLOWED_ORIGINS: "http://localhost:4200,http://localhost:3000,http://localhost:3001"
 
       # AWS / LocalStack
       AWS_ENDPOINT_OVERRIDE: http://localstack:4566
       AWS_REGION: us-east-1
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
-      AUTOSTOCK_S3_BUCKET: autostock-docs
+      # AUTOSTOCK_S3_BUCKET: autostock-docs   # désactivé → stockage disque local persistant
       AUTOSTOCK_SES_FROM: joelpangop@gmail.com
       AUTOSTOCK_SQS_NOTIFICATIONS_URL: http://localstack:4566/000000000000/autostock-notifications
     # Les variables MAIL_*, TWILIO_*, SECURITY_JWT_* sont chargees depuis .env
     env_file:
       - ../autos-stock-manager-services/.env
+    volumes:
+      - uploads_data:/app/uploads
     labels:
       ARTIFACT_CATEGORY: Computation
       Replicas: 1
@@ -124,6 +126,21 @@ services:
     networks:
       - backend
 
+  # ── Portail client Ted Auto (React) ──────────────────────────
+  autostockcustomer:
+    build:
+      context: ../autostock-customer
+      dockerfile: Dockerfile
+    container_name: autostockcustomer
+    image: autostockcustomer
+    ports:
+      - "3001:80"
+    depends_on:
+      autostockmanager:
+        condition: service_healthy
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge
@@ -131,3 +148,4 @@ networks:
 volumes:
   mysql_data:
   localstack_data:
+  uploads_data:

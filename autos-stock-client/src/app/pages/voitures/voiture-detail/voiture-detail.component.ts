@@ -355,6 +355,16 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().pipe(filter(Boolean)).subscribe(() => this.refresh$.next());
   }
 
+  setPhotoPrincipale(p: Document): void {
+    this.dSrv.setPhotoPrincipale(p.id).subscribe({
+      next: () => {
+        this.snack.open('Photo principale définie ✔', 'OK', { duration: 2000 });
+        this.refresh$.next();
+      },
+      error: () => this.snack.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 })
+    });
+  }
+
   openPhotoFull(p: Document): void {
     this.lightboxPhoto = p;
   }

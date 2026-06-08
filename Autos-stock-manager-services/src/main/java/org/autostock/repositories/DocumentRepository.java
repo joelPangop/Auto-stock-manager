@@ -16,4 +16,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByTypeAndVoiture_Id(String type, Long voitureId) ;
 
     List<Document> findByVoiture_Id(Long idVoiture);
+
+    /** Retourne la photo principale d'une voiture, s'il y en a une. */
+    java.util.Optional<Document> findFirstByVoiture_IdAndPrincipaleTrue(Long voitureId);
+
+    /** Toutes les photos d'une voiture marquées principale (pour reset). */
+    List<Document> findByVoiture_IdAndPrincipaleTrue(Long voitureId);
 }

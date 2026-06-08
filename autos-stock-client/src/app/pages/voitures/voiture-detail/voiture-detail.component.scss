@@ -183,7 +183,8 @@
   background: #e5e7eb;
   overflow: hidden;
 
-  &:hover .photo-delete-btn {
+  &:hover .photo-delete-btn,
+  &:hover .photo-star-btn {
     opacity: 1;
   }
 }
@@ -216,6 +217,22 @@
   transition: opacity .2s;
   background: rgba(255,255,255,.85);
 }
+
+.photo-star-btn {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  opacity: 0;
+  transition: opacity .2s;
+  background: rgba(255,255,255,.85) !important;
+  color: #f59e0b !important;
+
+  // L'étoile pleine (principale) reste toujours visible
+  &--active {
+    opacity: 1 !important;
+  }
+}
+
 
 .photo-caption {
   padding: 4px 8px 6px;

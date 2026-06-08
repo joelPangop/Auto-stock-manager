@@ -36,4 +36,8 @@ public class Document extends AbstractEntity {
     private String description;  // notes libres sur le document
 
     private BigDecimal montant;
+
+    /** Indique si cette photo est la photo principale du véhicule (affichée en couverture). */
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean principale = false;
 }

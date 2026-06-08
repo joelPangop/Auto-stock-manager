@@ -28,4 +28,7 @@ public interface DocumentService extends IService<Document, Long> {
 
     void saveReceiptForPaiement(Paiement paiementId, byte[] pdf);
 
+    /** Marque le document comme photo principale du véhicule (dé-sélectionne les autres). */
+    DocumentDto setPhotoPrincipale(Long documentId);
+
 }

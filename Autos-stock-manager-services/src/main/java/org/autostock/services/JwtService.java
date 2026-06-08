@@ -2,6 +2,7 @@ package org.autostock.services;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.autostock.models.CompteClient;
 import org.autostock.models.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,20 +33,25 @@ public class JwtService {
     }
 
     public String generateAccessToken(User user) {
-        return buildToken(user, accessExpirationMs, "access");
+        return buildToken(user.getEmail(), user.getId(), user.getRole().name(), accessExpirationMs, "access");
     }
 
     public String generateRefreshToken(User user) {
-        return buildToken(user, refreshExpirationMs, "refresh");
+        return buildToken(user.getEmail(), user.getId(), user.getRole().name(), refreshExpirationMs, "refresh");
     }
 
-    private String buildToken(User user, long expiresIn, String type) {
+    /** Génère un access token pour un CompteClient (portail client Ted Auto). */
+    public String generateTokenForClient(CompteClient client) {
+        return buildToken(client.getEmail(), client.getId(), client.getRole().name(), accessExpirationMs, "access");
+    }
+
+    private String buildToken(String email, Long uid, String role, long expiresIn, String type) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
-                .setSubject(user.getEmail())
+                .setSubject(email)
                 .addClaims(Map.of(
-                        "uid", user.getId(),
-                        "role", user.getRole().name(),
+                        "uid", uid,
+                        "role", role,
                         "typ", type
                 ))
                 .setIssuedAt(new Date(now))
