@@ -14,7 +14,7 @@ function CarouselCard({ v }: { v: VehiculePublic }) {
   return (
     <Link
       to={`/catalogue/${v.id}`}
-      className="group shrink-0 w-64 bg-[#111] border border-[#2a2a2a] hover:border-red-600/60 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-red-600/10 hover:-translate-y-1"
+      className="group shrink-0 w-52 sm:w-64 bg-[#111] border border-[#2a2a2a] hover:border-red-600/60 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-red-600/10 hover:-translate-y-1"
     >
       {/* Photo */}
       <div className="relative h-40 bg-[#1a1a1a] overflow-hidden">
@@ -121,9 +121,9 @@ export function VehicleCarousel({ title = 'NOTRE INVENTAIRE', subtitle = 'Décou
   const items = [...shuffled, ...shuffled]
 
   return (
-    <section className="py-20 overflow-hidden">
+    <section className="py-10 md:py-20 overflow-hidden w-full">
       {/* En-tête */}
-      <div className="max-w-7xl mx-auto px-6 mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-8 md:mb-10">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-red-500 text-sm font-medium tracking-widest uppercase mb-2">{subtitle}</p>
@@ -147,23 +147,22 @@ export function VehicleCarousel({ title = 'NOTRE INVENTAIRE', subtitle = 'Décou
         </div>
       </div>
 
-      {/* Piste de défilement */}
-      <div
-        ref={trackRef}
-        className="flex gap-5 overflow-x-hidden px-6 cursor-grab select-none"
-        style={{ scrollBehavior: 'auto' }}
-        onMouseEnter={() => { pausedRef.current = true }}
-        onMouseLeave={() => { pausedRef.current = false }}
-      >
-        {items.map((v, i) => (
-          <CarouselCard key={`${v.id}-${i}`} v={v} />
-        ))}
-      </div>
-
-      {/* Dégradés sur les bords pour l'effet fondu */}
-      <div className="relative pointer-events-none -mt-[164px] h-[164px]">
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+      {/* Piste de défilement — position relative pour les dégradés */}
+      <div className="relative">
+        <div
+          ref={trackRef}
+          className="flex gap-5 overflow-x-hidden px-6 cursor-grab select-none"
+          style={{ scrollBehavior: 'auto' }}
+          onMouseEnter={() => { pausedRef.current = true }}
+          onMouseLeave={() => { pausedRef.current = false }}
+        >
+          {items.map((v, i) => (
+            <CarouselCard key={`${v.id}-${i}`} v={v} />
+          ))}
+        </div>
+        {/* Dégradés sur les bords pour l'effet fondu */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-24 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-24 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
       </div>
     </section>
   )

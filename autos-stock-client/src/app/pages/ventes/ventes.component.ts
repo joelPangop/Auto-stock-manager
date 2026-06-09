@@ -1,14 +1,12 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatTableDataSource} from '@angular/material/table';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
-import {VenteService} from "../../services/vente.service";
-import {Vente} from "../../models/vente";
-import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
-import {MatDialog} from "@angular/material/dialog";
-import {ClientCreateDialogComponent} from "../features/client/client-create-dialog/client-create-dialog.component";
-import {ClientService} from "../../services/client.service";
-import {Client} from "../../models/client";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { VenteService } from '../../services/vente.service';
+import { Vente } from '../../models/vente';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from '../../services/auth.service';
+import { VenteEditDialogComponent } from '../features/ventes/vente-edit-dialog/vente-edit-dialog.component';
 
 @Component({
   selector: 'app-ventes',
@@ -16,7 +14,11 @@ import {Client} from "../../models/client";
   styleUrls: ['./ventes.component.scss']
 })
 export class VentesComponent implements OnInit {
-  displayed = ['marque', 'modele', 'nomClient', 'nomVendeur', 'prixFinal', 'modePaiement', 'actions'];
+  isAdmin = false;
+  get displayed(): string[] {
+    const cols = ['marque', 'modele', 'nomClient', 'nomVendeur', 'prixFinal', 'modePaiement', 'actions'];
+    return cols;
+  }
   data = new MatTableDataSource<Vente>([]);
   total = 0;
   pageIndex = 0;
@@ -25,16 +27,19 @@ export class VentesComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private srv: VenteService, private dialog: MatDialog, private clientSrv: ClientService) {
-  }
+  constructor(
+    private srv: VenteService,
+    private dialog: MatDialog,
+    private auth: AuthService
+  ) {}
 
   ngOnInit() {
+    this.isAdmin = this.auth.isAdmin();
     this.reload();
   }
 
   reload() {
     this.srv.getPage(this.pageIndex, this.pageSize).subscribe(p => {
-      console.log("Ventes", p);
       this.data.data = p;
       this.total = p.length;
     });
@@ -46,31 +51,18 @@ export class VentesComponent implements OnInit {
     this.reload();
   }
 
+  edit(r: Vente) {
+    const ref = this.dialog.open(VenteEditDialogComponent, {
+      width: '520px',
+      disableClose: true,
+      data: r
+    });
+    ref.afterClosed().subscribe(updated => {
+      if (updated) this.reload();
+    });
+  }
+
   remove(r: Vente) {
     if (confirm('Supprimer cette vente ?')) this.srv.delete(r.id).subscribe(() => this.reload());
   }
-
-  openNewClientDialog() {
-    const dialogRef = this.dialog.open(ClientCreateDialogComponent, {
-      width: '400px'
-    });
-
-    dialogRef.afterClosed().pipe(
-      filter(res => !!res), // res = ClientDto créé
-      switchMap((newClient: Client) => {
-        // recharger la liste ou simplement ajouter en local
-        return this.clientSrv.list().pipe(
-          tap(clients => {
-            // tu pourrais soit recharger complètement
-            // soit mettre à jour localement
-          }),
-          map(() => newClient)
-        );
-      })
-    ).subscribe((newClient) => {
-      // sélectionner le nouveau client
-      // this.form.controls['clientId'].setValue(newClient.id);
-    });
-  }
-
 }

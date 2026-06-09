@@ -189,7 +189,7 @@ export default function Home() {
 
       {/* ── STATS ─────────────────────────────────────────────── */}
       <section className="bg-[#0f0f0f] border-y border-[#1e1e1e] py-14">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-3 gap-8 text-center">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
           {[
             { value: '500+', label: 'Véhicules vendus' },
             { value: '98%',  label: 'Clients satisfaits' },
@@ -210,7 +210,7 @@ export default function Home() {
             <h2 className="text-3xl font-black text-white">Prêt à trouver votre future voiture ?</h2>
             <p className="text-red-100 mt-1">Contactez-nous dès aujourd'hui — notre équipe vous répond rapidement.</p>
           </div>
-          <div className="flex gap-4 shrink-0">
+          <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto">
             <a href="tel:+14385072586"
               className="bg-white text-red-600 font-bold px-6 py-3 rounded hover:bg-red-50 transition-colors text-sm flex items-center gap-2">
               <Phone size={16} />Appeler maintenant

@@ -36,7 +36,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - mysql_data:/var/lib/mysql 
+      - mysql_data:/var/lib/mysql
     networks:
       - backend
 
@@ -65,20 +65,16 @@ services:
       JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       #JAVA_TOOL_OPTIONS: ""
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/autos_stock_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      #SPRING_DATASOURCE_URL: jdbc:mysql://schoolspace-db.c6f8qe264enx.us-east-1.rds.amazonaws.com:3306/schoolspacedb?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: Abc123...
-            # --- SQL affiché ---
+      # --- SQL affiche ---
       SPRING_JPA_SHOW_SQL: "true"
       SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
-
-      # --- Logs Hibernate SQL + paramètres (Hibernate 6) ---
+      # --- Logs Hibernate SQL + parametres (Hibernate 6) ---
       LOGGING_LEVEL_ORG_HIBERNATE_SQL: "DEBUG"
       LOGGING_LEVEL_ORG_HIBERNATE_ORM_JDBC_BIND: "TRACE"
-
       # (optionnel) transactions
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_TRANSACTION: "TRACE"
-      #DB_HOST: schoolspace-db.c6f8qe264enx.us-east-1.rds.amazonaws.com
       DB_USER: root
       DB_PASSWORD: Abc123...
       SPRING_PROFILES_ACTIVE: docker
@@ -89,14 +85,15 @@ services:
       AWS_REGION: us-east-1
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
-      # AUTOSTOCK_S3_BUCKET: autostock-docs   # désactivé → stockage disque local persistant
+      # S3 actif + disque local = double stockage (persistance garantie)
+      AUTOSTOCK_S3_BUCKET: "autostock-docs"
       AUTOSTOCK_SES_FROM: joelpangop@gmail.com
       AUTOSTOCK_SQS_NOTIFICATIONS_URL: http://localstack:4566/000000000000/autostock-notifications
     # Les variables MAIL_*, TWILIO_*, SECURITY_JWT_* sont chargees depuis .env
     env_file:
       - ../autos-stock-manager-services/.env
     volumes:
-      - uploads_data:/app/uploads
+      - ../uploads:/app/uploads  # bind mount -> dossier reel sur Windows, survit aux redemarrages
     labels:
       ARTIFACT_CATEGORY: Computation
       Replicas: 1
@@ -108,7 +105,6 @@ services:
       context: ../autos-stock-client
       dockerfile: Dockerfile
       args:
-    #    REACT_APP_API_URL: http://localhost:8080
         REACT_APP_API_URL: http://autostockmanager:8080
     container_name: autostockclient
     ports:
@@ -116,17 +112,12 @@ services:
     depends_on:
       autostockmanager:
         condition: service_healthy
-    #environment:
-    # - REACT_APP_API_URL=http://autostockmanager:8080
-    #  args:
-    #  - VITE_API_URL=http://$(curl http://169.254.169.254/latest/meta-data/public-ipv4):8080
     environment:
       - NODE_OPTIONS=--openssl-legacy-provider
-
     networks:
       - backend
 
-  # ── Portail client Ted Auto (React) ──────────────────────────
+  # Portail client Ted Auto (React)
   autostockcustomer:
     build:
       context: ../autostock-customer
@@ -148,4 +139,3 @@ networks:
 volumes:
   mysql_data:
   localstack_data:
-  uploads_data:

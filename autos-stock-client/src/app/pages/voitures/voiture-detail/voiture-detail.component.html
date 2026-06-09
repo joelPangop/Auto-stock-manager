@@ -11,11 +11,14 @@
       <mat-icon>edit</mat-icon>&nbsp;Modifier
     </button>
     <ng-container *ngIf="isEditing">
-      <button mat-stroked-button color="primary" (click)="cancel()" *ngIf="isOwner">
+      <button mat-stroked-button color="primary" (click)="cancel()" *ngIf="isOwner" [disabled]="isSaving">
         <mat-icon>close</mat-icon>&nbsp;Annuler
       </button>
-      <button mat-flat-button color="primary" (click)="save(v.id)" [disabled]="form.invalid" *ngIf="isOwner">
-        <mat-icon>save</mat-icon>&nbsp;Enregistrer
+      <button mat-flat-button color="primary" (click)="save(v.id)"
+              [disabled]="form.invalid || isSaving" *ngIf="isOwner">
+        <mat-spinner *ngIf="isSaving" diameter="18" style="display:inline-block;margin-right:6px;vertical-align:middle"></mat-spinner>
+        <mat-icon *ngIf="!isSaving">save</mat-icon>
+        &nbsp;{{ isSaving ? 'Enregistrement…' : 'Enregistrer' }}
       </button>
     </ng-container>
 
@@ -23,6 +26,12 @@
       <mat-icon>sell</mat-icon>&nbsp;Nouvelle vente
     </button>
   </ng-container>
+</div>
+
+<!-- Overlay de sauvegarde -->
+<div class="save-overlay" *ngIf="isSaving">
+  <mat-spinner diameter="56"></mat-spinner>
+  <p>Enregistrement en cours…</p>
 </div>
 
 <mat-card class="card" *ngIf="v$ | async as v">
@@ -171,57 +180,120 @@
       </div>
     </mat-tab>
 
+    <!-- DESCRIPTION -->
+    <mat-tab label="Description">
+      <div class="tab-pad">
+        <ng-container *ngIf="form">
+          <ng-container *ngIf="!isEditing; else editDescription">
+            <!-- Mode visualisation -->
+            <div *ngIf="form.get('description')?.value; else noDesc" class="description-view">
+              {{ form.get('description')?.value }}
+            </div>
+            <ng-template #noDesc>
+              <p class="muted" style="margin-top:16px">Aucune description. Cliquez sur "Modifier" pour en ajouter une.</p>
+            </ng-template>
+          </ng-container>
+
+          <ng-template #editDescription>
+            <!-- Mode édition -->
+            <div class="description-edit" [formGroup]="form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description du véhicule</mat-label>
+                <textarea matInput formControlName="description"
+                          rows="10"
+                          maxlength="5000"
+                          placeholder="Décrivez le véhicule : état, équipements, historique...">
+                </textarea>
+                <mat-hint align="end">
+                  {{ form.get('description')?.value?.length || 0 }} / 5000
+                </mat-hint>
+                <mat-error *ngIf="form.get('description')?.hasError('maxlength')">
+                  Maximum 5000 caractères
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </mat-tab>
+
     <!-- PHOTOS -->
     <mat-tab label="Photos">
       <div class="tab-pad">
 
-        <!-- Bouton upload uniquement en mode édition -->
-        <div class="photos-header" *ngIf="isEditing && isOwner">
-          <button mat-flat-button color="primary" (click)="openPhotoUploadDialog()">
-            <mat-icon>add_a_photo</mat-icon>&nbsp;Ajouter une photo
-          </button>
-        </div>
-
         <ng-container *ngIf="photos$ | async as photos">
+
+          <!-- Barre d'actions (mode édition) -->
+          <div class="photos-header" *ngIf="isEditing && isOwner">
+            <button mat-flat-button color="primary" (click)="openPhotoUploadDialog()">
+              <mat-icon>add_a_photo</mat-icon>&nbsp;Ajouter une photo
+            </button>
+
+            <span class="spacer"></span>
+
+            <!-- Tout sélectionner / Désélectionner -->
+            <button mat-stroked-button *ngIf="photos.length > 0"
+                    (click)="toggleSelectAll(photos)"
+                    [color]="selectedPhotoIds.size === photos.length ? 'primary' : ''">
+              <mat-icon>{{ selectedPhotoIds.size === photos.length ? 'deselect' : 'select_all' }}</mat-icon>
+              &nbsp;{{ selectedPhotoIds.size === photos.length ? 'Désélectionner tout' : 'Tout sélectionner' }}
+            </button>
+
+            <!-- Supprimer la sélection — visible seulement si ≥1 sélectionné -->
+            <button mat-flat-button color="warn"
+                    *ngIf="selectedPhotoIds.size > 0"
+                    (click)="deleteSelectedPhotos()">
+              <mat-icon>delete_sweep</mat-icon>
+              &nbsp;Supprimer ({{ selectedPhotoIds.size }})
+            </button>
+          </div>
+
           <div *ngIf="photos.length === 0" class="muted" style="margin-top:16px">Aucune photo.</div>
+
           <div class="photo-grid">
-            <div class="photo-card" *ngFor="let p of photos">
+            <div class="photo-card"
+                 *ngFor="let p of photos"
+                 [class.photo-card--selected]="isPhotoSelected(p.id)">
               <div class="photo-img-wrap">
                 <img *ngIf="photoUrlMap[p.id]; else photoLoading"
                      [src]="photoUrlMap[p.id]"
                      class="photo-thumb"
-                     (click)="openPhotoFull(p)"
+                     (click)="isEditing ? togglePhotoSelection(p.id) : openPhotoFull(p)"
                      alt="{{ p.description || p.nomFichier }}" />
                 <ng-template #photoLoading>
                   <div class="photo-placeholder">
                     <mat-spinner diameter="28"></mat-spinner>
                   </div>
                 </ng-template>
-                <!-- Étoile principale — visible uniquement en mode édition -->
+
+                <!-- Étoile principale -->
                 <ng-container *ngIf="isEditing && isOwner">
-                  <!-- Étoile pleine : déjà principale (non cliquable, juste indicateur) -->
                   <button *ngIf="p.principale" mat-icon-button
                           class="photo-star-btn photo-star-btn--active"
                           title="Photo principale" disabled>
                     <mat-icon>star</mat-icon>
                   </button>
-                  <!-- Étoile vide : cliquer pour définir comme principale -->
                   <button *ngIf="!p.principale" mat-icon-button
-                          class="photo-star-btn" (click)="setPhotoPrincipale(p)"
+                          class="photo-star-btn" (click)="$event.stopPropagation(); setPhotoPrincipale(p)"
                           title="Définir comme photo principale">
                     <mat-icon>star_border</mat-icon>
                   </button>
                 </ng-container>
 
-                <!-- Bouton suppression uniquement en mode édition -->
-                <button *ngIf="isEditing && isOwner" mat-icon-button color="warn"
-                        class="photo-delete-btn" (click)="deleteDoc(p)" title="Supprimer">
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <!-- Checkbox de sélection (mode édition) -->
+                <div *ngIf="isEditing && isOwner"
+                     class="photo-check-overlay"
+                     (click)="$event.stopPropagation(); togglePhotoSelection(p.id)">
+                  <mat-icon class="photo-check-icon">
+                    {{ isPhotoSelected(p.id) ? 'check_circle' : 'radio_button_unchecked' }}
+                  </mat-icon>
+                </div>
+
               </div>
               <div class="photo-caption">{{ p.description || '' }}</div>
             </div>
           </div>
+
         </ng-container>
       </div>
 

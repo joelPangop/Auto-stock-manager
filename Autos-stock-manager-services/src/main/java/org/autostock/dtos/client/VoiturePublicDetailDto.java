@@ -16,7 +16,8 @@ public record VoiturePublicDetailDto(
         BigDecimal prixVente,
         String statut,
         String vin,
-        List<Long> photoIds
+        List<Long> photoIds,
+        String description
 ) {
     public static VoiturePublicDetailDto from(Voiture v, List<Long> photoIds) {
         return new VoiturePublicDetailDto(
@@ -29,7 +30,8 @@ public record VoiturePublicDetailDto(
                 v.getPrixVente(),
                 v.getStatut().getValue(),
                 v.getVin(),
-                photoIds
+                photoIds,
+                v.getDescription()
         );
     }
 }

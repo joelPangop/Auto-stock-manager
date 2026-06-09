@@ -82,23 +82,27 @@ public class DocumentServiceImpl extends AbstractBaseService<Document, Long, Doc
         doc.setDescription(meta.getDescription());
         doc.setDateUpload(LocalDateTime.now());
 
+        // 1. Toujours sauvegarder sur disque local (persistance garantie)
+        String safeName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path dest = root.resolve(safeName).normalize();
+        try (var in = file.getInputStream()) {
+            Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur écriture fichier disque", e);
+        }
+        doc.setNomFichier(safeName);
+        doc.setUrlFichier("/api/documents/file/" + safeName);
+        log.info("[Document] Fichier sauvegardé sur disque : {}", safeName);
+
+        // 2. Si S3 disponible : upload également sur S3 (double stockage)
         if (s3Storage != null) {
-            // Stockage S3 / LocalStack
-            String key = s3Storage.upload(file, "voitures/" + idVoiture);
-            doc.setNomFichier(S3StorageService.keyToFilename(key));
-            doc.setUrlFichier(key); // clé S3, l'URL pré-signée est générée à la demande
-            log.info("[Document] Fichier uploadé sur S3 : {}", key);
-        } else {
-            // Fallback : stockage disque local
-            String safeName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path dest = root.resolve(safeName).normalize();
-            try (var in = file.getInputStream()) {
-                Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException("Erreur écriture fichier", e);
+            try {
+                String s3Key = s3Storage.uploadFromPath(dest, "voitures/" + idVoiture, safeName);
+                doc.setUrlFichier(s3Key); // clé S3 pour la lecture (plus rapide)
+                log.info("[Document] Fichier également uploadé sur S3 : {}", s3Key);
+            } catch (Exception e) {
+                log.warn("[Document] Upload S3 échoué (disque local utilisé) : {}", e.getMessage());
             }
-            doc.setNomFichier(safeName);
-            doc.setUrlFichier("/api/documents/file/" + safeName);
         }
 
         return documentMapper.toDto(repository.save(doc));
@@ -121,20 +125,31 @@ public class DocumentServiceImpl extends AbstractBaseService<Document, Long, Doc
     @Transactional(readOnly = true)
     public Resource loadAsResource(Long id) {
         var doc = repository.findById(id).orElseThrow();
-        if (s3Storage != null) {
-            byte[] data = s3Storage.download(doc.getUrlFichier());
-            return new ByteArrayResource(data);
+
+        // 1. Essayer le disque local en premier (le plus rapide localement)
+        if (doc.getNomFichier() != null) {
+            Path path = root.resolve(doc.getNomFichier()).normalize();
+            try {
+                Resource res = new UrlResource(path.toUri());
+                if (res.exists() && res.isReadable()) {
+                    return res;
+                }
+            } catch (MalformedURLException ignored) {}
         }
-        Path path = root.resolve(doc.getNomFichier()).normalize();
-        try {
-            Resource res = new UrlResource(path.toUri());
-            if (!res.exists() || !res.isReadable()) {
-                throw new RuntimeException("Fichier introuvable/illisible");
+
+        // 2. Fallback : essayer S3 si disponible
+        if (s3Storage != null && doc.getUrlFichier() != null
+                && !doc.getUrlFichier().startsWith("/api/")) {
+            try {
+                byte[] data = s3Storage.download(doc.getUrlFichier());
+                log.info("[Document] Fichier servi depuis S3 (disque absent) : {}", doc.getUrlFichier());
+                return new ByteArrayResource(data);
+            } catch (Exception e) {
+                log.warn("[Document] Lecture S3 échouée : {}", e.getMessage());
             }
-            return res;
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("URL invalide", e);
         }
+
+        throw new RuntimeException("Fichier introuvable (disque + S3) pour document id=" + id);
     }
 
     /**

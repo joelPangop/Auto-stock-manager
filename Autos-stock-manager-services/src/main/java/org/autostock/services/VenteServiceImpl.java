@@ -67,6 +67,30 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
     }
 
     @Override
+    @Transactional
+    public Vente modifierVente(Long id, Long idClient, Long idVendeur,
+                               java.time.LocalDateTime dateVente, java.math.BigDecimal prixFinal, String modePaiement) {
+        Vente vente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Vente introuvable : " + id));
+
+        if (idClient != null) {
+            Client client = clientRepository.findById(idClient)
+                    .orElseThrow(() -> new EntityNotFoundException("Client introuvable : " + idClient));
+            vente.setClient(client);
+        }
+        if (idVendeur != null) {
+            org.autostock.models.User vendeur = userRepository.findById(idVendeur)
+                    .orElseThrow(() -> new EntityNotFoundException("Vendeur introuvable : " + idVendeur));
+            vente.setVendeur(vendeur);
+        }
+        if (dateVente != null)    vente.setDateVente(dateVente);
+        if (prixFinal != null)    vente.setPrixFinal(prixFinal);
+        if (modePaiement != null) vente.setModePaiement(modePaiement);
+
+        return repository.save(vente);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Vente> ventesDuClient(Long idClient) {
         return repository.findByClient_Id(idClient);

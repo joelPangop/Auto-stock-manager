@@ -17,10 +17,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+record VenteUpdateDto(Long idClient, Long idVendeur, String dateVente,
+                      BigDecimal prixFinal, String modePaiement) {
+    LocalDateTime parsedDateVente() {
+        if (dateVente == null || dateVente.isBlank()) return null;
+        try {
+            return LocalDateTime.parse(dateVente);
+        } catch (Exception e) {
+            try {
+                return LocalDate.parse(dateVente).atStartOfDay();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+    }
+}
 
 @RestController
 @RequestMapping("/api/ventes")
@@ -102,6 +119,17 @@ public class VenteController {
             var reste = v.getPrixFinal().subtract(total);
             return venteMapper.toDto(v, total, reste);
         }).toList();
+    }
+
+    @PutMapping("/{id}")
+    public VenteDto update(@PathVariable Long id, @RequestBody VenteUpdateDto dto) {
+        Vente v = venteService.modifierVente(
+                id, dto.idClient(), dto.idVendeur(),
+                dto.parsedDateVente(), dto.prixFinal(), dto.modePaiement()
+        );
+        BigDecimal total = paiementService.totalPaye(v.getId());
+        BigDecimal reste = v.getPrixFinal().subtract(total);
+        return venteMapper.toDto(v, total, reste);
     }
 
     @DeleteMapping("/{id}")

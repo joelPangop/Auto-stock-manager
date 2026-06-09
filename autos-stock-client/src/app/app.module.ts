@@ -66,6 +66,7 @@ import { EntretienViewDialogComponent } from './pages/features/entretien/entreti
 import { PaiementViewDialogComponent } from './pages/features/paiement-view-dialog/paiement-view-dialog.component';
 import { ForgotPasswordComponent } from './pages/users/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/users/reset-password/reset-password.component';
+import { VenteEditDialogComponent } from './pages/features/ventes/vente-edit-dialog/vente-edit-dialog.component';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { ResetPasswordComponent } from './pages/users/reset-password/reset-passw
     EntretienViewDialogComponent,
     PaiementViewDialogComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    VenteEditDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -50,7 +50,9 @@ public class EntretienServiceImpl extends AbstractBaseService<Entretien, Long, E
     @Override
     public Entretien modifierEntretien(Long entretienId, Entretien entretien) {
         Entretien entretien1 = repository.findById(entretienId).orElseThrow();
-        entretien1.setVoiture(entretien.getVoiture());
+        if (entretien.getVoiture() != null) {
+            entretien1.setVoiture(entretien.getVoiture());
+        }
         entretien1.setDateEntretien(entretien.getDateEntretien());
         entretien1.setType(entretien.getType());
         entretien1.setGarage(entretien.getGarage());

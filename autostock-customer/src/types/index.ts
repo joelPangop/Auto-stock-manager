@@ -16,12 +16,14 @@ export interface VehiculePublicDetail extends VehiculePublic {
   vin?: string
   /** IDs de toutes les photos du véhicule */
   photoIds: number[]
+  description?: string
 }
 
 export interface FiltresCatalogue {
   marque?: string
   anneeMin?: number
   prixMax?: number
+  search?: string
   page?: number
   size?: number
 }

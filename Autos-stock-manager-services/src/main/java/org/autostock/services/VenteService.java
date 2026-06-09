@@ -14,6 +14,9 @@ public interface VenteService extends IService<Vente, Long> {
     Vente creerVente(Long idVoiture, Long idClient, Long idVendeur,
                      BigDecimal prixFinal, String modePaiement) throws AccessDeniedException;
 
+    Vente modifierVente(Long id, Long idClient, Long idVendeur,
+                        LocalDateTime dateVente, BigDecimal prixFinal, String modePaiement);
+
     List<Vente> ventesDuClient(Long idClient);
 
     List<Vente> ventesDuVendeur(Long idVendeur);

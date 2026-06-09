@@ -26,4 +26,5 @@ public class VoitureDetailDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean needsRemark;
+    private String description;
 }

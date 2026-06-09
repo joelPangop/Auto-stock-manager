@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {distinctUntilChanged, switchMap} from "rxjs/internal/operators";
-import {debounceTime, map, shareReplay} from "rxjs/operators";
+import {debounceTime, map, shareReplay, takeUntil} from "rxjs/operators";
 import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
 import {EntretienService} from "../../../services/entretien.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -12,6 +12,9 @@ import {AuthService} from "../../../services/auth.service";
 import {
   EntretienViewDialogComponent
 } from "../../features/entretien/entretien-view-dialog/entretien-view-dialog.component";
+import {
+  EntretienEditDialogComponent
+} from "../../features/entretien/entretien-edit-dialog/entretien-edit-dialog.component";
 
 @Component({
   selector: 'app-entretiens-list',
@@ -30,9 +33,7 @@ export class EntretiensListComponent implements OnInit {
   private readonly sort$ = new BehaviorSubject<string>('dateEntretien,desc');
   private readonly onlyMine$ = new BehaviorSubject<boolean>(false);
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
-
   private readonly search$ = new BehaviorSubject<string>('');
-
   private readonly destroy$ = new Subject<void>();
 
   // ====== VM ======
@@ -56,16 +57,13 @@ export class EntretiensListComponent implements OnInit {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-
   constructor(
     private readonly entretienSrv: EntretienService,
     private auth: AuthService,
     private readonly dialog: MatDialog
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
-    // Rien d’obligatoire ici. Streams déjà prêts.
     this.isAdmin = this.auth.isAdmin();
   }
 
@@ -74,11 +72,11 @@ export class EntretiensListComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  // ====== handlers appelés par le HTML ======
+  // ====== handlers ======
   toggleOnlyMine(checked: boolean): void {
     this.onlyMine = checked;
     this.onlyMine$.next(checked);
-    this.page$.next(0); // retour page 0
+    this.page$.next(0);
   }
 
   onSearch(text: string): void {
@@ -88,11 +86,9 @@ export class EntretiensListComponent implements OnInit {
   }
 
   onSort(sort: Sort): void {
-    // sort.active = colonne, sort.direction = 'asc' | 'desc' | ''
     const dir = sort.direction || 'desc';
     const active = sort.active || 'dateEntretien';
-    // ⚠️ Assure-toi que "active" correspond à un champ triable côté backend
-    this.sort$.next(`${active},${dir}`);
+    this.sort$.next(active + ',' + dir);
     this.page$.next(0);
   }
 
@@ -105,7 +101,7 @@ export class EntretiensListComponent implements OnInit {
     this.refresh$.next(undefined);
   }
 
-  openView(entretien: Entretien) {
+  openView(entretien: Entretien): void {
     this.dialog.open(EntretienViewDialogComponent, {
       width: '760px',
       disableClose: true,
@@ -113,66 +109,35 @@ export class EntretiensListComponent implements OnInit {
     });
   }
 
+  openEdit(entretien: Entretien): void {
+    const ref = this.dialog.open(EntretienEditDialogComponent, {
+      width: '720px',
+      disableClose: true,
+      data: { idVoiture: entretien.idVoiture, entretien: entretien }
+    });
 
-  // openCreate(): void {
-  //   const ref = this.dialog.open(VoitureEntretienDialogComponent, {
-  //     width: '720px',
-  //     disableClose: true,
-  //     data: {mode: 'create'}
-  //   });
-  //
-  //   ref.afterClosed()
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe((changed: boolean) => {
-  //       if (changed) this.reload();
-  //     });
-  // }
-  //
-  // openEdit(id: number): void {
-  //   const ref = this.dialog.open(VoitureEntretienDialogComponent, {
-  //     width: '720px',
-  //     disableClose: true,
-  //     data: {mode: 'edit', entretienId: id}
-  //   });
-  //
-  //   ref.afterClosed()
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe((changed: boolean) => {
-  //       if (changed) this.reload();
-  //     });
-  // }
-  //
-  // confirmDelete(e: Entretien): void {
-  //   const ref = this.dialog.open(ConfirmDialogComponent, {
-  //     width: '440px',
-  //     disableClose: true,
-  //     data: {
-  //       title: 'Supprimer l’entretien',
-  //       message: `Voulez-vous vraiment supprimer cet entretien du ${this.formatDate(e.dateEntretien)} ?`,
-  //       confirmText: 'Supprimer',
-  //       cancelText: 'Annuler'
-  //     }
-  //   });
-  //
-  //   ref.afterClosed()
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe((ok: boolean) => {
-  //       if (!ok) return;
-  //
-  //       // ⚠️ adapte selon ton API: delete(id) ou delete(idVoiture, id)
-  //       this.entretienSrv.delete(e.id).subscribe({
-  //         next: () => this.reload(),
-  //         error: err => console.error(err)
-  //       });
-  //     });
-  // }
+    ref.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) { this.reload(); }
+      });
+  }
+
+  confirmDelete(e: Entretien): void {
+    const msg = 'Voulez-vous vraiment supprimer cet entretien du ' + this.formatDate(e.dateEntretien) + ' ?';
+    if (!window.confirm(msg)) { return; }
+
+    this.entretienSrv.delete(e.id!).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => this.reload(),
+      error: err => console.error(err)
+    });
+  }
 
   // ====== helpers ======
   private applySearch(vm: PageVm<Entretien>, search: string): PageVm<Entretien> {
-    if (!search) return vm;
+    if (!search) { return vm; }
 
     const q = search.toLowerCase();
-
     const filtered = (vm.items ?? []).filter(e => {
       const type = (e.typeLabel || e.type || '').toLowerCase();
       const com = (e.commentaire || '').toLowerCase();
@@ -181,8 +146,6 @@ export class EntretiensListComponent implements OnInit {
       return type.includes(q) || com.includes(q) || cout.includes(q) || date.includes(q);
     });
 
-    // ⚠️ Ici on filtre la page courante seulement.
-    // Si tu veux un vrai search global, ajoute un param "q" côté backend.
     return {
       ...vm,
       items: filtered,
@@ -195,7 +158,7 @@ export class EntretiensListComponent implements OnInit {
   private formatDate(d: any): string {
     try {
       const dt = new Date(d);
-      if (isNaN(dt.getTime())) return String(d);
+      if (isNaN(dt.getTime())) { return String(d); }
       return dt.toISOString().slice(0, 10);
     } catch {
       return String(d);

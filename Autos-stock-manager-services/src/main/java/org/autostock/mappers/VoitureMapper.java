@@ -68,6 +68,7 @@ public class VoitureMapper {
         dto.setOwner(v.getOwner().getId());
         dto.setNeedsRemark(needsRemark);
         dto.setDateEntreeStock(v.getDateEntreeStock());
+        dto.setDescription(v.getDescription());
         return dto;
     }
 
@@ -82,7 +83,7 @@ public class VoitureMapper {
         v.setKilometrage(dto.getKilometrage());
         v.setPrixAchat(dto.getPrixAchat());
         v.setPrixVente(dto.getPrixVente());
-//        v.setOwner(dto.getOwner().getId());
+        v.setDescription(dto.getDescription());
         return v;
     }
 }

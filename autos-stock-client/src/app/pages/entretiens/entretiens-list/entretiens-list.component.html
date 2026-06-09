@@ -118,7 +118,7 @@
             <button mat-icon-button (click)="openView(e)" matTooltip="Visualiser">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button (click)="openEdit(e.id)" matTooltip="Modifier">
+            <button mat-icon-button (click)="openEdit(e)" matTooltip="Modifier">
               <mat-icon>edit</mat-icon>
             </button>
             <button mat-icon-button color="warn" (click)="confirmDelete(e)" matTooltip="Supprimer">
@@ -131,7 +131,7 @@
 
         <tr mat-row *matRowDef="let row; columns: displayedColumns"
             class="row"
-            (dblclick)="openEdit(row.id)">
+            (dblclick)="openEdit(row)">
         </tr>
 
         <!-- Empty -->

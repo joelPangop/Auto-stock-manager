@@ -22,4 +22,19 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     /** Toutes les photos d'une voiture marquées principale (pour reset). */
     List<Document> findByVoiture_IdAndPrincipaleTrue(Long voitureId);
+
+    /**
+     * Tous les documents avec voiture, modele, marque chargés en une seule requête.
+     * La vente/vendeur/client sont optionnels et seront chargés séparément si besoin.
+     */
+    @org.springframework.data.jpa.repository.Query(
+        "SELECT d FROM Document d " +
+        "LEFT JOIN FETCH d.voiture v " +
+        "LEFT JOIN FETCH v.modele m " +
+        "LEFT JOIN FETCH m.marque " +
+        "LEFT JOIN FETCH v.vente vt " +
+        "LEFT JOIN FETCH vt.vendeur " +
+        "LEFT JOIN FETCH vt.client"
+    )
+    List<Document> findAllWithVoiture();
 }

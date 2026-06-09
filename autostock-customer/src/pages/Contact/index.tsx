@@ -104,7 +104,7 @@ export default function Contact() {
             )}
 
             <form onSubmit={handleSubmit(d => mutate(d))} className="flex flex-col gap-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Nom complet</label>
                   <input {...register('nom')} placeholder="Jean Dupont" className={inputClass} />

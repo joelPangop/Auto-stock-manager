@@ -1,3 +1,24 @@
+/* === Overlay de sauvegarde === */
+.save-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+
+  p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin: 0;
+  }
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -96,6 +117,27 @@
   color: #6b7280;
 }
 
+.description-view {
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #374151;
+  white-space: pre-wrap;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 120px;
+}
+
+.description-edit {
+  margin-top: 16px;
+
+  .full-width {
+    width: 100%;
+  }
+}
+
 .bad {
   background: #dc2626;
   color: #fee2e2;
@@ -158,7 +200,13 @@
 
 /* === PHOTOS === */
 .photos-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .spacer { flex: 1 1 auto; }
 }
 
 .photo-grid {
@@ -233,6 +281,50 @@
   }
 }
 
+
+.photo-card--selected .photo-img-wrap {
+  outline: 3px solid #2563eb;
+  outline-offset: -3px;
+  border-radius: 6px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(37, 99, 235, 0.18);
+    pointer-events: none;
+    border-radius: 6px;
+  }
+}
+
+.photo-check-overlay {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  cursor: pointer;
+  z-index: 2;
+  line-height: 0;
+}
+
+.photo-check-icon {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  color: #2563eb;
+  background: rgba(255,255,255,.88);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  transition: transform .15s;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+}
+
+.photo-card--selected .photo-check-icon {
+  color: #2563eb;
+  background: #fff;
+}
 
 .photo-caption {
   padding: 4px 8px 6px;

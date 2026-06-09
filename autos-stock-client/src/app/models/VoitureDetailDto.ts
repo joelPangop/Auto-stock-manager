@@ -18,4 +18,5 @@ export interface VoitureDetailDto {
   updatedAt?: string;
   dateEntreeStock?: string;
   needsRemark: boolean;
+  description?: string;
 }

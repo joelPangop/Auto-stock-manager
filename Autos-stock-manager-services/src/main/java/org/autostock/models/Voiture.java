@@ -52,4 +52,7 @@ public class Voiture extends AbstractEntity {
     @OneToOne(mappedBy = "voiture")
     private Vente vente;
 
+    @Column(columnDefinition = "TEXT", length = 5000)
+    private String description;
+
 }

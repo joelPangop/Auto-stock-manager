@@ -12,7 +12,7 @@ export default function Catalogue() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['vehicules', filtres, search],
-    queryFn: () => catalogueApi.list({ ...filtres }),
+    queryFn: () => catalogueApi.list({ ...filtres, search: search.trim() || undefined }),
   })
 
   const { data: marques } = useQuery({
@@ -38,14 +38,14 @@ export default function Catalogue() {
       </div>
 
       {/* Barre de recherche */}
-      <form onSubmit={handleSearch} className="flex gap-3 mb-6">
+      <form onSubmit={handleSearch} className="flex flex-wrap gap-3 mb-6">
         <div className="flex-1 relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Rechercher une marque, un modèle…"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setFiltres(f => ({ ...f, page: 0 })) }}
             className="w-full pl-9 pr-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-white placeholder-gray-600 rounded focus:outline-none focus:border-red-600 text-sm transition-colors"
           />
           {search && (

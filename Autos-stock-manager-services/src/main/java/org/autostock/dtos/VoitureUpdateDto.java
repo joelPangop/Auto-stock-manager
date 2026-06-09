@@ -19,4 +19,5 @@ public class VoitureUpdateDto {
     String statut;       // ou enum StatutVoiture
     Long idFournisseur;
     private boolean needsRemark;
+    private String description;
 }

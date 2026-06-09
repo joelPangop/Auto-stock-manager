@@ -2,7 +2,7 @@ package org.autostock.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -12,7 +12,10 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,7 +23,7 @@ import java.util.UUID;
  * Activé quand aws.s3.bucket est défini.
  */
 @Service
-@ConditionalOnProperty(name = "aws.s3.bucket")
+@ConditionalOnExpression("'${aws.s3.bucket:}'.length() > 0")
 @Slf4j
 public class S3StorageService {
 
@@ -101,6 +104,57 @@ public class S3StorageService {
                 GetObjectRequest.builder().bucket(bucket).key(key).build()
         ).asByteArray();
     }
+
+    /**
+     * Upload un fichier depuis un Path local vers S3.
+     * Utilisé pour le double stockage (disque + S3).
+     */
+    public String uploadFromPath(Path filePath, String folder, String filename) {
+        String key = folder + "/" + filename;
+        try {
+            byte[] bytes = Files.readAllBytes(filePath);
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null) contentType = "application/octet-stream";
+            s3.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .contentType(contentType)
+                            .contentLength((long) bytes.length)
+                            .build(),
+                    RequestBody.fromBytes(bytes)
+            );
+            log.info("[S3] Fichier uploadé depuis disque : s3://{}/{}", bucket, key);
+            return key;
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur upload S3 depuis disque : " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Vérifie si une clé existe dans le bucket S3.
+     */
+    public boolean exists(String key) {
+        try {
+            s3.headObject(HeadObjectRequest.builder().bucket(bucket).key(key).build());
+            return true;
+        } catch (NoSuchKeyException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Liste toutes les clés du bucket avec un préfixe donné.
+     */
+    public List<String> listKeys(String prefix) {
+        return s3.listObjectsV2(ListObjectsV2Request.builder()
+                .bucket(bucket).prefix(prefix).build())
+                .contents().stream()
+                .map(S3Object::key)
+                .toList();
+    }
+
+    public String getBucket() { return bucket; }
 
     /**
      * Supprime un fichier de S3.

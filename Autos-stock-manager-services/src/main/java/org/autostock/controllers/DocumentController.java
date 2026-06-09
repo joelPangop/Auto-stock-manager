@@ -4,16 +4,20 @@ import lombok.RequiredArgsConstructor;
 import org.autostock.dtos.DepenseCreateDto;
 import org.autostock.dtos.DocumentCreateDto;
 import org.autostock.dtos.DocumentDto;
+import org.autostock.dtos.DocumentRichDto;
 import org.autostock.dtos.DocumentUpdateDto;
 import org.autostock.enums.CategorieDepense;
 import org.autostock.mappers.DocumentMapper;
+import org.autostock.models.Document;
 import org.autostock.models.Voiture;
+import org.autostock.repositories.DocumentRepository;
 import org.autostock.services.DepenseService;
 import org.autostock.services.DocumentService;
 import org.autostock.services.VoitureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +44,58 @@ public class DocumentController {
 
     @Autowired
     private DepenseService depenseService;
+
+    @Autowired
+    private DocumentRepository documentRepository;
+
+    /** Tous les documents (toutes voitures) avec infos enrichies voiture + vendeur */
+    @GetMapping("/all")
+    @Transactional(readOnly = true)
+    public java.util.List<DocumentRichDto> listAll() {
+        return documentRepository.findAllWithVoiture().stream().map(doc -> {
+            DocumentRichDto dto = new DocumentRichDto();
+            dto.setId(doc.getId());
+            dto.setType(doc.getType().getValue());
+            dto.setTypeLabel(doc.getType().getLabel());
+            dto.setNomFichier(doc.getNomFichier());
+            dto.setDescription(doc.getDescription());
+            dto.setMontant(doc.getMontant());
+            dto.setDateUpload(doc.getDateUpload());
+            dto.setPrincipale(doc.isPrincipale());
+            dto.setUrlFichier(doc.getUrlFichier());
+
+            try {
+                Voiture v = doc.getVoiture();
+                if (v != null) {
+                    dto.setVoitureId(v.getId());
+                    StringBuilder label = new StringBuilder();
+                    try {
+                        if (v.getModele() != null) {
+                            if (v.getModele().getMarque() != null) label.append(v.getModele().getMarque().getNom()).append(" ");
+                            label.append(v.getModele().getNom()).append(" ");
+                        }
+                    } catch (Exception ignored) {}
+                    label.append(v.getAnnee());
+                    dto.setVoitureLabel(label.toString().trim());
+                    dto.setCouleur(v.getCouleur());
+                    dto.setVin(v.getVin());
+                    try {
+                        if (v.getVente() != null) {
+                            if (v.getVente().getVendeur() != null) {
+                                dto.setVendeurNom(v.getVente().getVendeur().getNom());
+                                dto.setVendeurEmail(v.getVente().getVendeur().getEmail());
+                            }
+                            if (v.getVente().getClient() != null) {
+                                dto.setClientNom(v.getVente().getClient().getNom());
+                                dto.setClientTelephone(v.getVente().getClient().getTelephone());
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+            } catch (Exception ignored) {}
+            return dto;
+        }).toList();
+    }
 
     @PostMapping(value = "/voiture/{voitureId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DocumentDto upload(@PathVariable Long voitureId,

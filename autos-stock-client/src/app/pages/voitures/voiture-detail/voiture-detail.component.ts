@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, forkJoin, Observable, Subject, Subscription} from 'rxjs';
 import {VoitureDetailDto} from '../../../models/VoitureDetailDto';
 import {Document} from '../../../models/document';
 import {Entretien} from '../../../models/entretien';
@@ -44,6 +44,7 @@ import {PaiementService} from "../../../services/paiement.service";
 })
 export class VoitureDetailComponent implements OnInit, OnDestroy {
   isEditing = false;
+  isSaving  = false;
   fournisseurLibelle?: string;
   paiementLibelle?: string;
   marqueLabelle?: string;
@@ -63,6 +64,52 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
   photoUrlMap: { [id: number]: string } = {};
   lightboxPhoto: Document | null = null;
   private _photoSub?: Subscription;
+
+  // === SÉLECTION MULTIPLE ===
+  selectedPhotoIds = new Set<number>();
+
+  isPhotoSelected(id: number): boolean {
+    return this.selectedPhotoIds.has(id);
+  }
+
+  togglePhotoSelection(id: number): void {
+    if (this.selectedPhotoIds.has(id)) {
+      this.selectedPhotoIds.delete(id);
+    } else {
+      this.selectedPhotoIds.add(id);
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleSelectAll(photos: Document[]): void {
+    if (this.selectedPhotoIds.size === photos.length) {
+      this.selectedPhotoIds.clear();
+    } else {
+      photos.forEach(p => this.selectedPhotoIds.add(p.id));
+    }
+    this.cdr.markForCheck();
+  }
+
+  clearSelection(): void {
+    this.selectedPhotoIds.clear();
+    this.cdr.markForCheck();
+  }
+
+  deleteSelectedPhotos(): void {
+    const count = this.selectedPhotoIds.size;
+    if (count === 0) return;
+    if (!confirm(`Supprimer ${count} photo(s) sélectionnée(s) ?`)) return;
+
+    const deletes$ = Array.from(this.selectedPhotoIds).map(id => this.dSrv.delete(id));
+    forkJoin(deletes$).subscribe({
+      next: () => {
+        this.snack.open(`${count} photo(s) supprimée(s) ✔`, 'OK', { duration: 2500 });
+        this.selectedPhotoIds.clear();
+        this.refresh$.next();
+      },
+      error: () => this.snack.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 })
+    });
+  }
 
   // id$ réagit à chaque changement d’URL
   readonly id$ = this.route.paramMap.pipe(
@@ -156,6 +203,7 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
         kilometrage: [voiture.kilometrage ? voiture.kilometrage : null, [Validators.min(0)]],
         statut: <StatutVoiture | null>(voiture.statut ? voiture.statut : ''),
         idFournisseur: [voiture.idFournisseur ? voiture.idFournisseur : null, [Validators.min(1)]],
+        description: [voiture.description ?? '', [Validators.maxLength(5000)]],
       });
 
       if (voiture.idMarque) {
@@ -247,7 +295,7 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
 
 
   get isOwner(): boolean {
-    return !!this.ownerId && !!this.currentUserId && this.ownerId === this.currentUserId;
+    return this.authSrv.isAdmin() || (!!this.ownerId && !!this.currentUserId && this.ownerId === this.currentUserId);
   }
 
   // === DOCUMENTS ===
@@ -434,24 +482,28 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
     this.isEditing = false;
   }
 
-  save(id
-       :
-       number
-  ) {
+  save(id: number) {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
+    this.isSaving = true;
+    this.cdr.markForCheck();
+
     const payload = this.form.value;
-    console.log("payload", payload);
     this.vSrv.update(id, payload).subscribe({
-      next: updated => {
+      next: () => {
+        // Rafraîchit tout le pipeline v$ → recharge les données depuis le backend
+        this.refresh$.next();
         this.isEditing = false;
-        this.patchForm(updated);
+        this.isSaving  = false;
+        this.cdr.markForCheck();
         this.snack.open('Voiture mise à jour ✔', 'OK', {duration: 2000});
       },
       error: err => {
         console.error(err);
+        this.isSaving = false;
+        this.cdr.markForCheck();
         this.snack.open('Échec de la mise à jour', 'Fermer', {duration: 3000});
       }
     });

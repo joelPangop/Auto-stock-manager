@@ -41,12 +41,14 @@ public class PublicVehiculeController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String marque,
             @RequestParam(required = false) BigDecimal prixMax,
-            @RequestParam(required = false) Integer anneeMin
+            @RequestParam(required = false) Integer anneeMin,
+            @RequestParam(required = false) String search
     ) {
         // Récupérer tous les véhicules disponibles et filtrer en mémoire
         // (volume faible en début de projet, facile à migrer en JPQL si nécessaire)
         var sort = Sort.by("dateEntreeStock").descending();
         var all = voitureRepo.findAll(sort);
+        var searchLower = (search != null && !search.isBlank()) ? search.trim().toLowerCase() : null;
 
         var filtered = all.stream()
                 .filter(v -> v.getStatut() == StatutVoiture.EN_STOCK
@@ -54,6 +56,11 @@ public class PublicVehiculeController {
                 .filter(v -> marque == null || v.getModele().getMarque().getNom().equalsIgnoreCase(marque))
                 .filter(v -> prixMax == null || (v.getPrixVente() != null && v.getPrixVente().compareTo(prixMax) <= 0))
                 .filter(v -> anneeMin == null || (v.getAnnee() != null && v.getAnnee() >= anneeMin))
+                .filter(v -> searchLower == null
+                          || v.getModele().getMarque().getNom().toLowerCase().contains(searchLower)
+                          || v.getModele().getNom().toLowerCase().contains(searchLower)
+                          || (v.getAnnee() != null && v.getAnnee().toString().contains(searchLower))
+                          || (v.getCouleur() != null && v.getCouleur().toLowerCase().contains(searchLower)))
                 .map(v -> {
                     // Priorité : photo principale, sinon la première photo disponible
                     Long photoId = documentRepo

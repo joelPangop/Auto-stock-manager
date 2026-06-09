@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Calendar, Gauge, Palette, Phone, Mail, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Calendar, Gauge, Palette, Phone, Mail, ChevronLeft, ChevronRight, Expand } from 'lucide-react'
 import { catalogueApi } from '@/api/catalogue'
 import { useAuthStore } from '@/store/authStore'
 import { statutBadge } from '@/components/ui/Badge'
 import { ReservationModal } from './ReservationModal'
+import { PhotoLightbox } from './PhotoLightbox'
 
 export default function VehicleDetail() {
   const { id } = useParams<{ id: string }>()
@@ -13,6 +14,7 @@ export default function VehicleDetail() {
   const { isAuthenticated } = useAuthStore()
   const [photoIdx, setPhotoIdx] = useState(0)
   const [showReservation, setShowReservation] = useState(false)
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
 
   const { data: v, isLoading } = useQuery({
     queryKey: ['vehicule', id],
@@ -55,15 +57,24 @@ export default function VehicleDetail() {
         <ArrowLeft size={16} />Retour au catalogue
       </button>
 
-      <div className="grid md:grid-cols-2 gap-10">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-10 w-full">
 
-        {/* ── Photos ── */}
-        <div className="flex flex-col gap-3">
+        {/* ── Photos ── sticky pendant le scroll */}
+        <div className="flex flex-col gap-3 self-start md:sticky md:top-4 min-w-0 w-full overflow-hidden">
           {/* Photo principale */}
-          <div className="relative aspect-video bg-[#1a1a1a] rounded-lg overflow-hidden">
+          <div className="relative aspect-video bg-[#1a1a1a] rounded-lg overflow-hidden group cursor-pointer"
+            onClick={() => photoIds.length > 0 && setLightboxIdx(photoIdx)}>
             {currentPhotoUrl ? (
-              <img src={currentPhotoUrl} alt={`${v.marque} ${v.modele}`}
-                className="w-full h-full object-cover" />
+              <>
+                <img src={currentPhotoUrl} alt={`${v.marque} ${v.modele}`}
+                  className="w-full h-full object-cover" />
+                {/* Overlay "Agrandir" au survol */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <Expand size={12} /> Agrandir
+                  </div>
+                </div>
+              </>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[#2a2a2a]">
                 <svg className="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,17 +85,17 @@ export default function VehicleDetail() {
             )}
             {photoIds.length > 1 && (
               <>
-                <button onClick={() => setPhotoIdx(i => (i - 1 + photoIds.length) % photoIds.length)}
+                <button onClick={e => { e.stopPropagation(); setPhotoIdx(i => (i - 1 + photoIds.length) % photoIds.length) }}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full transition-colors">
                   <ChevronLeft size={18} />
                 </button>
-                <button onClick={() => setPhotoIdx(i => (i + 1) % photoIds.length)}
+                <button onClick={e => { e.stopPropagation(); setPhotoIdx(i => (i + 1) % photoIds.length) }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full transition-colors">
                   <ChevronRight size={18} />
                 </button>
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                   {photoIds.map((_, i) => (
-                    <button key={i} onClick={() => setPhotoIdx(i)}
+                    <button key={i} onClick={e => { e.stopPropagation(); setPhotoIdx(i) }}
                       className={`w-1.5 h-1.5 rounded-full transition-colors ${i === photoIdx ? 'bg-red-500' : 'bg-white/40'}`} />
                   ))}
                 </div>
@@ -107,7 +118,7 @@ export default function VehicleDetail() {
         </div>
 
         {/* ── Détails ── */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 min-w-0 w-full overflow-hidden">
           <div>
             <div className="flex items-start justify-between gap-3 mb-1">
               <div>
@@ -144,6 +155,17 @@ export default function VehicleDetail() {
             ))}
           </div>
 
+          {/* Description */}
+          {v.description && (
+            <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-5">
+              <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span className="w-1 h-4 bg-red-600 rounded-full inline-block" />
+                Description
+              </h3>
+              <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">{v.description}</p>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex flex-col gap-3">
             {disponible && (
@@ -171,6 +193,15 @@ export default function VehicleDetail() {
 
       {showReservation && v && (
         <ReservationModal vehiculeId={v.id} vehiculeLabel={`${v.marque} ${v.modele} (${v.annee})`} onClose={() => setShowReservation(false)} />
+      )}
+
+      {lightboxIdx !== null && v && (
+        <PhotoLightbox
+          photoIds={photoIds}
+          initialIndex={lightboxIdx}
+          vehiculeLabel={`${v.marque} ${v.modele} (${v.annee})`}
+          onClose={() => setLightboxIdx(null)}
+        />
       )}
     </div>
   )

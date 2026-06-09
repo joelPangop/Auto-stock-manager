@@ -6,6 +6,7 @@ import {environment} from "../../environments/environment";
 import {Document} from "../models/document";
 import {DocumentCreateMeta} from "../models/DocumentCreateMeta";
 import {DocumentUpdateMeta} from "../models/DocumentUpdateMeta";
+import {DocumentRichDto} from "../models/DocumentRichDto";
 
 @Injectable({providedIn: 'root'})
 export class DocumentService {
@@ -16,6 +17,10 @@ export class DocumentService {
 
   listByVoiture(voitureId: number): Observable<Document[]>{
     return this.http.get<Document[]>(`${this.base}/${voitureId}`);
+  }
+
+  listAll(): Observable<DocumentRichDto[]> {
+    return this.http.get<DocumentRichDto[]>(`${this.base}/all`);
   }
 
   getPage(page = 0, size = 10, sort = 'id,desc', q?: string): Observable<Page<Document>> {

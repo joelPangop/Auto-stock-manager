@@ -64,15 +64,28 @@ public class EntretienController {
 
     @PutMapping("/{entretienId}")
     public EntretienDto update(@PathVariable Long entretienId, @RequestBody EntretienCreateDto dto) {
-        // ✅ création automatique de la dépense si dto.depense est fourni (ou si montant présent)
+        // 1. Mettre à jour l'entretien
+        Entretien updated = entretienService.modifierEntretien(entretienId, entretienMapper.toEntity(dto));
 
-        DepenseCreateDto dDto = new DepenseCreateDto();
-        dDto.setCategorie(CategorieDepense.ENTRETIEN);
-        dDto.setDescription(dto.getCommentaire());
-        dDto.setMontant(dto.getCout());
-        dDto.setDateDepense(dto.getDateEntretien());
-        depenseService.update(dDto.getVoitureId(), dDto.getEntretienId(), dDto);
-        return entretienMapper.toDto(entretienService.modifierEntretien(entretienId, entretienMapper.toEntity(dto)));
+        // 2. Mettre à jour la dépense associée (supprimer l'ancienne + recréer)
+        try {
+            depenseService.deleteByEntretienId(entretienId);
+            Long voitureId = updated.getVoiture() != null ? updated.getVoiture().getId() : null;
+            if (voitureId != null) {
+                DepenseCreateDto dDto = new DepenseCreateDto();
+                dDto.setCategorie(CategorieDepense.ENTRETIEN);
+                dDto.setDescription(dto.getCommentaire());
+                dDto.setMontant(dto.getCout());
+                dDto.setDateDepense(dto.getDateEntretien());
+                dDto.setEntretienId(entretienId);
+                dDto.setVoitureId(voitureId);
+                depenseService.create(voitureId, dDto);
+            }
+        } catch (Exception e) {
+            // Ne pas bloquer la mise à jour de l'entretien si la dépense échoue
+        }
+
+        return entretienMapper.toDto(updated);
     }
 
     @DeleteMapping("/{entretienId}")
