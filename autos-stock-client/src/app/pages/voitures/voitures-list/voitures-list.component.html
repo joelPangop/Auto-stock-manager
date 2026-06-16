@@ -1,21 +1,21 @@
 <div class="page" [formGroup]="form">
   <div class="header">
-    <h2>Voitures</h2>
+    <h2>{{ 'VOITURES.TITRE' | translate }}</h2>
     <span class="spacer"></span>
-    <mat-slide-toggle [(ngModel)]="onlyMine" [ngModelOptions]="{ standalone: true }" (change)="reload()">Mes voitures
+    <mat-slide-toggle [(ngModel)]="onlyMine" [ngModelOptions]="{ standalone: true }" (change)="reload()">{{ 'VOITURES.MES_VOITURES' | translate }}
     </mat-slide-toggle>
     <button mat-flat-button color="primary" (click)="nouvelleVoiture()">
-      <mat-icon>add</mat-icon>&nbsp;Nouvelle voiture
+      <mat-icon>add</mat-icon>&nbsp;{{ 'VOITURES.NOUVELLE_VOITURE' | translate }}
     </button>
     <mat-form-field appearance="outline" class="flt">
-      <mat-label>Marque</mat-label>
+      <mat-label>{{ 'COMMON.MARQUE' | translate }}</mat-label>
       <input matInput placeholder="ex: Toyota" formControlName="marque"/>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="flt">
-      <mat-label>Statut</mat-label>
+      <mat-label>{{ 'COMMON.STATUT' | translate }}</mat-label>
       <mat-select formControlName="statut">
-        <mat-option>Tous</mat-option>
+        <mat-option>{{ 'COMMON.TOUS' | translate }}</mat-option>
         <mat-option value="EN_STOCK">EN_STOCK</mat-option>
         <mat-option value="RESERVEE">RESERVEE</mat-option>
         <mat-option value="VENDUE">VENDUE</mat-option>
@@ -23,74 +23,66 @@
     </mat-form-field>
 
     <button mat-stroked-button type="button" (click)="clearFilters()">
-      <mat-icon>clear</mat-icon>&nbsp;Réinitialiser
+      <mat-icon>clear</mat-icon>&nbsp;{{ 'VOITURES.REINITIALISER' | translate }}
     </button>
   </div>
 
   <mat-card class="card">
     <div class="table-wrap" [class.loading]="loading">
       <table mat-table [dataSource]="data" matSort (matSortChange)="reload()">
-        <!-- colonnes (inchangées) -->
-        <!--        <ng-container matColumnDef="id">-->
-        <!--          <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>-->
-        <!--          <td mat-cell *matCellDef="let v">{{ v.id }}</td>-->
-        <!--        </ng-container>-->
 
         <ng-container matColumnDef="marque">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Marque</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.MARQUE' | translate }}</th>
           <td mat-cell *matCellDef="let v">{{ v.marque }}</td>
         </ng-container>
 
         <ng-container matColumnDef="modele">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Modèle</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.MODELE' | translate }}</th>
           <td mat-cell *matCellDef="let v">{{ v.modele }}</td>
         </ng-container>
 
         <ng-container matColumnDef="annee">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Année</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'COMMON.ANNEE' | translate }}</th>
           <td mat-cell *matCellDef="let v">{{ v.annee }}</td>
         </ng-container>
 
         <ng-container matColumnDef="couleur">
-          <th mat-header-cell *matHeaderCellDef>Couleur</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.COULEUR' | translate }}</th>
           <td mat-cell *matCellDef="let v">{{ v.couleur }}</td>
         </ng-container>
 
         <ng-container matColumnDef="vin">
-          <th mat-header-cell *matHeaderCellDef>VIN</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.VIN' | translate }}</th>
           <td mat-cell *matCellDef="let v">{{ v.vin }}</td>
         </ng-container>
 
         <ng-container matColumnDef="prixVente">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix vente</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'VOITURES.PRIX_VENTE' | translate }}</th>
           <td mat-cell *matCellDef="let v">{{ v.prixVente | number:'1.0-0' }} $</td>
         </ng-container>
 
         <ng-container matColumnDef="statut">
-          <th mat-header-cell *matHeaderCellDef>Statut</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUT' | translate }}</th>
           <td mat-cell *matCellDef="let v">
-            <span class="badge" [matTooltipPosition]="v.statut === 'EN_STOCK' && v.needsRemark ? 'above' : ''"
-                  [matTooltip]="v.statut === 'EN_STOCK' && v.needsRemark ? 'En stock depuis plus de 3 mois' : ''"
+            <span class="badge"
+                  [matTooltip]="v.statut === 'EN_STOCK' && v.needsRemark ? ('VOITURES.EN_STOCK_DEPUIS' | translate) : ''"
+                  [matTooltipPosition]="v.statut === 'EN_STOCK' && v.needsRemark ? 'above' : 'above'"
                   [class.ok]="v.statut === 'EN_STOCK' && !v.needsRemark"
                   [class.bad]="v.statut === 'EN_STOCK' && v.needsRemark"
                   [class.warn]="v.statut==='RESERVEE'"
                   [class.muted]="v.statut==='VENDUE'">
               {{ v.statut }}
             </span>
-            <!--            <span class="spacer"></span>&nbsp;-->
-            <!--            <mat-chip class="chip-warn" color="warn" *ngIf="v.needsRemark" selected>-->
-            <!--              +3 mois en stock-->
-            <!--            </mat-chip>-->
           </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let v">
-            <button mat-icon-button (click)="goToDetail(v.id)" matTooltip="Visualiser">
+            <button mat-icon-button (click)="goToDetail(v.id)" [matTooltip]="'VOITURES.VISUALISER' | translate">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="delete(v)" matTooltip="Supprimer">
+            <button mat-icon-button color="warn" (click)="delete(v)" [matTooltip]="'VOITURES.SUPPRIMER' | translate">
               <mat-icon>delete</mat-icon>
             </button>
           </td>

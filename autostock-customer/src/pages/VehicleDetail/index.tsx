@@ -7,11 +7,13 @@ import { useAuthStore } from '@/store/authStore'
 import { statutBadge } from '@/components/ui/Badge'
 import { ReservationModal } from './ReservationModal'
 import { PhotoLightbox } from './PhotoLightbox'
+import { useTranslation } from 'react-i18next'
 
 export default function VehicleDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuthStore()
+  const { t } = useTranslation()
   const [photoIdx, setPhotoIdx] = useState(0)
   const [showReservation, setShowReservation] = useState(false)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
@@ -39,8 +41,8 @@ export default function VehicleDetail() {
   if (!v) return (
     <div className="text-center py-24 text-gray-500">
       <p className="text-4xl mb-4">🚗</p>
-      <p>Véhicule introuvable</p>
-      <Link to="/catalogue" className="text-red-500 text-sm mt-2 inline-block">← Retour au catalogue</Link>
+      <p>{t('vehicule.introuvable')}</p>
+      <Link to="/catalogue" className="text-red-500 text-sm mt-2 inline-block">← {t('vehicule.retour_catalogue')}</Link>
     </div>
   )
 
@@ -54,7 +56,7 @@ export default function VehicleDetail() {
       {/* Breadcrumb */}
       <button onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-gray-500 hover:text-white text-sm mb-8 transition-colors">
-        <ArrowLeft size={16} />Retour au catalogue
+        <ArrowLeft size={16} />{t('vehicule.retour_catalogue')}
       </button>
 
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 w-full">
@@ -71,7 +73,7 @@ export default function VehicleDetail() {
                 {/* Overlay "Agrandir" au survol */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                    <Expand size={12} /> Agrandir
+                    <Expand size={12} /> {t('vehicule.agrandir')}
                   </div>
                 </div>
               </>
@@ -133,7 +135,7 @@ export default function VehicleDetail() {
           {/* Prix */}
           {v.prixVente && (
             <div className="bg-red-600 rounded-lg px-6 py-4">
-              <p className="text-red-100 text-xs uppercase tracking-wider mb-0.5">Prix de vente</p>
+              <p className="text-red-100 text-xs uppercase tracking-wider mb-0.5">{t('vehicule.prix_vente')}</p>
               <p className="text-white font-black text-3xl">{v.prixVente.toLocaleString('fr-CA')} $</p>
             </div>
           )}
@@ -141,9 +143,9 @@ export default function VehicleDetail() {
           {/* Caractéristiques */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { icon: Calendar, label: 'Année', value: v.annee },
-              { icon: Gauge,    label: 'Kilométrage', value: v.kilometrage ? `${v.kilometrage.toLocaleString('fr-CA')} km` : '—' },
-              { icon: Palette,  label: 'Couleur', value: v.couleur ?? '—' },
+              { icon: Calendar, label: t('vehicule.annee'), value: v.annee },
+              { icon: Gauge,    label: t('vehicule.kilometrage'), value: v.kilometrage ? `${v.kilometrage.toLocaleString('fr-CA')} km` : '—' },
+              { icon: Palette,  label: t('vehicule.couleur'), value: v.couleur ?? '—' },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-1">
@@ -160,7 +162,7 @@ export default function VehicleDetail() {
             <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-5">
               <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
                 <span className="w-1 h-4 bg-red-600 rounded-full inline-block" />
-                Description
+                {t('vehicule.description')}
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere">{v.description}</p>
             </div>
@@ -172,19 +174,19 @@ export default function VehicleDetail() {
               <button
                 onClick={() => isAuthenticated ? setShowReservation(true) : navigate('/login')}
                 className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors">
-                {isAuthenticated ? 'Réserver ce véhicule' : 'Connectez-vous pour réserver'}
+                {isAuthenticated ? t('vehicule.reserver') : t('vehicule.connecter_reserver')}
               </button>
             )}
             <div className="grid grid-cols-2 gap-3">
               <a href="tel:+14385072586"
                 className="flex items-center justify-center gap-2 border border-[#2a2a2a] hover:border-red-600 text-gray-300 hover:text-white py-2.5 rounded-lg text-sm transition-colors">
                 <Phone size={16} className="text-red-500" />
-                Appeler
+                {t('vehicule.appeler')}
               </a>
               <Link to={`/contact?vehiculeId=${v.id}`}
                 className="flex items-center justify-center gap-2 border border-[#2a2a2a] hover:border-red-600 text-gray-300 hover:text-white py-2.5 rounded-lg text-sm transition-colors">
                 <Mail size={16} className="text-red-500" />
-                Envoyer un message
+                {t('vehicule.envoyer_msg')}
               </Link>
             </div>
           </div>

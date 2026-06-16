@@ -1,77 +1,71 @@
 import { Link } from 'react-router-dom'
 import { Shield, Zap, Handshake, Headphones, ArrowRight, Phone, Mail, CheckCircle2 } from 'lucide-react'
 import { VehicleCarousel } from '@/components/VehicleCarousel'
-
-const categories = [
-  { label: 'CITADINES', sub: 'Agiles et économiques' },
-  { label: 'BERLINES',  sub: 'Confort et élégance' },
-  { label: 'SUV / 4x4', sub: 'Puissance et espace' },
-  { label: 'PREMIUM',   sub: 'Luxe et performance' },
-]
-
-const valeurs = [
-  { icon: Shield,     label: 'QUALITÉ',        desc: 'Véhicules contrôlés et garantis' },
-  { icon: Zap,        label: 'PERFORMANCE',    desc: 'Des voitures fiables et performantes' },
-  { icon: Handshake,  label: 'CONFIANCE',      desc: "Une relation basée sur l'honnêteté" },
-  { icon: Headphones, label: 'ACCOMPAGNEMENT', desc: 'Un service personnalisé de A à Z' },
-]
-
-const engagements = [
-  'Inspection complète 150 points',
-  'Historique Carfax disponible',
-  'Financement flexible sur place',
-  'Garantie incluse',
-]
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation()
+
+  const categories = [
+    { label: 'CITADINES', sub: t('home.categories.citadines') },
+    { label: 'BERLINES',  sub: t('home.categories.berlines') },
+    { label: 'SUV / 4x4', sub: t('home.categories.suv') },
+    { label: 'PREMIUM',   sub: t('home.categories.premium') },
+  ]
+
+  const valeurs = [
+    { icon: Shield,     label: t('home.valeurs.qualite'),        desc: t('home.valeurs.qualite_desc') },
+    { icon: Zap,        label: t('home.valeurs.performance'),    desc: t('home.valeurs.performance_desc') },
+    { icon: Handshake,  label: t('home.valeurs.confiance'),      desc: t('home.valeurs.confiance_desc') },
+    { icon: Headphones, label: t('home.valeurs.accompagnement'), desc: t('home.valeurs.accompagnement_desc') },
+  ]
+
+  const engagements = [
+    t('home.engagements.inspection'),
+    t('home.engagements.carfax'),
+    t('home.engagements.financement'),
+    t('home.engagements.garantie'),
+  ]
+
   return (
     <div className="bg-[#0a0a0a]">
 
-      {/* ── HERO ─────────────────────────────────────────────── */}
+      {/* ── HERO ───────────────────────────────────────────── */}
       <section className="relative min-h-[620px] flex items-center overflow-hidden">
-
-        {/* Fond noir uniforme */}
         <div className="absolute inset-0 bg-[#0a0a0a]">
-          {/* Lignes horizontales décoratives */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-red-600/30" />
           <div className="absolute top-0 left-0 right-0 h-px bg-white/5" />
-          {/* Grille de points subtile */}
           <div className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-              backgroundSize: '32px 32px',
-            }} />
+            style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 py-24 w-full grid md:grid-cols-2 gap-12 items-center">
-
-          {/* Texte gauche */}
           <div>
             <div className="inline-flex items-center gap-2 bg-red-600/20 border border-red-600/40 text-red-400 text-xs font-medium px-3 py-1.5 rounded mb-6 uppercase tracking-widest">
               <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-              Vente de voitures usagées
+              {t('home.badge')}
             </div>
 
             <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-2">
-              TROUVEZ LA VOITURE
+              {t('home.hero_titre1')}
             </h1>
             <h1 className="text-5xl md:text-6xl font-black text-red-600 leading-tight mb-6">
-              QUI VOUS CORRESPOND
+              {t('home.hero_titre2')}
             </h1>
 
             <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-lg">
-              Des véhicules sélectionnés avec soin pour vous offrir qualité, sécurité et tranquillité.
+              {t('home.hero_desc')}
             </p>
 
             <div className="flex flex-wrap gap-4 mb-10">
               <Link to="/catalogue"
                 className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded flex items-center gap-2 transition-all hover:translate-x-1">
-                Découvrir nos véhicules
+                {t('home.decouvrir')}
                 <ArrowRight size={18} />
               </Link>
               <Link to="/contact"
                 className="border border-gray-600 hover:border-white text-gray-300 hover:text-white font-semibold px-8 py-3.5 rounded transition-colors">
-                Nous contacter
+                {t('home.nous_contacter')}
               </Link>
             </div>
 
@@ -93,21 +87,15 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Bloc décoratif droite — logo + accroche */}
           <div className="hidden md:flex flex-col items-center justify-center gap-6">
-            <img
-              src="/assets/logo-clean.png"
-              alt="Ted Auto"
-              className="w-80 object-contain"
+            <img src="/assets/logo-clean.png" alt="Ted Auto" className="w-80 object-contain"
               style={{ mixBlendMode: 'lighten', filter: 'contrast(1.1)' }}
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-            />
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
             <div className="flex flex-col items-center gap-1 text-center">
-              <p className="text-white/30 text-xs tracking-[0.3em] uppercase">Votre confiance, notre priorité</p>
+              <p className="text-white/30 text-xs tracking-[0.3em] uppercase">{t('home.confiance')}</p>
               <div className="w-16 h-px bg-red-600/50 mt-1" />
             </div>
           </div>
-
         </div>
       </section>
 
@@ -128,21 +116,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CAROUSEL AUTO-DÉFILANT ───────────────────────────── */}
-      <VehicleCarousel
-        title="NOS VÉHICULES"
-        subtitle="Découvrez notre inventaire"
-      />
+      {/* ── CAROUSEL ─────────────────────────────────────────── */}
+      <VehicleCarousel title={t('home.nos_vehicules')} subtitle={t('home.inventaire')} />
 
-      {/* ── ENGAGEMENT + CATÉGORIES ──────────────────────────── */}
+      {/* ── ENGAGEMENT + CATÉGORIES ─────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-6">
 
-        {/* Engagement */}
         <div className="rounded-2xl border border-[#1e1e1e] bg-[#111] p-8 flex flex-col justify-between min-h-[340px]">
           <div>
-            <p className="text-red-500 text-xs font-bold tracking-widest uppercase mb-2">Pourquoi nous choisir</p>
+            <p className="text-red-500 text-xs font-bold tracking-widest uppercase mb-2">{t('home.pourquoi')}</p>
             <h2 className="text-3xl font-black text-white mb-6">
-              NOTRE <span className="text-red-600">ENGAGEMENT</span>
+              {t('home.engagement_titre')} <span className="text-red-600">{t('home.engagement_accent')}</span>
             </h2>
             <ul className="flex flex-col gap-3">
               {engagements.map(item => (
@@ -155,16 +139,15 @@ export default function Home() {
           </div>
           <Link to="/catalogue"
             className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm px-5 py-2.5 rounded transition-colors mt-6 w-fit">
-            Voir les véhicules <ArrowRight size={16} />
+            {t('home.voir_vehicules')} <ArrowRight size={16} />
           </Link>
         </div>
 
-        {/* Catégories */}
         <div className="rounded-2xl border border-[#1e1e1e] bg-[#111] p-8 flex flex-col justify-between min-h-[340px]">
           <div>
-            <p className="text-red-500 text-xs font-bold tracking-widest uppercase mb-2">Notre sélection</p>
+            <p className="text-red-500 text-xs font-bold tracking-widest uppercase mb-2">{t('home.selection')}</p>
             <h2 className="text-3xl font-black text-white mb-6">
-              NOS <span className="text-red-600">CATÉGORIES</span>
+              {t('home.categories_titre')} <span className="text-red-600">{t('home.categories_accent')}</span>
             </h2>
             <div className="grid grid-cols-2 gap-3">
               {categories.map(cat => (
@@ -182,7 +165,7 @@ export default function Home() {
           </div>
           <Link to="/catalogue"
             className="inline-flex items-center gap-2 border border-[#2a2a2a] hover:border-white text-gray-300 hover:text-white font-bold text-sm px-5 py-2.5 rounded transition-colors mt-6 w-fit">
-            Explorer le catalogue <ArrowRight size={16} />
+            {t('home.explorer')} <ArrowRight size={16} />
           </Link>
         </div>
       </section>
@@ -191,9 +174,9 @@ export default function Home() {
       <section className="bg-[#0f0f0f] border-y border-[#1e1e1e] py-14">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
           {[
-            { value: '500+', label: 'Véhicules vendus' },
-            { value: '98%',  label: 'Clients satisfaits' },
-            { value: '10+',  label: "Années d'expérience" },
+            { value: '500+', label: t('home.vehicules_vendus') },
+            { value: '98%',  label: t('home.clients_satisfaits') },
+            { value: '10+',  label: t('home.annees_experience') },
           ].map(s => (
             <div key={s.label}>
               <p className="text-4xl md:text-5xl font-black text-red-600 mb-1">{s.value}</p>
@@ -203,21 +186,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CTA FINAL ────────────────────────────────────────── */}
+      {/* ── CTA FINAL ─────────────────────────────────────────── */}
       <section className="bg-red-600 py-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-black text-white">Prêt à trouver votre future voiture ?</h2>
-            <p className="text-red-100 mt-1">Contactez-nous dès aujourd'hui — notre équipe vous répond rapidement.</p>
+            <h2 className="text-3xl font-black text-white">{t('home.pret')}</h2>
+            <p className="text-red-100 mt-1">{t('home.cta_desc')}</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto">
             <a href="tel:+14385072586"
               className="bg-white text-red-600 font-bold px-6 py-3 rounded hover:bg-red-50 transition-colors text-sm flex items-center gap-2">
-              <Phone size={16} />Appeler maintenant
+              <Phone size={16} />{t('home.appeler')}
             </a>
             <Link to="/catalogue"
               className="border-2 border-white text-white font-bold px-6 py-3 rounded hover:bg-white/10 transition-colors text-sm">
-              Voir le catalogue
+              {t('home.voir_catalogue')}
             </Link>
           </div>
         </div>

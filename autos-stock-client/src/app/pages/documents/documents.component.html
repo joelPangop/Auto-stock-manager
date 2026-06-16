@@ -1,56 +1,50 @@
 <div class="docs-page">
 
-  <!-- Header -->
   <div class="page-header">
     <div class="header-left">
       <h1 class="page-title">
         <mat-icon class="title-icon">folder_open</mat-icon>
-        Documents
+        {{ 'DOCUMENTS.TITRE' | translate }}
       </h1>
       <span class="doc-count" *ngIf="!loading">{{ allDocs.length }} document(s)</span>
     </div>
     <div class="header-actions">
       <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Rechercher...</mat-label>
+        <mat-label>{{ 'COMMON.RECHERCHER' | translate }}</mat-label>
         <mat-icon matPrefix>search</mat-icon>
         <input matInput [value]="searchText" (input)="onSearch($any($event.target).value)"
-               placeholder="Nom, vehicule, vendeur...">
+               [placeholder]="'DOCUMENTS.RECHERCHER' | translate">
         <button *ngIf="searchText" matSuffix mat-icon-button (click)="onSearch('')">
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-icon-button (click)="load()" matTooltip="Rafraichir">
+      <button mat-icon-button (click)="load()" [matTooltip]="'COMMON.RAFRAICHIR' | translate">
         <mat-icon>refresh</mat-icon>
       </button>
     </div>
   </div>
 
-  <!-- Loading -->
   <div class="loading-container" *ngIf="loading">
     <mat-spinner diameter="48"></mat-spinner>
-    <p>Chargement des documents...</p>
+    <p>{{ 'DOCUMENTS.CHARGEMENT' | translate }}</p>
   </div>
 
-  <!-- Error -->
   <mat-card class="error-card" *ngIf="error && !loading">
     <mat-card-content>
       <mat-icon color="warn">error_outline</mat-icon>
       <span>{{ error }}</span>
-      <button mat-button color="primary" (click)="load()">Reessayer</button>
+      <button mat-button color="primary" (click)="load()">{{ 'COMMON.REESSAYER' | translate }}</button>
     </mat-card-content>
   </mat-card>
 
-  <!-- Empty -->
   <div class="empty-state" *ngIf="!loading && !error && folders.length === 0">
     <mat-icon>folder_off</mat-icon>
-    <p>Aucun document trouve.</p>
+    <p>{{ 'DOCUMENTS.AUCUN' | translate }}</p>
   </div>
 
-  <!-- Folders -->
   <div class="folders-container" *ngIf="!loading && !error && folders.length > 0">
     <div class="folder-section" *ngFor="let folder of folders">
 
-      <!-- Folder Header -->
       <div class="folder-header" (click)="toggleFolder(folder)" [class.open]="folder.open">
         <div class="folder-icon-wrap">
           <mat-icon class="folder-icon" *ngIf="!folder.open">folder</mat-icon>
@@ -69,14 +63,12 @@
         <mat-icon class="chevron">{{ folder.open ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
 
-      <!-- Documents Table -->
       <div class="folder-content" *ngIf="folder.open">
         <div class="table-wrapper">
           <table mat-table [dataSource]="folder.documents" class="docs-table">
 
-            <!-- Nom fichier -->
             <ng-container matColumnDef="nomFichier">
-              <th mat-header-cell *matHeaderCellDef>Fichier</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.FICHIER' | translate }}</th>
               <td mat-cell *matCellDef="let doc">
                 <div class="file-cell">
                   <mat-icon class="file-icon img-icon" *ngIf="isImage(doc)">image</mat-icon>
@@ -89,9 +81,8 @@
               </td>
             </ng-container>
 
-            <!-- Vehicule -->
             <ng-container matColumnDef="voiture">
-              <th mat-header-cell *matHeaderCellDef>Vehicule</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DOCUMENTS.VEHICULE' | translate }}</th>
               <td mat-cell *matCellDef="let doc">
                 <a *ngIf="doc.voitureId" class="voiture-link" (click)="goToVoiture(doc.voitureId)">
                   {{ doc.voitureLabel || ('Voiture #' + doc.voitureId) }}
@@ -101,9 +92,8 @@
               </td>
             </ng-container>
 
-            <!-- Vendeur -->
             <ng-container matColumnDef="vendeur">
-              <th mat-header-cell *matHeaderCellDef>Vendeur</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DOCUMENTS.VENDEUR' | translate }}</th>
               <td mat-cell *matCellDef="let doc">
                 <ng-container *ngIf="doc.vendeurNom; else noVendeur">
                   <div class="person-cell">
@@ -115,9 +105,8 @@
               </td>
             </ng-container>
 
-            <!-- Client -->
             <ng-container matColumnDef="client">
-              <th mat-header-cell *matHeaderCellDef>Client</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DOCUMENTS.CLIENT' | translate }}</th>
               <td mat-cell *matCellDef="let doc">
                 <ng-container *ngIf="doc.clientNom; else noClient">
                   <div class="person-cell">
@@ -129,53 +118,47 @@
               </td>
             </ng-container>
 
-            <!-- Montant -->
             <ng-container matColumnDef="montant">
-              <th mat-header-cell *matHeaderCellDef class="col-right">Montant</th>
+              <th mat-header-cell *matHeaderCellDef class="col-right">{{ 'DOCUMENTS.MONTANT' | translate }}</th>
               <td mat-cell *matCellDef="let doc" class="col-right">
                 <span *ngIf="doc.montant" class="amount">{{ doc.montant | number:'1.2-2' }} $</span>
                 <span *ngIf="!doc.montant" class="muted">--</span>
               </td>
             </ng-container>
 
-            <!-- Date -->
             <ng-container matColumnDef="dateUpload">
-              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DOCUMENTS.DATE' | translate }}</th>
               <td mat-cell *matCellDef="let doc">
                 <span *ngIf="doc.dateUpload">{{ doc.dateUpload | date:'yyyy-MM-dd' }}</span>
                 <span *ngIf="!doc.dateUpload" class="muted">--</span>
               </td>
             </ng-container>
 
-            <!-- Description -->
             <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.DESCRIPTION' | translate }}</th>
               <td mat-cell *matCellDef="let doc">
                 <span class="desc-text" [title]="doc.description || ''">{{ doc.description || '' }}</span>
               </td>
             </ng-container>
 
-            <!-- Actions -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="col-right">Actions</th>
+              <th mat-header-cell *matHeaderCellDef class="col-right">{{ 'DOCUMENTS.ACTIONS' | translate }}</th>
               <td mat-cell *matCellDef="let doc" class="col-right">
-                <button mat-icon-button (click)="download(doc)" matTooltip="Telecharger">
+                <button mat-icon-button (click)="download(doc)" [matTooltip]="'DOCUMENTS.TELECHARGER' | translate">
                   <mat-icon>download</mat-icon>
                 </button>
                 <button mat-icon-button (click)="goToVoiture(doc.voitureId)"
-                        matTooltip="Voir le vehicule" [disabled]="!doc.voitureId">
+                        [matTooltip]="'DOCUMENTS.VOIR_VEHICULE' | translate" [disabled]="!doc.voitureId">
                   <mat-icon>directions_car</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="delete(doc, folder)" matTooltip="Supprimer">
+                <button mat-icon-button color="warn" (click)="delete(doc, folder)" [matTooltip]="'DOCUMENTS.SUPPRIMER' | translate">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="doc-row"
-                (dblclick)="download(row)">
-            </tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="doc-row" (dblclick)="download(row)"></tr>
           </table>
         </div>
       </div>

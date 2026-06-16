@@ -30,7 +30,7 @@ const TYPE_ICONS: Record<string, string> = {
 export class DocumentsComponent implements OnInit {
 
   folders: FolderVm[] = [];
-  loading = true;
+  loading = false;
   error = '';
   searchText = '';
   allDocs: DocumentRichDto[] = [];
@@ -39,54 +39,35 @@ export class DocumentsComponent implements OnInit {
     'nomFichier', 'voiture', 'vendeur', 'client', 'montant', 'dateUpload', 'description', 'actions'
   ];
 
-  constructor(
-    private docSrv: DocumentService,
-    private router: Router
-  ) {}
+  constructor(private docSrv: DocumentService, private router: Router) {}
 
-  ngOnInit(): void {
-    this.load();
-  }
+  ngOnInit(): void { this.load(); }
 
   load(): void {
-    this.loading = true;
     this.error = '';
-    console.log('[Documents] Appel listAll()...');
     this.docSrv.listAll().subscribe({
       next: (docs) => {
-        console.log('[Documents] Recu:', docs ? docs.length : 0, 'documents');
-        try {
-          this.allDocs = docs || [];
-          this.buildFolders(this.allDocs);
-        } catch (e) {
-          console.error('[Documents] Erreur buildFolders:', e);
-          this.error = 'Erreur lors du traitement des donnees: ' + e;
-        }
-        this.loading = false;
+        this.allDocs = docs || [];
+        this.buildFolders(this.allDocs);
       },
       error: (err) => {
-        console.error('[Documents] Erreur HTTP:', err);
-        this.error = 'Erreur: ' + (err?.message || JSON.stringify(err));
-        this.loading = false;
+        this.error = 'Erreur HTTP ' + (err?.status || '') + ': ' + (err?.message || 'inconnue');
       }
     });
   }
 
   private buildFolders(docs: DocumentRichDto[]): void {
     const map = new Map<string, DocumentRichDto[]>();
-
     docs.forEach(d => {
       const key = d.type || 'AUTRE';
       if (!map.has(key)) { map.set(key, []); }
       map.get(key)!.push(d);
     });
-
     const order = ['FACTURE', 'CARFAX', 'IMMATRICULATION', 'INSPECTION', 'ASSURANCE', 'PHOTO', 'AUTRE'];
     const sorted = Array.from(map.entries()).sort(([a], [b]) => {
       return (order.indexOf(a) === -1 ? 99 : order.indexOf(a)) -
              (order.indexOf(b) === -1 ? 99 : order.indexOf(b));
     });
-
     this.folders = sorted.map(([type, documents]) => ({
       type,
       typeLabel: documents[0]?.typeLabel || type,
@@ -97,16 +78,11 @@ export class DocumentsComponent implements OnInit {
     }));
   }
 
-  toggleFolder(folder: FolderVm): void {
-    folder.open = !folder.open;
-  }
+  toggleFolder(folder: FolderVm): void { folder.open = !folder.open; }
 
   onSearch(text: string): void {
     this.searchText = text;
-    if (!text.trim()) {
-      this.buildFolders(this.allDocs);
-      return;
-    }
+    if (!text.trim()) { this.buildFolders(this.allDocs); return; }
     const q = text.toLowerCase();
     const filtered = this.allDocs.filter(d =>
       (d.nomFichier || '').toLowerCase().includes(q) ||
@@ -121,9 +97,7 @@ export class DocumentsComponent implements OnInit {
   }
 
   goToVoiture(voitureId: number | undefined): void {
-    if (voitureId) {
-      this.router.navigate(['/voitures', voitureId]);
-    }
+    if (voitureId) { this.router.navigate(['/voitures', voitureId]); }
   }
 
   download(doc: DocumentRichDto): void {
@@ -144,21 +118,17 @@ export class DocumentsComponent implements OnInit {
         folder.documents = folder.documents.filter(d => d.id !== doc.id);
         folder.count = folder.documents.length;
         this.allDocs = this.allDocs.filter(d => d.id !== doc.id);
-        if (folder.count === 0) {
-          this.folders = this.folders.filter(f => f.type !== folder.type);
-        }
+        if (folder.count === 0) { this.folders = this.folders.filter(f => f.type !== folder.type); }
       }
     });
   }
 
   isImage(doc: DocumentRichDto): boolean {
-    if (!doc.nomFichier) { return false; }
-    return /\.(jpg|jpeg|png|gif|webp)$/i.test(doc.nomFichier);
+    return !doc.nomFichier ? false : /\.(jpg|jpeg|png|gif|webp)$/i.test(doc.nomFichier);
   }
 
   isPdf(doc: DocumentRichDto): boolean {
-    if (!doc.nomFichier) { return false; }
-    return /\.pdf$/i.test(doc.nomFichier);
+    return !doc.nomFichier ? false : /\.pdf$/i.test(doc.nomFichier);
   }
 
   totalMontant(docs: DocumentRichDto[]): number {

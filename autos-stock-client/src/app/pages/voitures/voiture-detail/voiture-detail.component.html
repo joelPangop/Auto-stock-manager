@@ -1,51 +1,48 @@
-<!--<script src="voiture-detail.component.ts"></script>-->
 <div class="header">
   <button mat-stroked-button color="primary" routerLink="/voitures">
-    <mat-icon>arrow_back</mat-icon>&nbsp;Retour
+    <mat-icon>arrow_back</mat-icon>&nbsp;{{ 'VOITURES.RETOUR' | translate }}
   </button>
   <span class="spacer"></span>
 
-  <!-- Boutons selon le mode -->
   <ng-container *ngIf="v$ | async as v">
     <button *ngIf="!isEditing && isOwner" mat-flat-button color="primary" (click)="edit()">
-      <mat-icon>edit</mat-icon>&nbsp;Modifier
+      <mat-icon>edit</mat-icon>&nbsp;{{ 'VOITURES.MODIFIER' | translate }}
     </button>
     <ng-container *ngIf="isEditing">
       <button mat-stroked-button color="primary" (click)="cancel()" *ngIf="isOwner" [disabled]="isSaving">
-        <mat-icon>close</mat-icon>&nbsp;Annuler
+        <mat-icon>close</mat-icon>&nbsp;{{ 'VOITURES.ANNULER' | translate }}
       </button>
       <button mat-flat-button color="primary" (click)="save(v.id)"
               [disabled]="form.invalid || isSaving" *ngIf="isOwner">
         <mat-spinner *ngIf="isSaving" diameter="18" style="display:inline-block;margin-right:6px;vertical-align:middle"></mat-spinner>
         <mat-icon *ngIf="!isSaving">save</mat-icon>
-        &nbsp;{{ isSaving ? 'Enregistrement…' : 'Enregistrer' }}
+        &nbsp;{{ isSaving ? ('VOITURES.ENREGISTREMENT' | translate) : ('VOITURES.ENREGISTRER' | translate) }}
       </button>
     </ng-container>
 
     <button mat-stroked-button color="primary" *ngIf="isOwner" (click)="nouvelleVente()">
-      <mat-icon>sell</mat-icon>&nbsp;Nouvelle vente
+      <mat-icon>sell</mat-icon>&nbsp;{{ 'VOITURES.NOUVELLE_VENTE' | translate }}
     </button>
   </ng-container>
 </div>
 
-<!-- Overlay de sauvegarde -->
 <div class="save-overlay" *ngIf="isSaving">
   <mat-spinner diameter="56"></mat-spinner>
-  <p>Enregistrement en cours…</p>
+  <p>{{ 'VOITURES.ENREGISTREMENT_EN_COURS' | translate }}</p>
 </div>
 
 <mat-card class="card" *ngIf="v$ | async as v">
   <div class="key-info" *ngIf="!isEditing; else editHeader">
     <div class="title">{{ marqueLabelle }} {{ modeleLabelle }} ({{ v.annee }})</div>
-    <div class="sub">VIN: {{ v.vin || '—' }} • Couleur: {{ v.couleur || '—' }} • Km: {{ v.kilometrage || '—' }}</div>
+    <div class="sub">VIN: {{ v.vin || '—' }} • {{ 'COMMON.COULEUR' | translate }}: {{ v.couleur || '—' }} • Km: {{ v.kilometrage || '—' }}</div>
     <div class="price">{{ v.prixVente | number:'1.0-0' }} $</div>
     <div class="status">
       <span class="chip" [class.ok]="v.statut === 'EN_STOCK' && !v.needsRemark"
             [class.bad]="v.statut === 'EN_STOCK' && v.needsRemark" [class.warn]="v.statut==='VENDUE'">
-        {{ v.statut || v.statut }}
+        {{ v.statut }}
       </span>&nbsp;
       <mat-chip class="chip-warn" color="warn" *ngIf="v.needsRemark" selected>
-        +3 mois en stock
+        {{ 'VOITURES.PLUS_3_MOIS' | translate }}
       </mat-chip>
     </div>
   </div>
@@ -54,34 +51,34 @@
     <form [formGroup]="form" class="header-form">
       <div class="row-inline">
         <mat-form-field appearance="outline" class="grow">
-          <mat-label>Marque</mat-label>
+          <mat-label>{{ 'COMMON.MARQUE' | translate }}</mat-label>
           <mat-select formControlName="idMarque">
             <mat-option *ngFor="let m of marques" [value]="m.id">{{ m.nom }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="form.get('idMarque')?.hasError('required')">Obligatoire</mat-error>
+          <mat-error *ngIf="form.get('idMarque')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
       <div class="row-inline">
         <mat-form-field appearance="outline" class="grow">
-          <mat-label>Modèle</mat-label>
+          <mat-label>{{ 'COMMON.MODELE' | translate }}</mat-label>
           <mat-select formControlName="idModele" [disabled]="!form.value.idMarque">
             <mat-option *ngFor="let mo of modeles" [value]="mo.id">{{ mo.nom }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="form.get('idModele')?.hasError('required')">Obligatoire</mat-error>
+          <mat-error *ngIf="form.get('idModele')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
       <mat-form-field appearance="outline">
-        <mat-label>Année</mat-label>
+        <mat-label>{{ 'COMMON.ANNEE' | translate }}</mat-label>
         <input matInput type="number" formControlName="annee">
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Prix d'achat</mat-label>
+        <mat-label>{{ 'COMMON.PRIX_ACHAT' | translate }}</mat-label>
         <input matInput type="number" formControlName="prixAchat">
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Prix de vente</mat-label>
+        <mat-label>{{ 'COMMON.PRIX_VENTE' | translate }}</mat-label>
         <input matInput type="number" formControlName="prixVente">
       </mat-form-field>
     </form>
@@ -89,51 +86,25 @@
 
   <mat-tab-group>
     <!-- Onglet Détails -->
-    <mat-tab label="Détails">
+    <mat-tab [label]="'VOITURES.DETAILS' | translate">
       <div class="tab-pad">
         <ng-container *ngIf="!isEditing; else editDetails">
           <div class="details-grid">
-            <div><strong>Marque</strong>
-              <div>{{ marqueLabelle }}</div>
-            </div>
-            <div><strong>Modèle</strong>
-              <div>{{ modeleLabelle }}</div>
-            </div>
-            <div><strong>Année</strong>
-              <div>{{ v.annee }}</div>
-            </div>
-            <div><strong>Statut</strong>
-              <div>{{ v.statut }}</div>
-            </div>
-            <div><strong>Prix de Achat</strong>
-              <div>{{ v.prixAchat | number:'1.0-0' }} $</div>
-            </div>
-            <div><strong>Prix de vente</strong>
-              <div>{{ v.prixVente | number:'1.0-0' }} $</div>
-            </div>
-            <div><strong>VIN</strong>
-              <div>{{ v.vin || '—' }}</div>
-            </div>
-            <div><strong>Couleur</strong>
-              <div>{{ v.couleur || '—' }}</div>
-            </div>
-            <div><strong>Kilométrage</strong>
-              <div>{{ v.kilometrage || '—' }}</div>
-            </div>
-            <div><strong>Fournisseur</strong>
-              <div>{{ fournisseurLibelle || '—' }}</div>
-            </div>
-            <div><strong>Date d'entrée en stock</strong>
-              <div>{{ v.dateEntreeStock | date:'short' }}</div>
-            </div>
-            <div><strong>Modifiée le</strong>
-              <div>{{ v.updatedAt | date:'short' }}</div>
-            </div>
-            <div *ngIf="v.statut === 'VENDUE'"><strong>Paiement</strong>
-              <div>{{ paiementLibelle }}</div>
-            </div>
-            <div *ngIf="v.statut === 'VENDUE'" style="background-color: #dcfce7"><strong>Benefice</strong>
-              <div>{{ benefice }}$</div>
+            <div><strong>{{ 'COMMON.MARQUE' | translate }}</strong><div>{{ marqueLabelle }}</div></div>
+            <div><strong>{{ 'COMMON.MODELE' | translate }}</strong><div>{{ modeleLabelle }}</div></div>
+            <div><strong>{{ 'COMMON.ANNEE' | translate }}</strong><div>{{ v.annee }}</div></div>
+            <div><strong>{{ 'COMMON.STATUT' | translate }}</strong><div>{{ v.statut }}</div></div>
+            <div><strong>{{ 'VOITURES.PRIX_DE_ACHAT' | translate }}</strong><div>{{ v.prixAchat | number:'1.0-0' }} $</div></div>
+            <div><strong>{{ 'COMMON.PRIX_VENTE' | translate }}</strong><div>{{ v.prixVente | number:'1.0-0' }} $</div></div>
+            <div><strong>{{ 'COMMON.VIN' | translate }}</strong><div>{{ v.vin || '—' }}</div></div>
+            <div><strong>{{ 'COMMON.COULEUR' | translate }}</strong><div>{{ v.couleur || '—' }}</div></div>
+            <div><strong>{{ 'COMMON.KILOMETRAGE' | translate }}</strong><div>{{ v.kilometrage || '—' }}</div></div>
+            <div><strong>{{ 'COMMON.FOURNISSEUR' | translate }}</strong><div>{{ fournisseurLibelle || '—' }}</div></div>
+            <div><strong>{{ 'VOITURES.DATE_ENTREE' | translate }}</strong><div>{{ v.dateEntreeStock | date:'short' }}</div></div>
+            <div><strong>{{ 'VOITURES.MODIFIEE_LE' | translate }}</strong><div>{{ v.updatedAt | date:'short' }}</div></div>
+            <div *ngIf="v.statut === 'VENDUE'"><strong>{{ 'COMMON.PAIEMENT' | translate }}</strong><div>{{ paiementLibelle }}</div></div>
+            <div *ngIf="v.statut === 'VENDUE'" style="background-color: #dcfce7">
+              <strong>{{ 'COMMON.BENEFICE' | translate }}</strong><div>{{ benefice }}$</div>
             </div>
           </div>
         </ng-container>
@@ -141,40 +112,48 @@
         <ng-template #editDetails>
           <form [formGroup]="form" class="edit-grid">
             <mat-form-field appearance="outline">
-              <mat-label>VIN</mat-label>
+              <mat-label>{{ 'COMMON.VIN' | translate }}</mat-label>
               <input matInput formControlName="vin">
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Couleur</mat-label>
+              <mat-label>{{ 'COMMON.COULEUR' | translate }}</mat-label>
               <input matInput formControlName="couleur">
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Kilométrage</mat-label>
+              <mat-label>{{ 'COMMON.KILOMETRAGE' | translate }}</mat-label>
               <input matInput type="number" formControlName="kilometrage">
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Statut</mat-label>
+              <mat-label>{{ 'COMMON.STATUT' | translate }}</mat-label>
               <mat-select formControlName="statut">
-                <mat-option value="DISPONIBLE">DISPONIBLE</mat-option>
-                <mat-option value="RESERVEE">RESERVEE</mat-option>
-                <mat-option value="EN_STOCK">EN_STOCK</mat-option>
-                <mat-option value="VENDUE">VENDUE</mat-option>
+                <mat-option value="RESERVEE">{{ 'VOITURES.STATUT_RESERVEE' | translate }}</mat-option>
+                <mat-option value="EN_STOCK">{{ 'VOITURES.STATUT_EN_STOCK' | translate }}</mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Fournisseur</mat-label>
+              <mat-label>{{ 'VOITURES.CATEGORIE' | translate }}</mat-label>
+              <mat-select formControlName="categorie">
+                <mat-option [value]="null">{{ 'VOITURES.NON_DEFINIE' | translate }}</mat-option>
+                <mat-option value="CITADINE">Citadine</mat-option>
+                <mat-option value="BERLINE">Berline</mat-option>
+                <mat-option value="SUV_4X4">SUV / 4x4</mat-option>
+                <mat-option value="PREMIUM">Premium</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'COMMON.FOURNISSEUR' | translate }}</mat-label>
               <mat-select formControlName="idFournisseur">
-                <mat-option [value]="null">— Aucun —</mat-option>
+                <mat-option [value]="null">{{ 'VOITURES.AUCUN_FOURNISSEUR' | translate }}</mat-option>
                 <mat-option *ngFor="let f of fournisseurs" [value]="f.id">
                   {{ f.nom }} <span *ngIf="f.type">({{ f.type }})</span>
                 </mat-option>
               </mat-select>
             </mat-form-field>
-
           </form>
         </ng-template>
       </div>
@@ -185,30 +164,28 @@
       <div class="tab-pad">
         <ng-container *ngIf="form">
           <ng-container *ngIf="!isEditing; else editDescription">
-            <!-- Mode visualisation -->
             <div *ngIf="form.get('description')?.value; else noDesc" class="description-view">
               {{ form.get('description')?.value }}
             </div>
             <ng-template #noDesc>
-              <p class="muted" style="margin-top:16px">Aucune description. Cliquez sur "Modifier" pour en ajouter une.</p>
+              <p class="muted" style="margin-top:16px">{{ 'VOITURES.AUCUNE_DESC' | translate }}</p>
             </ng-template>
           </ng-container>
 
           <ng-template #editDescription>
-            <!-- Mode édition -->
             <div class="description-edit" [formGroup]="form">
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Description du véhicule</mat-label>
+                <mat-label>{{ 'VOITURES.DESC_VEHICULE' | translate }}</mat-label>
                 <textarea matInput formControlName="description"
                           rows="10"
                           maxlength="5000"
-                          placeholder="Décrivez le véhicule : état, équipements, historique...">
+                          [placeholder]="'VOITURES.DESC_PLACEHOLDER' | translate">
                 </textarea>
                 <mat-hint align="end">
                   {{ form.get('description')?.value?.length || 0 }} / 5000
                 </mat-hint>
                 <mat-error *ngIf="form.get('description')?.hasError('maxlength')">
-                  Maximum 5000 caractères
+                  {{ 'VOITURES.MAX_5000' | translate }}
                 </mat-error>
               </mat-form-field>
             </div>
@@ -218,37 +195,34 @@
     </mat-tab>
 
     <!-- PHOTOS -->
-    <mat-tab label="Photos">
+    <mat-tab [label]="'VOITURES.PHOTOS' | translate">
       <div class="tab-pad">
 
         <ng-container *ngIf="photos$ | async as photos">
 
-          <!-- Barre d'actions (mode édition) -->
           <div class="photos-header" *ngIf="isEditing && isOwner">
             <button mat-flat-button color="primary" (click)="openPhotoUploadDialog()">
-              <mat-icon>add_a_photo</mat-icon>&nbsp;Ajouter une photo
+              <mat-icon>add_a_photo</mat-icon>&nbsp;{{ 'VOITURES.AJOUTER_PHOTO' | translate }}
             </button>
 
             <span class="spacer"></span>
 
-            <!-- Tout sélectionner / Désélectionner -->
             <button mat-stroked-button *ngIf="photos.length > 0"
                     (click)="toggleSelectAll(photos)"
                     [color]="selectedPhotoIds.size === photos.length ? 'primary' : ''">
               <mat-icon>{{ selectedPhotoIds.size === photos.length ? 'deselect' : 'select_all' }}</mat-icon>
-              &nbsp;{{ selectedPhotoIds.size === photos.length ? 'Désélectionner tout' : 'Tout sélectionner' }}
+              &nbsp;{{ selectedPhotoIds.size === photos.length ? ('VOITURES.DESELECTIONNER_TOUT' | translate) : ('VOITURES.TOUT_SELECTIONNER' | translate) }}
             </button>
 
-            <!-- Supprimer la sélection — visible seulement si ≥1 sélectionné -->
             <button mat-flat-button color="warn"
                     *ngIf="selectedPhotoIds.size > 0"
                     (click)="deleteSelectedPhotos()">
               <mat-icon>delete_sweep</mat-icon>
-              &nbsp;Supprimer ({{ selectedPhotoIds.size }})
+              &nbsp;{{ 'VOITURES.SUPPRIMER_SELECTION' | translate }} ({{ selectedPhotoIds.size }})
             </button>
           </div>
 
-          <div *ngIf="photos.length === 0" class="muted" style="margin-top:16px">Aucune photo.</div>
+          <div *ngIf="photos.length === 0" class="muted" style="margin-top:16px">{{ 'VOITURES.AUCUNE_PHOTO' | translate }}</div>
 
           <div class="photo-grid">
             <div class="photo-card"
@@ -266,21 +240,19 @@
                   </div>
                 </ng-template>
 
-                <!-- Étoile principale -->
                 <ng-container *ngIf="isEditing && isOwner">
                   <button *ngIf="p.principale" mat-icon-button
                           class="photo-star-btn photo-star-btn--active"
-                          title="Photo principale" disabled>
+                          [title]="'VOITURES.PHOTO_PRINCIPALE' | translate" disabled>
                     <mat-icon>star</mat-icon>
                   </button>
                   <button *ngIf="!p.principale" mat-icon-button
                           class="photo-star-btn" (click)="$event.stopPropagation(); setPhotoPrincipale(p)"
-                          title="Définir comme photo principale">
+                          [title]="'VOITURES.DEFINIR_PRINCIPALE' | translate">
                     <mat-icon>star_border</mat-icon>
                   </button>
                 </ng-container>
 
-                <!-- Checkbox de sélection (mode édition) -->
                 <div *ngIf="isEditing && isOwner"
                      class="photo-check-overlay"
                      (click)="$event.stopPropagation(); togglePhotoSelection(p.id)">
@@ -288,7 +260,6 @@
                     {{ isPhotoSelected(p.id) ? 'check_circle' : 'radio_button_unchecked' }}
                   </mat-icon>
                 </div>
-
               </div>
               <div class="photo-caption">{{ p.description || '' }}</div>
             </div>
@@ -307,11 +278,11 @@
     </mat-tab>
 
     <!-- DOCUMENTS -->
-    <mat-tab label="Documents">
+    <mat-tab [label]="'VOITURES.DOCUMENTS' | translate">
       <div class="tab-pad docs-tab">
         <div class="row">
           <button mat-stroked-button (click)="openUploadDialog()" *ngIf="isOwner">
-            <mat-icon>upload_file</mat-icon>&nbsp;Ajouter
+            <mat-icon>upload_file</mat-icon>&nbsp;{{ 'VOITURES.AJOUTER_DOC' | translate }}
           </button>
         </div>
 
@@ -319,18 +290,16 @@
           <thead>
           <tr>
             <th style="width:36px;"></th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Fichier</th>
-            <th>Date</th>
-            <th class="r">Actions</th>
+            <th>{{ 'VOITURES.TYPE' | translate }}</th>
+            <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+            <th>{{ 'COMMON.FICHIER' | translate }}</th>
+            <th>{{ 'COMMON.DATE' | translate }}</th>
+            <th class="r">{{ 'COMMON.ACTIONS' | translate }}</th>
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let d of docs">
-            <td>
-              <mat-icon>description</mat-icon>
-            </td>
+            <td><mat-icon>description</mat-icon></td>
             <td>{{ d.type }}</td>
             <td>{{ d.description || '—' }}</td>
             <td>{{ d.nomFichier }}</td>
@@ -351,17 +320,16 @@
         </table>
 
         <ng-template #loadingDocs>
-          <div class="muted">Chargement des documents…</div>
+          <div class="muted">{{ 'COMMON.CHARGEMENT_EN_COURS' | translate }}</div>
         </ng-template>
       </div>
     </mat-tab>
 
-
     <!-- ENTRETIENS -->
-    <mat-tab label="Entretiens">
+    <mat-tab [label]="'VOITURES.ENTRETIENS' | translate">
       <div class="tab-pad">
         <button mat-stroked-button (click)="planifierEntretien()" *ngIf="isOwner">
-          <mat-icon>build</mat-icon>&nbsp;Planifier
+          <mat-icon>build</mat-icon>&nbsp;{{ 'VOITURES.PLANIFIER' | translate }}
         </button>
 
         <mat-list *ngIf="entretiens$ | async as entretiens; else entLoading">
@@ -378,27 +346,27 @@
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <div><p>Total Cout: </p></div>
+            <div><p>{{ 'VOITURES.TOTAL_COUT' | translate }}</p></div>
             <div>{{ totalCoutEntretien }} $</div>
           </mat-list-item>
-          <div *ngIf="entretiens.length === 0" class="muted">Aucun entretien.</div>
+          <div *ngIf="entretiens.length === 0" class="muted">{{ 'VOITURES.AUCUN_ENTRETIEN' | translate }}</div>
         </mat-list>
         <ng-template #entLoading>
-          <div class="muted">Chargement…</div>
+          <div class="muted">{{ 'COMMON.CHARGEMENT_EN_COURS' | translate }}</div>
         </ng-template>
       </div>
     </mat-tab>
 
     <!-- DEPENSES -->
-    <mat-tab label="Dépenses">
+    <mat-tab [label]="'VOITURES.DEPENSES' | translate">
       <app-voiture-depenses [voitureId]="(id$ | async)" [isOwner]="isOwner" [refreshParent$]="refreshTrigger$"></app-voiture-depenses>
     </mat-tab>
 
     <!-- MOUVEMENTS -->
-    <mat-tab label="Mouvements">
+    <mat-tab [label]="'VOITURES.MOUVEMENTS' | translate">
       <div class="tab-pad">
         <button mat-stroked-button (click)="nouveauMouvement()" *ngIf="isOwner">
-          <mat-icon>compare_arrows</mat-icon>&nbsp;Ajouter
+          <mat-icon>compare_arrows</mat-icon>&nbsp;{{ 'COMMON.AJOUTER' | translate }}
         </button>
 
         <table class="docs" *ngIf="mouvements$ | async as mouvements; else movLoading">
@@ -406,13 +374,18 @@
             <td>{{ m.type }}</td>
             <td>{{ m.dateMouvement | date:'short' }}</td>
             <td>{{ m.commentaire || '—' }}</td>
+            <td *ngIf="isOwner" style="width:40px;padding:0">
+              <button mat-icon-button color="warn" (click)="supprimerMouvement(m)" [matTooltip]="'COMMON.SUPPRIMER' | translate">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
           </tr>
           <tr *ngIf="mouvements.length === 0">
-            <td colspan="3" class="muted">Aucun mouvement.</td>
+            <td colspan="4" class="muted">{{ 'VOITURES.AUCUN_MOUVEMENT' | translate }}</td>
           </tr>
         </table>
         <ng-template #movLoading>
-          <div class="muted">Chargement…</div>
+          <div class="muted">{{ 'COMMON.CHARGEMENT_EN_COURS' | translate }}</div>
         </ng-template>
       </div>
     </mat-tab>

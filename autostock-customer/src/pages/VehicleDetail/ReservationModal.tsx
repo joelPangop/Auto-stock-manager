@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, CheckCircle } from 'lucide-react'
 import { useMutation } from '@tanstack/react-query'
 import { reservationApi } from '@/api/reservation'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   vehiculeId: number
@@ -13,6 +14,7 @@ export function ReservationModal({ vehiculeId, vehiculeLabel, onClose }: Props) 
   const [message, setMessage] = useState('')
   const [dateVisite, setDateVisite] = useState('')
   const [done, setDone] = useState(false)
+  const { t } = useTranslation()
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: () => reservationApi.create({
@@ -32,20 +34,20 @@ export function ReservationModal({ vehiculeId, vehiculeLabel, onClose }: Props) 
         {done ? (
           <div className="text-center py-6">
             <CheckCircle size={48} className="text-green-500 mx-auto mb-4" />
-            <h3 className="text-white font-bold text-xl mb-2">Réservation envoyée !</h3>
+            <h3 className="text-white font-bold text-xl mb-2">{t('reservation.envoyee')}</h3>
             <p className="text-gray-400 text-sm mb-6">
-              Notre équipe vous contactera rapidement pour confirmer votre rendez-vous.
+              {t('reservation.envoyee_desc')}
             </p>
             <button onClick={onClose}
               className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors">
-              Fermer
+              {t('reservation.fermer')}
             </button>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h3 className="text-white font-bold text-lg">Réserver ce véhicule</h3>
+                <h3 className="text-white font-bold text-lg">{t('reservation.titre')}</h3>
                 <p className="text-red-500 text-sm">{vehiculeLabel}</p>
               </div>
               <button onClick={onClose} className="text-gray-500 hover:text-white">
@@ -55,14 +57,14 @@ export function ReservationModal({ vehiculeId, vehiculeLabel, onClose }: Props) 
 
             {error && (
               <div className="mb-4 bg-red-950/50 border border-red-800 text-red-400 text-sm rounded-lg px-3 py-2">
-                Une erreur est survenue. Veuillez réessayer.
+                {t('reservation.erreur')}
               </div>
             )}
 
             <div className="flex flex-col gap-4">
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">
-                  Date de visite souhaitée (optionnel)
+                  {t('reservation.date_visite')}
                 </label>
                 <input type="date" value={dateVisite}
                   onChange={e => setDateVisite(e.target.value)}
@@ -72,16 +74,16 @@ export function ReservationModal({ vehiculeId, vehiculeLabel, onClose }: Props) 
 
               <div>
                 <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">
-                  Message (optionnel)
+                  {t('reservation.message')}
                 </label>
                 <textarea value={message} onChange={e => setMessage(e.target.value)}
-                  rows={3} placeholder="Questions, commentaires…"
+                  rows={3} placeholder={t('reservation.message_placeholder')}
                   className="w-full bg-[#1a1a1a] border border-[#2a2a2a] focus:border-red-600 text-white placeholder-gray-600 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none transition-colors" />
               </div>
 
               <button onClick={() => mutate()} disabled={isPending}
                 className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors">
-                {isPending ? 'Envoi en cours…' : 'Confirmer la réservation'}
+                {isPending ? t('reservation.envoi') : t('reservation.confirmer')}
               </button>
             </div>
           </>

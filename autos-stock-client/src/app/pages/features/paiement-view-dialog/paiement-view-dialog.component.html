@@ -2,10 +2,10 @@
 
   <div class="header">
     <div class="title">
-      <h2>Détails du paiement</h2>
+      <h2>{{ 'PAIEMENT_VIEW.TITRE' | translate }}</h2>
       <div class="sub">#{{ data.paiementId }}</div>
     </div>
-    <button mat-icon-button (click)="close()" aria-label="Fermer">
+    <button mat-icon-button (click)="close()" [attr.aria-label]="'COMMON.FERMER' | translate">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -18,38 +18,38 @@
       <div class="grid">
 
         <div class="field">
-          <div class="label">Voiture</div>
+          <div class="label">{{ 'PAIEMENT_VIEW.VOITURE' | translate }}</div>
           <div class="value">
             <span class="badge voiture">{{ p.voitureLabel || ('Vente #' + p.venteId) }}</span>
           </div>
         </div>
 
         <div class="field">
-          <div class="label">Date</div>
+          <div class="label">{{ 'PAIEMENT_VIEW.DATE' | translate }}</div>
           <div class="value mono">{{ p.datePaiement | date:'yyyy-MM-dd' }}</div>
         </div>
 
         <div class="field">
-          <div class="label">Montant</div>
+          <div class="label">{{ 'PAIEMENT_VIEW.MONTANT' | translate }}</div>
           <div class="value money">{{ money(p.montant) }}</div>
         </div>
 
         <div class="field">
-          <div class="label">Méthode</div>
+          <div class="label">{{ 'PAIEMENT_VIEW.METHODE' | translate }}</div>
           <div class="value">
             <span class="badge">{{ p.methode }}</span>
           </div>
         </div>
 
         <div class="field full">
-          <div class="label">Référence</div>
+          <div class="label">{{ 'PAIEMENT_VIEW.REFERENCE' | translate }}</div>
           <div class="value box">{{ p.reference || '—' }}</div>
         </div>
 
       </div>
 
       <div class="footer">
-        <button mat-stroked-button (click)="close()">Fermer</button>
+        <button mat-stroked-button (click)="close()">{{ 'PAIEMENT_VIEW.FERMER' | translate }}</button>
       </div>
 
     </ng-container>
@@ -58,7 +58,7 @@
   <ng-template #loading>
     <div class="loading">
       <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-      <div>Chargement…</div>
+      <div>{{ 'PAIEMENT_VIEW.CHARGEMENT' | translate }}</div>
     </div>
   </ng-template>
 
@@ -66,12 +66,12 @@
     <div class="error">
       <mat-icon>error</mat-icon>
       <div>
-        <div class="error-title">Erreur</div>
+        <div class="error-title">{{ 'PAIEMENT_VIEW.ERREUR_TITRE' | translate }}</div>
         <div class="error-text">{{ errorMsg }}</div>
       </div>
     </div>
     <div class="footer">
-      <button mat-stroked-button (click)="close()">Fermer</button>
+      <button mat-stroked-button (click)="close()">{{ 'PAIEMENT_VIEW.FERMER' | translate }}</button>
     </div>
   </ng-template>
 

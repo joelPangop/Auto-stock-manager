@@ -13,7 +13,11 @@ export class MouvementService {
   }
 
   listByVoiture(voitureId: number) {
-    return this.http.get<Mouvement[]>( `http://localhost:8080/api/mouvements/voiture/${voitureId}`);
+    return this.http.get<Mouvement[]>(`${this.base}/voiture/${voitureId}`);
+  }
+
+  listAll(): Observable<Mouvement[]> {
+    return this.http.get<Mouvement[]>(`${this.base}/all`);
   }
 
   getPage(page = 0, size = 10, sort = 'dateMouvement,desc'): Observable<Page<Mouvement>> {

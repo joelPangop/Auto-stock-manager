@@ -2,6 +2,7 @@ package org.autostock.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.autostock.enums.CategorieVoiture;
 import org.autostock.enums.StatutVoiture;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class VoitureCreateDto {
     private BigDecimal prixVente;
     private Long kilometrage;
     StatutVoiture statut;
+    CategorieVoiture categorie;
     LocalDate dateEntreeStock;
     Boolean creerMouvementEntree;
     // getters / setters

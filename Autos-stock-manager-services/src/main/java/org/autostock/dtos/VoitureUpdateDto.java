@@ -16,7 +16,8 @@ public class VoitureUpdateDto {
     String vin;
     String couleur;
     Long kilometrage;
-    String statut;       // ou enum StatutVoiture
+    String statut;
+    String categorie;
     Long idFournisseur;
     private boolean needsRemark;
     private String description;

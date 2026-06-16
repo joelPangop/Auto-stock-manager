@@ -1,1 +1,144 @@
-<p>mouvements works!</p>
+<div class="mouv-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        <mat-icon class="title-icon">swap_horiz</mat-icon>
+        {{ 'MOUVEMENTS.TITRE' | translate }}
+      </h1>
+      <span class="count-chip" *ngIf="!loading">{{ filtered.length }} / {{ totalCount }}</span>
+    </div>
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ 'COMMON.RECHERCHER' | translate }}</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [value]="searchText"
+               (input)="onSearch($any($event.target).value)"
+               [placeholder]="'MOUVEMENTS.RECHERCHER' | translate">
+        <button *ngIf="searchText" matSuffix mat-icon-button (click)="onSearch('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <button mat-icon-button (click)="load()" [matTooltip]="'COMMON.RAFRAICHIR' | translate">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-row" *ngIf="!loading && !error">
+    <div class="stat-card">
+      <mat-icon class="stat-icon total">swap_horiz</mat-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ totalCount }}</span>
+        <span class="stat-label">{{ 'MOUVEMENTS.TOTAL' | translate }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <mat-icon class="stat-icon month">calendar_today</mat-icon>
+      <div class="stat-info">
+        <span class="stat-value">{{ monthCount }}</span>
+        <span class="stat-label">{{ 'MOUVEMENTS.CE_MOIS' | translate }}</span>
+      </div>
+    </div>
+    <div class="stat-card type-card"
+         *ngFor="let t of uniqueTypes"
+         [style.border-left-color]="getTypeConfig(t).color"
+         (click)="setFilter(activeFilter === t ? 'ALL' : t)"
+         [class.active-card]="activeFilter === t">
+      <mat-icon class="stat-icon" [style.color]="getTypeConfig(t).color">{{ getTypeConfig(t).icon }}</mat-icon>
+      <div class="stat-info">
+        <span class="stat-value" [style.color]="getTypeConfig(t).color">{{ getTypeCount(t) }}</span>
+        <span class="stat-label">{{ t }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter chips -->
+  <div class="filter-row" *ngIf="!loading && !error && uniqueTypes.length > 0">
+    <button class="filter-chip" [class.active]="activeFilter === 'ALL'" (click)="setFilter('ALL')">
+      {{ 'MOUVEMENTS.TOUS' | translate }}
+    </button>
+    <button class="filter-chip"
+            *ngFor="let t of uniqueTypes"
+            [class.active]="activeFilter === t"
+            [style.border-color]="getTypeConfig(t).color"
+            [style.color]="activeFilter === t ? '#fff' : getTypeConfig(t).color"
+            [style.background]="activeFilter === t ? getTypeConfig(t).color : getTypeConfig(t).bg"
+            (click)="setFilter(t)">
+      <mat-icon class="chip-icon">{{ getTypeConfig(t).icon }}</mat-icon>
+      {{ t }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>{{ 'MOUVEMENTS.CHARGEMENT' | translate }}</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-state" *ngIf="error && !loading">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <span>{{ error }}</span>
+    <button mat-button color="primary" (click)="load()">{{ 'COMMON.REESSAYER' | translate }}</button>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!loading && !error && groups.length === 0">
+    <mat-icon>inbox</mat-icon>
+    <p>{{ 'MOUVEMENTS.AUCUN' | translate }}</p>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline" *ngIf="!loading && !error && groups.length > 0">
+    <div class="timeline-group" *ngFor="let group of groups">
+
+      <div class="group-label">
+        <span>{{ group.label }}</span>
+        <span class="group-count">{{ group.mouvements.length }}</span>
+      </div>
+
+      <div class="timeline-events">
+        <div class="timeline-event" *ngFor="let m of group.mouvements">
+          <div class="tl-dot-col">
+            <div class="tl-dot"
+                 [style.background]="getTypeConfig(m.type).color"
+                 [style.border-color]="getTypeConfig(m.type).color">
+              <mat-icon class="dot-icon">{{ getTypeConfig(m.type).icon }}</mat-icon>
+            </div>
+            <div class="tl-line"></div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-header">
+              <span class="type-badge"
+                    [style.color]="getTypeConfig(m.type).color"
+                    [style.background]="getTypeConfig(m.type).bg">
+                {{ m.typeLabel || m.type }}
+              </span>
+              <a *ngIf="m.voitureId" class="voiture-link" (click)="goToVoiture(m.voitureId)">
+                <mat-icon class="car-icon">directions_car</mat-icon>
+                {{ m.voitureLabel || ('Voiture #' + m.voitureId) }}
+              </a>
+              <span *ngIf="!m.voitureId" class="muted">{{ 'MOUVEMENTS.VEHICULE_INCONNU' | translate }}</span>
+              <span *ngIf="m.voitureStatut" class="statut-pill"
+                    [class.pill-vendue]="m.voitureStatut === 'VENDUE'"
+                    [class.pill-stock]="m.voitureStatut === 'EN_STOCK'"
+                    [class.pill-reserve]="m.voitureStatut === 'RESERVEE'">
+                {{ m.voitureStatut }}
+              </span>
+              <span class="event-time" [title]="formatDate(m.dateMouvement)">
+                {{ formatTime(m.dateMouvement) }}
+              </span>
+            </div>
+            <p class="event-comment" *ngIf="m.commentaire">{{ m.commentaire }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

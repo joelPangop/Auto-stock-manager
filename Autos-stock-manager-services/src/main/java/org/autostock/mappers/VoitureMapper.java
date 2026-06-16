@@ -4,6 +4,7 @@ import org.autostock.dtos.VoitureCreateDto;
 import org.autostock.dtos.VoitureDetailDto;
 import org.autostock.dtos.VoitureListDto;
 import org.autostock.dtos.VoitureUpdateDto;
+import org.autostock.enums.CategorieVoiture;
 import org.autostock.enums.StatutVoiture;
 import org.autostock.models.Fournisseur;
 import org.autostock.models.Modele;
@@ -25,6 +26,7 @@ public class VoitureMapper {
         v.setKilometrage(dto.getKilometrage());
         v.setPrixAchat(dto.getPrixAchat());
         v.setPrixVente(dto.getPrixVente());
+        v.setCategorie(dto.getCategorie());
         return v;
     }
 
@@ -69,6 +71,10 @@ public class VoitureMapper {
         dto.setNeedsRemark(needsRemark);
         dto.setDateEntreeStock(v.getDateEntreeStock());
         dto.setDescription(v.getDescription());
+        if (v.getCategorie() != null) {
+            dto.setCategorie(v.getCategorie().getValue());
+            dto.setCategorieLabel(v.getCategorie().getLabel());
+        }
         return dto;
     }
 
@@ -80,6 +86,7 @@ public class VoitureMapper {
         v.setCouleur(dto.getCouleur());
         v.setVin(dto.getVin());
         v.setStatut(StatutVoiture.fromValue(dto.getStatut()));
+        v.setCategorie(CategorieVoiture.fromValue(dto.getCategorie()));
         v.setKilometrage(dto.getKilometrage());
         v.setPrixAchat(dto.getPrixAchat());
         v.setPrixVente(dto.getPrixVente());

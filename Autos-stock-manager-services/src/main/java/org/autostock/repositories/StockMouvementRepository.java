@@ -16,4 +16,13 @@ public interface StockMouvementRepository extends JpaRepository<StockMouvement, 
     // Tous les mouvements d'un certain type (ENTREE, VENTE, etc.)
     List<StockMouvement> findByType(TypeMouvement type);
     List<StockMouvement> findByVoiture_Id(Long voitureId);
+
+    @org.springframework.data.jpa.repository.Query(
+        "SELECT m FROM StockMouvement m " +
+        "LEFT JOIN FETCH m.voiture v " +
+        "LEFT JOIN FETCH v.modele mo " +
+        "LEFT JOIN FETCH mo.marque " +
+        "ORDER BY m.dateMouvement DESC"
+    )
+    List<StockMouvement> findAllWithVoiture();
 }

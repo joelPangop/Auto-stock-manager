@@ -1,7 +1,10 @@
 export interface Mouvement {
   id: number;
-  voitureId: number;
-  type: 'ENTREE' | 'SORTIE' | 'AJUSTEMENT';
-  dateMouvement: string; // ISO
+  voitureId?: number;
+  voitureLabel?: string;
+  voitureStatut?: string;
+  type: string;
+  typeLabel?: string;
+  dateMouvement: string;
   commentaire?: string;
 }

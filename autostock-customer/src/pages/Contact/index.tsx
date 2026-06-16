@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Phone, Mail, MapPin, Clock, CheckCircle } from 'lucide-react'
 import { contactApi } from '@/api/contact'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const schema = z.object({
   nom: z.string().min(2, 'Nom requis'),
@@ -20,6 +21,7 @@ const inputClass = "w-full bg-[#1a1a1a] border border-[#2a2a2a] focus:border-red
 export default function Contact() {
   const [params] = useSearchParams()
   const vehiculeId = params.get('vehiculeId')
+  const { t } = useTranslation()
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -34,10 +36,10 @@ export default function Contact() {
   })
 
   const infos = [
-    { icon: Phone,   label: 'Téléphone',  value: '+1 (438) 507-2586',    href: 'tel:+14385072586' },
-    { icon: Mail,    label: 'Email',      value: 'contact@tedauto.com',   href: 'mailto:contact@tedauto.com' },
-    { icon: MapPin,  label: 'Adresse',    value: 'Votre ville, QC, Canada', href: undefined },
-    { icon: Clock,   label: 'Horaires',   value: 'Lun–Sam : 9h–18h',     href: undefined },
+    { icon: Phone,   label: t('contact.telephone'),  value: '+1 (438) 507-2586',    href: 'tel:+14385072586' },
+    { icon: Mail,    label: t('contact.email'),      value: 'contact@tedauto.com',   href: 'mailto:contact@tedauto.com' },
+    { icon: MapPin,  label: t('contact.adresse'),    value: 'Votre ville, QC, Canada', href: undefined },
+    { icon: Clock,   label: t('contact.horaires'),   value: t('contact.horaires_val'),  href: undefined },
   ]
 
   return (
@@ -45,9 +47,9 @@ export default function Contact() {
 
       {/* En-tête */}
       <div className="mb-12 text-center">
-        <p className="text-red-500 text-sm font-medium tracking-widest uppercase mb-2">On est là pour vous</p>
+        <p className="text-red-500 text-sm font-medium tracking-widest uppercase mb-2">{t('contact.sous_titre')}</p>
         <h1 className="text-4xl font-black text-white">
-          NOUS <span className="text-red-600">CONTACTER</span>
+          {t('contact.titre')} <span className="text-red-600">{t('contact.titre_accent')}</span>
         </h1>
         <div className="flex items-center justify-center gap-3 mt-4">
           <div className="h-px w-16 bg-red-600" />
@@ -61,7 +63,7 @@ export default function Contact() {
         {/* Infos de contact */}
         <div className="md:col-span-2 flex flex-col gap-5">
           <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-6">
-            <h2 className="text-white font-bold mb-5">Nos coordonnées</h2>
+            <h2 className="text-white font-bold mb-5">{t('contact.nos_coords')}</h2>
             <ul className="flex flex-col gap-4">
               {infos.map(({ icon: Icon, label, value, href }) => (
                 <li key={label} className="flex items-start gap-3">
@@ -84,9 +86,9 @@ export default function Contact() {
           </div>
 
           <div className="bg-red-600 rounded-xl p-6">
-            <p className="text-white font-bold text-lg mb-2">Réponse rapide</p>
+            <p className="text-white font-bold text-lg mb-2">{t('contact.reponse_rapide')}</p>
             <p className="text-red-100 text-sm leading-relaxed">
-              Notre équipe s'engage à vous répondre dans les 24h ouvrables. Pour une réponse immédiate, appelez-nous directement.
+              {t('contact.reponse_rapide_desc')}
             </p>
           </div>
         </div>
@@ -94,24 +96,24 @@ export default function Contact() {
         {/* Formulaire */}
         <div className="md:col-span-3">
           <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-6">
-            <h2 className="text-white font-bold mb-5">Envoyer un message</h2>
+            <h2 className="text-white font-bold mb-5">{t('contact.envoyer_msg')}</h2>
 
             {isSuccess && (
               <div className="flex items-center gap-3 bg-green-900/30 border border-green-800/50 text-green-400 text-sm px-4 py-3 rounded-lg mb-5">
                 <CheckCircle size={18} />
-                Message envoyé ! Nous vous répondrons très prochainement.
+                {t('contact.msg_envoye')}
               </div>
             )}
 
             <form onSubmit={handleSubmit(d => mutate(d))} className="flex flex-col gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Nom complet</label>
+                  <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">{t('contact.nom_complet')}</label>
                   <input {...register('nom')} placeholder="Jean Dupont" className={inputClass} />
                   {errors.nom && <p className="text-red-500 text-xs mt-1">{errors.nom.message}</p>}
                 </div>
                 <div>
-                  <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Téléphone</label>
+                  <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">{t('contact.telephone')}</label>
                   <input {...register('telephone')} type="tel" placeholder="+1 (514) 000-0000" className={inputClass} />
                 </div>
               </div>
@@ -123,22 +125,22 @@ export default function Contact() {
               </div>
 
               <div>
-                <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Sujet</label>
-                <input {...register('sujet')} placeholder="Objet de votre message" className={inputClass} />
+                <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">{t('contact.sujet')}</label>
+                <input {...register('sujet')} placeholder={t('contact.sujet_placeholder')} className={inputClass} />
                 {errors.sujet && <p className="text-red-500 text-xs mt-1">{errors.sujet.message}</p>}
               </div>
 
               <div>
-                <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">Message</label>
+                <label className="text-gray-400 text-xs uppercase tracking-wider mb-1.5 block">{t('contact.message')}</label>
                 <textarea {...register('message')} rows={5}
-                  placeholder="Décrivez votre demande en détail…"
+                  placeholder={t('contact.message_placeholder')}
                   className={`${inputClass} resize-none`} />
                 {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
               </div>
 
               <button type="submit" disabled={isPending}
                 className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors">
-                {isPending ? 'Envoi en cours…' : 'Envoyer le message'}
+                {isPending ? t('contact.envoi_en_cours') : t('contact.envoyer')}
               </button>
             </form>
           </div>

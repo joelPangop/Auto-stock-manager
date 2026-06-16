@@ -3,6 +3,7 @@ package org.autostock.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.autostock.enums.CategorieVoiture;
 import org.autostock.enums.StatutVoiture;
 
 import java.math.BigDecimal;
@@ -40,6 +41,9 @@ public class Voiture extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatutVoiture statut = StatutVoiture.EN_STOCK;
+
+    @Enumerated(EnumType.STRING)
+    private CategorieVoiture categorie;
 
     @OneToMany(mappedBy = "voiture")
     private List<StockMouvement> mouvements = new ArrayList<>();

@@ -20,6 +20,8 @@ public class VoitureDetailDto {
     private BigDecimal prixAchat;
     private BigDecimal prixVente;
     private String statut;
+    private String categorie;
+    private String categorieLabel;
     private LocalDateTime dateEntreeStock;
     private Long kilometrage;
     private Long owner;

@@ -4,11 +4,13 @@ import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { catalogueApi } from '@/api/catalogue'
 import { VehicleCard } from '@/components/VehicleCard'
 import type { FiltresCatalogue } from '@/types'
+import { useTranslation } from 'react-i18next'
 
 export default function Catalogue() {
   const [filtres, setFiltres] = useState<FiltresCatalogue>({ page: 0, size: 12 })
   const [search, setSearch] = useState('')
   const [showFiltres, setShowFiltres] = useState(false)
+  const { t } = useTranslation()
 
   const { data, isLoading } = useQuery({
     queryKey: ['vehicules', filtres, search],
@@ -25,25 +27,25 @@ export default function Catalogue() {
     setFiltres(f => ({ ...f, page: 0 }))
   }
 
+  const total = data?.totalElements ?? 0
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-      {/* En-tête */}
       <div className="mb-8">
-        <p className="text-red-500 text-sm font-medium tracking-widest uppercase mb-1">Tous nos véhicules</p>
+        <p className="text-red-500 text-sm font-medium tracking-widest uppercase mb-1">{t('catalogue.sous_titre')}</p>
         <h1 className="text-3xl font-black text-white">
-          NOTRE <span className="text-red-600">CATALOGUE</span>
+          {t('catalogue.titre')} <span className="text-red-600">{t('catalogue.titre_accent')}</span>
         </h1>
         <div className="w-12 h-0.5 bg-red-600 mt-3" />
       </div>
 
-      {/* Barre de recherche */}
       <form onSubmit={handleSearch} className="flex flex-wrap gap-3 mb-6">
         <div className="flex-1 relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
-            placeholder="Rechercher une marque, un modèle…"
+            placeholder={t('catalogue.rechercher')}
             value={search}
             onChange={e => { setSearch(e.target.value); setFiltres(f => ({ ...f, page: 0 })) }}
             className="w-full pl-9 pr-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-white placeholder-gray-600 rounded focus:outline-none focus:border-red-600 text-sm transition-colors"
@@ -59,35 +61,34 @@ export default function Catalogue() {
           onClick={() => setShowFiltres(!showFiltres)}
           className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-gray-300 hover:border-red-600 rounded text-sm transition-colors">
           <SlidersHorizontal size={16} />
-          Filtres
+          {t('catalogue.filtres')}
         </button>
         <button type="submit"
           className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded text-sm transition-colors">
-          Rechercher
+          {t('catalogue.bouton_rechercher')}
         </button>
       </form>
 
-      {/* Filtres avancés */}
       {showFiltres && (
         <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-5 mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="text-gray-500 text-xs uppercase tracking-wider mb-1.5 block">Marque</label>
+            <label className="text-gray-500 text-xs uppercase tracking-wider mb-1.5 block">{t('catalogue.marque')}</label>
             <select value={filtres.marque ?? ''}
               onChange={e => setFiltres(f => ({ ...f, marque: e.target.value || undefined, page: 0 }))}
               className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded px-3 py-2 text-sm focus:outline-none focus:border-red-600">
-              <option value="">Toutes</option>
+              <option value="">{t('catalogue.toutes')}</option>
               {marques?.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-gray-500 text-xs uppercase tracking-wider mb-1.5 block">Prix max ($)</label>
+            <label className="text-gray-500 text-xs uppercase tracking-wider mb-1.5 block">{t('catalogue.prix_max')}</label>
             <input type="number" placeholder="Ex: 25000"
               value={filtres.prixMax ?? ''}
               onChange={e => setFiltres(f => ({ ...f, prixMax: e.target.value ? +e.target.value : undefined, page: 0 }))}
               className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded px-3 py-2 text-sm focus:outline-none focus:border-red-600" />
           </div>
           <div>
-            <label className="text-gray-500 text-xs uppercase tracking-wider mb-1.5 block">Année min</label>
+            <label className="text-gray-500 text-xs uppercase tracking-wider mb-1.5 block">{t('catalogue.annee_min')}</label>
             <input type="number" placeholder="Ex: 2018"
               value={filtres.anneeMin ?? ''}
               onChange={e => setFiltres(f => ({ ...f, anneeMin: e.target.value ? +e.target.value : undefined, page: 0 }))}
@@ -96,13 +97,12 @@ export default function Catalogue() {
           <div className="flex items-end">
             <button onClick={() => { setFiltres({ page: 0, size: 12 }); setSearch('') }}
               className="w-full py-2 border border-[#2a2a2a] hover:border-red-600 text-gray-400 hover:text-red-500 rounded text-sm transition-colors">
-              Réinitialiser
+              {t('catalogue.reinitialiser')}
             </button>
           </div>
         </div>
       )}
 
-      {/* Résultats */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -119,19 +119,18 @@ export default function Catalogue() {
       ) : data?.content.length === 0 ? (
         <div className="text-center py-20 text-gray-600">
           <p className="text-5xl mb-4">🚗</p>
-          <p className="text-lg font-medium text-gray-500">Aucun véhicule trouvé</p>
-          <p className="text-sm mt-1">Essayez d'autres critères de recherche</p>
+          <p className="text-lg font-medium text-gray-500">{t('catalogue.aucun_titre')}</p>
+          <p className="text-sm mt-1">{t('catalogue.aucun_desc')}</p>
         </div>
       ) : (
         <>
           <p className="text-gray-500 text-sm mb-4">
-            {data?.totalElements} véhicule{(data?.totalElements ?? 0) > 1 ? 's' : ''} trouvé{(data?.totalElements ?? 0) > 1 ? 's' : ''}
+            {total} {total > 1 ? t('catalogue.vehicule_pluriel') : t('catalogue.vehicule')} {total > 1 ? t('catalogue.trouves') : t('catalogue.trouve')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {data?.content.map(v => <VehicleCard key={v.id} vehicule={v} />)}
           </div>
 
-          {/* Pagination */}
           {(data?.totalPages ?? 0) > 1 && (
             <div className="flex justify-center gap-2 mt-10">
               {Array.from({ length: data!.totalPages }).map((_, i) => (

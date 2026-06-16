@@ -1,4 +1,5 @@
 import {StatutVoiture} from "./enums/StatutVoiture";
+import {CategorieVoiture} from "./enums/CategorieVoiture";
 
 export interface VoitureCreateDto {
   marque: string;
@@ -9,7 +10,8 @@ export interface VoitureCreateDto {
   kilometrage?: number;
   prixAchat?: number;
   prixVente?: number;
-  statut?: StatutVoiture;     // par défaut: EN_STOCK
+  statut?: StatutVoiture;
+  categorie?: CategorieVoiture;
   idFournisseur?: number;
   dateEntreeStock?: string;   // 'YYYY-MM-DD'
   creerMouvementEntree?: boolean; // true => crée un mouvement "ENTREE_STOCK"

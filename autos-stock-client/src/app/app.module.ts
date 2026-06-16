@@ -1,5 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -126,7 +133,11 @@ import { VenteEditDialogComponent } from './pages/features/ventes/vente-edit-dia
     MatProgressBarModule,
     RouterModule,
     ChartsModule,
-    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule, MatChipsModule
+    HttpClientModule, MatTabsModule, MatSelectModule, MatDialogModule, MatCheckboxModule, MatSlideToggleModule, MatChipsModule,
+    TranslateModule.forRoot({
+      loader: { provide: TranslateLoader, useFactory: HttpLoaderFactory, deps: [HttpClient] },
+      defaultLanguage: 'fr'
+    })
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]

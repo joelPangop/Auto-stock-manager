@@ -1,21 +1,30 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Menu, X, LogOut, User, Phone } from 'lucide-react'
+import { Menu, X, LogOut, User, Phone, Globe } from 'lucide-react'
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { clsx } from 'clsx'
+import { useTranslation } from 'react-i18next'
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
   const { isAuthenticated, client, logout } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
+  const { t, i18n } = useTranslation()
 
   const handleLogout = () => { logout(); navigate('/') }
 
+  const setLang = (lang: string) => {
+    i18n.changeLanguage(lang)
+    localStorage.setItem('i18nextLng', lang)
+    setLangOpen(false)
+  }
+
   const links = [
-    { to: '/',          label: 'Accueil' },
-    { to: '/catalogue', label: 'Catalogue' },
-    { to: '/contact',   label: 'Contact' },
+    { to: '/',          label: t('nav.accueil') },
+    { to: '/catalogue', label: t('nav.catalogue') },
+    { to: '/contact',   label: t('nav.contact') },
   ]
 
   const isActive = (to: string) =>
@@ -45,7 +54,7 @@ export function Navbar() {
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
               <div className="hidden sm:block">
                 <div className="text-white font-bold text-lg leading-none tracking-wide">TED AUTO</div>
-                <div className="text-red-600 text-[10px] tracking-widest uppercase">Vente de voitures usagées</div>
+                <div className="text-red-600 text-[10px] tracking-widest uppercase">{t('nav.slogan')}</div>
               </div>
             </Link>
 
@@ -64,7 +73,7 @@ export function Navbar() {
               ))}
             </div>
 
-            {/* Auth desktop */}
+            {/* Auth + Lang desktop */}
             <div className="hidden md:flex items-center gap-3">
               {isAuthenticated ? (
                 <>
@@ -82,14 +91,36 @@ export function Navbar() {
                 <>
                   <Link to="/login"
                     className="text-sm text-gray-300 hover:text-white transition-colors px-3 py-1.5">
-                    Connexion
+                    {t('nav.connexion')}
                   </Link>
                   <Link to="/register"
                     className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded transition-colors">
-                    S'inscrire
+                    {t('nav.inscrire')}
                   </Link>
                 </>
               )}
+
+              {/* Sélecteur de langue */}
+              <div className="relative">
+                <button
+                  onClick={() => setLangOpen(!langOpen)}
+                  className="flex items-center gap-1.5 text-gray-400 hover:text-white text-xs px-2 py-1.5 rounded border border-[#2a2a2a] hover:border-gray-500 transition-colors">
+                  <Globe size={13} />
+                  {i18n.language === 'en' ? 'EN' : 'FR'}
+                </button>
+                {langOpen && (
+                  <div className="absolute right-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded shadow-lg z-50 min-w-[110px]">
+                    <button onClick={() => setLang('fr')}
+                      className={clsx('w-full text-left px-3 py-2 text-xs hover:bg-white/5 transition-colors', i18n.language === 'fr' ? 'text-red-500 font-bold' : 'text-gray-300')}>
+                      🇫🇷 {t('lang.fr')}
+                    </button>
+                    <button onClick={() => setLang('en')}
+                      className={clsx('w-full text-left px-3 py-2 text-xs hover:bg-white/5 transition-colors', i18n.language === 'en' ? 'text-red-500 font-bold' : 'text-gray-300')}>
+                      🇬🇧 {t('lang.en')}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Burger mobile */}
@@ -113,18 +144,28 @@ export function Navbar() {
             {isAuthenticated ? (
               <>
                 <Link to="/mon-compte" onClick={() => setOpen(false)}
-                  className="px-3 py-2 text-sm text-gray-300">Mon compte</Link>
+                  className="px-3 py-2 text-sm text-gray-300">{t('nav.mon_compte')}</Link>
                 <button onClick={handleLogout}
-                  className="px-3 py-2 text-sm text-left text-red-500">Se déconnecter</button>
+                  className="px-3 py-2 text-sm text-left text-red-500">{t('nav.deconnecter')}</button>
               </>
             ) : (
               <>
                 <Link to="/login" onClick={() => setOpen(false)}
-                  className="px-3 py-2 text-sm text-gray-300">Connexion</Link>
+                  className="px-3 py-2 text-sm text-gray-300">{t('nav.connexion')}</Link>
                 <Link to="/register" onClick={() => setOpen(false)}
-                  className="px-3 py-2 text-sm text-red-500 font-medium">S'inscrire</Link>
+                  className="px-3 py-2 text-sm text-red-500 font-medium">{t('nav.inscrire')}</Link>
               </>
             )}
+            <div className="border-t border-[#2a2a2a] my-1 pt-2 flex gap-2 px-3">
+              <button onClick={() => setLang('fr')}
+                className={clsx('text-xs px-2 py-1 rounded border', i18n.language === 'fr' ? 'border-red-600 text-red-500' : 'border-[#2a2a2a] text-gray-400')}>
+                🇫🇷 FR
+              </button>
+              <button onClick={() => setLang('en')}
+                className={clsx('text-xs px-2 py-1 rounded border', i18n.language === 'en' ? 'border-red-600 text-red-500' : 'border-[#2a2a2a] text-gray-400')}>
+                🇬🇧 EN
+              </button>
+            </div>
           </div>
         )}
       </nav>

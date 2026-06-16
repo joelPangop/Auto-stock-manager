@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/store/authStore'
+import { useTranslation } from 'react-i18next'
 
 const schema = z.object({
   nom: z.string().min(2, 'Nom requis (min. 2 caractères)'),
@@ -31,6 +32,7 @@ const inputClass = "w-full bg-[#1a1a1a] border border-[#2a2a2a] focus:border-red
 export default function Register() {
   const navigate = useNavigate()
   const { login } = useAuthStore()
+  const { t } = useTranslation()
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   const { mutate, isPending, error } = useMutation({
@@ -44,44 +46,44 @@ export default function Register() {
         <div className="text-center mb-8">
           <img src="/assets/logo.jpg" alt="Ted Auto" className="h-16 mx-auto object-contain mb-4"
             onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-          <h1 className="text-2xl font-black text-white">Créer un compte</h1>
-          <p className="text-gray-500 text-sm mt-1">Accédez à l'espace client Ted Auto</p>
+          <h1 className="text-2xl font-black text-white">{t('auth.creer_compte')}</h1>
+          <p className="text-gray-500 text-sm mt-1">{t('auth.acces_espace_ted')}</p>
         </div>
 
         <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-6">
           {error && (
             <div className="bg-red-900/30 border border-red-800/50 text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
-              Une erreur est survenue. Cet email est peut-être déjà utilisé.
+              {t('auth.erreur_register')}
             </div>
           )}
 
           <form onSubmit={handleSubmit(d => mutate(d))} className="flex flex-col gap-4">
-            <Field label="Nom complet" error={errors.nom?.message}>
+            <Field label={t('auth.nom_complet')} error={errors.nom?.message}>
               <input {...register('nom')} placeholder="Jean Dupont" className={inputClass} />
             </Field>
             <Field label="Email" error={errors.email?.message}>
               <input {...register('email')} type="email" placeholder="jean@exemple.com" className={inputClass} />
             </Field>
-            <Field label="Téléphone (optionnel)" error={errors.telephone?.message}>
+            <Field label={t('auth.telephone_opt')} error={errors.telephone?.message}>
               <input {...register('telephone')} type="tel" placeholder="+1 (514) 000-0000" className={inputClass} />
             </Field>
-            <Field label="Mot de passe" error={errors.motDePasse?.message}>
-              <input {...register('motDePasse')} type="password" placeholder="Minimum 6 caractères" className={inputClass} />
+            <Field label={t('auth.mot_de_passe')} error={errors.motDePasse?.message}>
+              <input {...register('motDePasse')} type="password" placeholder={t('auth.min_6')} className={inputClass} />
             </Field>
-            <Field label="Confirmer le mot de passe" error={errors.confirmMotDePasse?.message}>
+            <Field label={t('auth.confirmer_mdp')} error={errors.confirmMotDePasse?.message}>
               <input {...register('confirmMotDePasse')} type="password" placeholder="••••••••" className={inputClass} />
             </Field>
 
             <button type="submit" disabled={isPending}
               className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-colors mt-2">
-              {isPending ? 'Création du compte…' : 'Créer mon compte'}
+              {isPending ? t('auth.creation_en_cours') : t('auth.creer_mon_compte')}
             </button>
           </form>
         </div>
 
         <p className="text-center text-gray-500 text-sm mt-5">
-          Déjà inscrit ?{' '}
-          <Link to="/login" className="text-red-500 hover:text-red-400 font-medium">Se connecter</Link>
+          {t('auth.deja_inscrit')}{' '}
+          <Link to="/login" className="text-red-500 hover:text-red-400 font-medium">{t('auth.se_connecter')}</Link>
         </p>
       </div>
     </div>

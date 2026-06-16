@@ -3,13 +3,13 @@
   <!-- Résumé + Chart -->
   <div class="top" *ngIf="dashboard$ | async as dash; else loadingDash">
     <mat-card class="card">
-      <div class="h">Total dépenses</div>
+      <div class="h">{{ 'DEPENSES.TOTAL' | translate }}</div>
       <div class="v">{{ dash.total | number:'1.2-2' }} $</div>
-      <div class="s">Période: {{ depStart }} → {{ depEnd }}</div>
+      <div class="s">{{ 'DEPENSES.PERIODE' | translate }}: {{ depStart }} → {{ depEnd }}</div>
     </mat-card>
 
     <mat-card class="card chart">
-      <div class="h">Dépenses mensuelles</div>
+      <div class="h">{{ 'DEPENSES.DEPENSES_MENSUELLES' | translate }}</div>
       <canvas baseChart
               [datasets]="barChartData"
               [labels]="barChartLabels"
@@ -21,20 +21,20 @@
   </div>
 
   <ng-template #loadingDash>
-    <div class="muted">Chargement…</div>
+    <div class="muted">{{ 'COMMON.CHARGEMENT_EN_COURS' | translate }}</div>
   </ng-template>
 
   <!-- Actions -->
   <div class="row">
     <button mat-stroked-button color="primary" (click)="toggleForm()" *ngIf="isOwner">
-      <mat-icon>add</mat-icon>&nbsp;Ajouter une dépense
+      <mat-icon>add</mat-icon>&nbsp;{{ 'DEPENSES.AJOUTER' | translate }}
     </button>
 
     <span class="spacer"></span>
 
     <mat-slide-toggle [checked]="onlyUnjustified"
                       (change)="setOnlyUnjustified($event.checked)">
-      Non justifiées
+      {{ 'DEPENSES.NON_JUSTIFIEES' | translate }}
     </mat-slide-toggle>
   </div>
 
@@ -44,23 +44,22 @@
       <table mat-table [dataSource]="pageVm.items" class="mat-elevation-z0">
 
         <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'DEPENSES.DATE' | translate }}</th>
           <td mat-cell *matCellDef="let d">{{ d.dateDepense }}</td>
         </ng-container>
 
         <ng-container matColumnDef="categorie">
-          <th mat-header-cell *matHeaderCellDef>Catégorie</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'DEPENSES.CATEGORIE' | translate }}</th>
           <td mat-cell *matCellDef="let d">{{ d.categorie }}</td>
         </ng-container>
 
         <ng-container matColumnDef="montant">
-          <th mat-header-cell *matHeaderCellDef>Montant</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'DEPENSES.MONTANT' | translate }}</th>
           <td mat-cell *matCellDef="let d">{{ d.montant | number:'1.2-2' }} $</td>
         </ng-container>
 
         <ng-container matColumnDef="fournisseur">
-          <th mat-header-cell *matHeaderCellDef>Fournisseur</th>
-
+          <th mat-header-cell *matHeaderCellDef>{{ 'DEPENSES.FOURNISSEUR' | translate }}</th>
           <td mat-cell *matCellDef="let d">
             <ng-container *ngIf="getFournisseur$(d.fournisseurId) | async as f">
               {{ f.nom }} ({{f.type}})
@@ -69,27 +68,28 @@
         </ng-container>
 
         <ng-container matColumnDef="justif">
-          <th mat-header-cell *matHeaderCellDef>Justif</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'DEPENSES.JUSTIF' | translate }}</th>
           <td mat-cell *matCellDef="let d">
-          <span
-            [matTooltip]="(d.documentId ? 'Document #' + d.documentId : 'Document: —') + ' | ' + (d.entretienId ? 'Entretien #' + d.entretienId : 'Entretien: —')"
-            matTooltipPosition="above">
-            {{ (d.documentId || d.entretienId) ? 'OK' : 'Aucun' }}
-          </span>
+            <span
+              [matTooltip]="(d.documentId ? 'Document #' + d.documentId : 'Document: —') + ' | ' + (d.entretienId ? 'Entretien #' + d.entretienId : 'Entretien: —')"
+              matTooltipPosition="above">
+              {{ (d.documentId || d.entretienId) ? 'OK' : ('COMMON.AUCUN' | translate) }}
+            </span>
           </td>
         </ng-container>
+
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let d">
-            <button mat-icon-button color="primary" (click)="toggleForm(d.id)" *ngIf="isOwner" matTooltip="Visualiser">
+            <button mat-icon-button color="primary" (click)="toggleForm(d.id)" *ngIf="isOwner" [matTooltip]="'COMMON.VISUALISER' | translate">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="remove(d.id)" *ngIf="isOwner" matTooltip="Supprimer">
+            <button mat-icon-button color="warn" (click)="remove(d.id)" *ngIf="isOwner" [matTooltip]="'COMMON.SUPPRIMER' | translate">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>
-<!--        &nbsp-->
+
         <tr mat-header-row *matHeaderRowDef="depColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: depColumns;"></tr>
       </table>
@@ -106,5 +106,5 @@
 </div>
 
 <ng-template #noId>
-  <div class="muted">VoitureId non disponible…</div>
+  <div class="muted">{{ 'DEPENSES.VOITURE_NON_DISPO' | translate }}</div>
 </ng-template>

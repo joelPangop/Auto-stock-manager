@@ -1,4 +1,5 @@
 import {StatutVoiture} from "./enums/StatutVoiture";
+import {CategorieVoiture} from "./enums/CategorieVoiture";
 
 export interface VoitureDetailDto {
   owner: number;
@@ -14,6 +15,8 @@ export interface VoitureDetailDto {
   couleur?: string;
   kilometrage?: number;
   statut: StatutVoiture;
+  categorie?: CategorieVoiture;
+  categorieLabel?: string;
   createdAt?: string;
   updatedAt?: string;
   dateEntreeStock?: string;

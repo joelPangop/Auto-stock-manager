@@ -1,6 +1,6 @@
-<div class="header"><h2>Clients</h2><span class="spacer"></span>
+<div class="header"><h2>{{ 'CLIENTS.TITRE' | translate }}</h2><span class="spacer"></span>
   <button mat-stroked-button color="primary" (click)="reload()">
-    <mat-icon>refresh</mat-icon>&nbsp;Rafraîchir
+    <mat-icon>refresh</mat-icon>&nbsp;{{ 'COMMON.RAFRAICHIR' | translate }}
   </button>
 </div>
 <mat-card class="card">
@@ -11,28 +11,28 @@
         <td mat-cell *matCellDef="let r">{{ r.id }}</td>
       </ng-container>
       <ng-container matColumnDef="nom">
-        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'CLIENTS.NOM' | translate }}</th>
         <td mat-cell *matCellDef="let r">{{ r.nom }}</td>
       </ng-container>
       <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'CLIENTS.EMAIL' | translate }}</th>
         <td mat-cell *matCellDef="let r">{{ r.email || '—' }}</td>
       </ng-container>
       <ng-container matColumnDef="telephone">
-        <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'CLIENTS.TELEPHONE' | translate }}</th>
         <td mat-cell *matCellDef="let r">{{ r.telephone || '—' }}</td>
       </ng-container>
       <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef>Créé</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'CLIENTS.CREE' | translate }}</th>
         <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'short' }}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'CLIENTS.ACTIONS' | translate }}</th>
         <td mat-cell *matCellDef="let r">
-          <button mat-icon-button color="primary" (click)="edit(r)" *ngIf="isAdmin" matTooltip="Modifier">
+          <button mat-icon-button color="primary" (click)="edit(r)" *ngIf="isAdmin" [matTooltip]="'COMMON.MODIFIER' | translate">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="remove(r)" matTooltip="Supprimer">
+          <button mat-icon-button color="warn" (click)="remove(r)" [matTooltip]="'COMMON.SUPPRIMER' | translate">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

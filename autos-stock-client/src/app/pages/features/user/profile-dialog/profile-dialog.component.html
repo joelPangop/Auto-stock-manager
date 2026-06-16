@@ -4,7 +4,7 @@
       <img *ngIf="user?.avatarUrl; else icon" [src]="user?.avatarUrl" class="avatar">
       <ng-template #icon><mat-icon>account_circle</mat-icon></ng-template>
     </div>
-    <mat-card-title>{{ user?.nom || 'Utilisateur' }}</mat-card-title>
+    <mat-card-title>{{ user?.nom || ('PROFILE.UTILISATEUR' | translate) }}</mat-card-title>
     <mat-card-subtitle>{{ user?.email }}</mat-card-subtitle>
   </mat-card-header>
 
@@ -13,21 +13,21 @@
   <mat-list>
     <mat-list-item (click)="gotoProfile()">
       <mat-icon matListItemIcon>person</mat-icon>
-      <div matListItemTitle>Mon profil</div>
+      <div matListItemTitle>{{ 'PROFILE.MON_PROFIL' | translate }}</div>
       <span class="spacer"></span>
-      <div matListItemLine>Informations du compte</div>
+      <div matListItemLine>{{ 'PROFILE.INFO_COMPTE' | translate }}</div>
     </mat-list-item>
 
     <mat-list-item (click)="gotoSettings()">
       <mat-icon matListItemIcon>settings</mat-icon>
-      <div matListItemTitle>Paramètres</div>
+      <div matListItemTitle>{{ 'PROFILE.PARAMETRES' | translate }}</div>
       <span class="spacer"></span>
-      <div matListItemLine>Préférences</div>
+      <div matListItemLine>{{ 'PROFILE.PREFERENCES' | translate }}</div>
     </mat-list-item>
 
     <mat-list-item (click)="logout()">
       <mat-icon matListItemIcon>logout</mat-icon>
-      <div matListItemTitle>Déconnexion</div>
+      <div matListItemTitle>{{ 'PROFILE.DECONNEXION' | translate }}</div>
     </mat-list-item>
   </mat-list>
 </mat-card>

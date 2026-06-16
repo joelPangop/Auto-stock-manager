@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 @Setter
 public class StockMouvementDto {
     private Long id;
-    private String type;        // "IN", "OUT", "SALE"...
-    private String typeLabel;   // "Entrée en stock", "Vente effectuée"...
+    private String type;
+    private String typeLabel;
     private LocalDateTime dateMouvement;
     private String commentaire;
-
-    // getters / setters
+    private Long voitureId;
+    private String voitureLabel;
+    private String voitureStatut;
 }

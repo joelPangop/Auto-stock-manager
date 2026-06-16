@@ -1,62 +1,62 @@
-<h2 mat-dialog-title>Nouvelle vente</h2>
+<h2 mat-dialog-title>{{ 'VENTES.NOUVELLE_VENTE' | translate }}</h2>
 
 <mat-dialog-content [formGroup]="form" class="grid">
   <mat-form-field appearance="outline">
-    <mat-label>Client</mat-label>
+    <mat-label>{{ 'VENTES.CLIENT' | translate }}</mat-label>
     <mat-select formControlName="idClient">
       <mat-option *ngFor="let c of clients" [value]="c.id">
         {{ c.nom }} <span *ngIf="c.email">({{ c.email }})</span>
       </mat-option>
       <mat-divider></mat-divider>
-      <mat-option  (click)="openNewClientDialog()">
-          <mat-icon>person_add</mat-icon> Ajouter un client
+      <mat-option (click)="openNewClientDialog()">
+        <mat-icon>person_add</mat-icon> {{ 'VENTES.AJOUTER_CLIENT' | translate }}
       </mat-option>
     </mat-select>
-    <mat-error *ngIf="form.get('idClient')?.hasError('required')">Obligatoire</mat-error>
+    <mat-error *ngIf="form.get('idClient')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Vendeur</mat-label>
+    <mat-label>{{ 'VENTES.VENDEUR' | translate }}</mat-label>
     <mat-select formControlName="idVendeur">
       <mat-option *ngFor="let u of vendeurs" [value]="u.id">
         {{ u.nom }} — {{ u.role }}
       </mat-option>
     </mat-select>
-    <mat-error *ngIf="form.get('idVendeur')?.hasError('required')">Obligatoire</mat-error>
+    <mat-error *ngIf="form.get('idVendeur')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Date de vente</mat-label>
+    <mat-label>{{ 'VENTES.DATE_VENTE' | translate }}</mat-label>
     <input matInput type="date" formControlName="dateVente">
-    <mat-error *ngIf="form.get('dateVente')?.hasError('required')">Obligatoire</mat-error>
+    <mat-error *ngIf="form.get('dateVente')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Prix final (CAD)</mat-label>
+    <mat-label>{{ 'VENTES.PRIX_FINAL' | translate }}</mat-label>
     <input matInput type="number" formControlName="prixFinal">
-    <mat-error *ngIf="form.get('prixFinal')?.hasError('required')">Obligatoire</mat-error>
+    <mat-error *ngIf="form.get('prixFinal')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Méthode de paiement</mat-label>
+    <mat-label>{{ 'VENTES.METHODE_PAIEMENT' | translate }}</mat-label>
     <mat-select formControlName="modePaiement">
       <mat-option *ngFor="let m of modes" [value]="m.value">{{ m.label }}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Acompte (optionnel)</mat-label>
+    <mat-label>{{ 'VENTES.ACOMPTE' | translate }}</mat-label>
     <input matInput type="number" formControlName="acompteMontant" placeholder="ex: 1000">
   </mat-form-field>
 
   <mat-error *ngIf="form.errors?.api" class="api-error">
-    Erreur lors de l’enregistrement. Réessaie.
+    {{ 'VENTES.ERREUR_API' | translate }}
   </mat-error>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-stroked-button (click)="cancel()">Annuler</button>
+  <button mat-stroked-button (click)="cancel()">{{ 'COMMON.ANNULER' | translate }}</button>
   <button mat-flat-button color="primary" (click)="save()" [disabled]="loading || form.invalid">
-    <mat-icon>save</mat-icon>&nbsp;Enregistrer
+    <mat-icon>save</mat-icon>&nbsp;{{ 'COMMON.ENREGISTRER' | translate }}
   </button>
 </mat-dialog-actions>

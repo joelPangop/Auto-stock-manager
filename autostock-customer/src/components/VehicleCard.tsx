@@ -3,12 +3,14 @@ import { Gauge, Calendar, Tag } from 'lucide-react'
 import type { VehiculePublic } from '@/types'
 import { statutBadge, ReservedSticker } from './ui/Badge'
 import { catalogueApi } from '@/api/catalogue'
+import { useTranslation } from 'react-i18next'
 
 interface Props { vehicule: VehiculePublic }
 
 export function VehicleCard({ vehicule: v }: Props) {
   const photoUrl = v.photoId ? catalogueApi.getPhotoUrl(v.photoId) : null
   const isReserved = v.statut === 'RESERVEE'
+  const { t } = useTranslation()
 
   return (
     <Link to={`/catalogue/${v.id}`}
@@ -73,10 +75,10 @@ export function VehicleCard({ vehicule: v }: Props) {
 
         <div className="mt-auto pt-3 border-t border-[#2a2a2a] flex items-center justify-between">
           <span className="text-red-500 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-            Voir les détails →
+            {t('vehicule.voir_details')} →
           </span>
           {isReserved && (
-            <span className="text-amber-500/70 text-xs font-medium">Réservée</span>
+            <span className="text-amber-500/70 text-xs font-medium">{t('vehicule.reservee')}</span>
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {Router} from "@angular/router";
 import {AuthService} from "./services/auth.service";
+import {LanguageService} from "./services/language.service";
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,8 @@ import {AuthService} from "./services/auth.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(public auth: AuthService, private router: Router) {
+  constructor(public auth: AuthService, private router: Router, private lang: LanguageService) {
+    this.lang.init();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.router.onSameUrlNavigation = 'reload';
   }

@@ -202,6 +202,7 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
         couleur: [voiture.couleur ? voiture.couleur : ''],
         kilometrage: [voiture.kilometrage ? voiture.kilometrage : null, [Validators.min(0)]],
         statut: <StatutVoiture | null>(voiture.statut ? voiture.statut : ''),
+        categorie: [voiture.categorie ?? null],
         idFournisseur: [voiture.idFournisseur ? voiture.idFournisseur : null, [Validators.min(1)]],
         description: [voiture.description ?? '', [Validators.maxLength(5000)]],
       });
@@ -288,7 +289,8 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
       vin: v.vin ?? '',
       couleur: v.couleur ?? '',
       kilometrage: v.kilometrage ?? null,
-      statut: (v as any).etat ?? v.statut,   // selon ton DTO
+      statut: (v as any).etat ?? v.statut,
+      categorie: v.categorie ?? null,
       idFournisseur: v.idFournisseur ?? null
     }, {emitEvent: false});
   }
