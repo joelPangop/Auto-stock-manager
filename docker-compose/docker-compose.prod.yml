@@ -3,24 +3,24 @@
 
 services:
 
-  # Désactiver LocalStack en prod (on utilise le vrai AWS)
+  # Désactiver LocalStack en prod
   localstack:
     profiles:
       - dev-only
 
   autostockmanager:
     environment:
-      # Vide = utilise le vrai AWS SDK (pas de LocalStack)
       AWS_ENDPOINT_OVERRIDE: ""
-      # Ces valeurs viennent du .env sur le serveur
-      AWS_REGION: ${AWS_REGION}
+      AWS_REGION: us-east-1
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AUTOSTOCK_S3_BUCKET: ${AUTOSTOCK_S3_BUCKET}
       AUTOSTOCK_SES_FROM: ${AUTOSTOCK_SES_FROM}
       AUTOSTOCK_SQS_NOTIFICATIONS_URL: ${AUTOSTOCK_SQS_NOTIFICATIONS_URL}
       APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
-    # Supprimer la dépendance à localstack
     depends_on:
       mysql:
         condition: service_healthy
+      localstack:
+        condition: service_healthy
+        required: false
