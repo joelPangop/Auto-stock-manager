@@ -1,0 +1,13 @@
+# Copiez ce fichier en terraform.tfvars et remplissez les valeurs
+# NE JAMAIS committer terraform.tfvars dans git
+
+project        = "autostock"
+aws_region     = "us-east-1"
+s3_bucket_name = "autostock-docs-prod"
+ses_from_email = "noreply@votredomaine.com"
+vps_ip         = "178.156.213.72"
+domain_name    = ""  # laisser vide si pas de domaine encore
+
+# Secrets (ne pas partager)
+jwt_secret_value = "REMPLACER_PAR_VOTRE_JWT_SECRET"
+db_password      = "REMPLACER_PAR_VOTRE_MOT_DE_PASSE_DB"
