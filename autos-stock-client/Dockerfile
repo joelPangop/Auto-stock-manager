@@ -14,7 +14,7 @@ ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN rm -rf build
 
 # Build Angular (prod)
-RUN npm run build
+RUN npm run build -- --prod
 
 # ---------- nginx stage ----------
 FROM nginx:alpine
