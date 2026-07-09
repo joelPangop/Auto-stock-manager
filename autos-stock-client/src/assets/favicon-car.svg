@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Car body silhouette - front view -->
+  <g fill="#1d4ed8">
+    <!-- Main car body -->
+    <ellipse cx="50" cy="62" rx="42" ry="18"/>
+    <!-- Hood/roof -->
+    <path d="M20 62 Q22 38 50 32 Q78 38 80 62 Z"/>
+    <!-- Windshield highlight -->
+    <path d="M30 58 Q32 42 50 37 Q68 42 70 58 Z" fill="#2563eb" opacity="0.6"/>
+    <!-- Left headlight -->
+    <ellipse cx="18" cy="64" rx="8" ry="5" fill="#60a5fa"/>
+    <!-- Right headlight -->
+    <ellipse cx="82" cy="64" rx="8" ry="5" fill="#60a5fa"/>
+    <!-- Front bumper -->
+    <rect x="12" y="72" width="76" height="8" rx="4"/>
+    <!-- Grille -->
+    <rect x="30" y="73" width="40" height="5" rx="2" fill="#1e3a8a"/>
+  </g>
+</svg>
