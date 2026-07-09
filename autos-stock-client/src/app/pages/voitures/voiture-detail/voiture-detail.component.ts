@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+﻿import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, forkJoin, Observable, Subject, Subscription} from 'rxjs';
@@ -111,7 +111,7 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  // id$ réagit à chaque changement d’URL
+  // id$ réagit à chaque changement d'URL
   readonly id$ = this.route.paramMap.pipe(
     map(pm => Number(pm.get('id')))
   );
@@ -221,18 +221,18 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
     shareReplay(1)
   );
 
-  // onglets enfants (chargés à la volée avec l’id)
+  // onglets enfants (chargés à la volée avec l'id)
   private readonly allDocs$: Observable<Document[]> = combineLatest([this.id$, this.refresh$]).pipe(
     switchMap(([id]) => this.dSrv.listByVoiture(id)),
     shareReplay(1)
   );
 
   readonly documents$: Observable<Document[]> = this.allDocs$.pipe(
-    map(docs => docs.filter(d => d.type !== ‘PHOTO’))
+    map(docs => docs.filter(d => d.type !== 'PHOTO'))
   );
 
   readonly photos$: Observable<Document[]> = this.allDocs$.pipe(
-    map(docs => docs.filter(d => d.type === ‘PHOTO’))
+    map(docs => docs.filter(d => d.type === 'PHOTO'))
   );
 
   readonly ventes$: Observable<Vente> = combineLatest([this.id$, this.refresh$]).pipe(
@@ -461,7 +461,7 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
               idModele: v.idModele,
               idFournisseur: v.idFournisseur ?? null,
               prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
-              vendeurId: undefined // ou l'id de l'utilisateur connecté si tu l’as
+              vendeurId: undefined // ou l'id de l'utilisateur connecté si tu l'as
             }
           });
           return ref.afterClosed(); // Observable<boolean | any>
@@ -473,7 +473,7 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
           // this.vSrv.getById(this.id$).subscribe(v => this.vSubject.next(v)); // si tu as un subject
           // // this.reloadChildren();
           //
-          // // OU petit trick de navigation pour forcer un refresh d’Angular :
+          // // OU petit trick de navigation pour forcer un refresh d'Angular :
           // this.router.navigateByUrl('/', { skipLocationChange: true })
           //   .then(() => this.router.navigate(['/voitures', this.id]));
           //
