@@ -15,7 +15,6 @@ export interface FolderVm {
 const TYPE_ICONS: Record<string, string> = {
   FACTURE: 'receipt_long',
   CARFAX: 'history',
-  PHOTO: 'photo_library',
   IMMATRICULATION: 'credit_card',
   INSPECTION: 'fact_check',
   ASSURANCE: 'security',
@@ -47,7 +46,7 @@ export class DocumentsComponent implements OnInit {
     this.error = '';
     this.docSrv.listAll().subscribe({
       next: (docs) => {
-        this.allDocs = docs || [];
+        this.allDocs = (docs || []).filter(d => d.type !== 'PHOTO');
         this.buildFolders(this.allDocs);
       },
       error: (err) => {
@@ -63,7 +62,7 @@ export class DocumentsComponent implements OnInit {
       if (!map.has(key)) { map.set(key, []); }
       map.get(key)!.push(d);
     });
-    const order = ['FACTURE', 'CARFAX', 'IMMATRICULATION', 'INSPECTION', 'ASSURANCE', 'PHOTO', 'AUTRE'];
+    const order = ['FACTURE', 'CARFAX', 'IMMATRICULATION', 'INSPECTION', 'ASSURANCE', 'AUTRE'];
     const sorted = Array.from(map.entries()).sort(([a], [b]) => {
       return (order.indexOf(a) === -1 ? 99 : order.indexOf(a)) -
              (order.indexOf(b) === -1 ? 99 : order.indexOf(b));

@@ -222,13 +222,17 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
   );
 
   // onglets enfants (chargés à la volée avec l’id)
-  readonly documents$: Observable<Document[]> = combineLatest([this.id$, this.refresh$]).pipe(
+  private readonly allDocs$: Observable<Document[]> = combineLatest([this.id$, this.refresh$]).pipe(
     switchMap(([id]) => this.dSrv.listByVoiture(id)),
     shareReplay(1)
   );
 
-  readonly photos$: Observable<Document[]> = this.documents$.pipe(
-    map(docs => docs.filter(d => d.type === "PHOTO"))
+  readonly documents$: Observable<Document[]> = this.allDocs$.pipe(
+    map(docs => docs.filter(d => d.type !== ‘PHOTO’))
+  );
+
+  readonly photos$: Observable<Document[]> = this.allDocs$.pipe(
+    map(docs => docs.filter(d => d.type === ‘PHOTO’))
   );
 
   readonly ventes$: Observable<Vente> = combineLatest([this.id$, this.refresh$]).pipe(
