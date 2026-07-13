@@ -18,9 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.logging.Logger;
 
 @Service
 public class AuthService {
+
+    private static final Logger log = Logger.getLogger(AuthService.class.getName());
 
     @Autowired
     private UserRepository repo;
@@ -125,10 +128,14 @@ public class AuthService {
     }
 
     private void sendWelcomeEmail(String to, String nom, String password) {
-        if (sesEmailService != null) {
-            sesEmailService.sendWelcomePassword(to, nom, password);
-        } else {
-            emailService.sendWelcomePassword(to, nom, password);
+        try {
+            if (sesEmailService != null) {
+                sesEmailService.sendWelcomePassword(to, nom, password);
+            } else {
+                emailService.sendWelcomePassword(to, nom, password);
+            }
+        } catch (Exception e) {
+            log.warning("Email non envoyé à " + to + " : " + e.getMessage());
         }
     }
 
