@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -29,6 +30,9 @@ public class AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired(required = false)
+    private SesEmailService sesEmailService;
 
     @Autowired
     private SmsService smsService;
@@ -62,7 +66,92 @@ public class AuthService {
     public AuthResponse login(LoginRequest req) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(req.email(), req.password()));
         var u = repo.findByEmail(req.email()).orElseThrow();
+
+        if (u.getPasswordExpiresAt() != null && LocalDateTime.now().isAfter(u.getPasswordExpiresAt())) {
+            u.setAccountLocked(true);
+            repo.save(u);
+            throw new IllegalStateException("Mot de passe temporaire expiré. Contactez un Super Admin pour régénérer votre accès.");
+        }
+
+        if (u.isAccountLocked()) {
+            throw new IllegalStateException("Compte verrouillé. Contactez un Super Admin.");
+        }
+
         return buildAuthResponse(u);
+    }
+
+    @Transactional
+    public void createUserByAdmin(AdminCreateUserRequest req, String creatorRole) {
+        if (repo.findByEmail(req.email()).isPresent()) {
+            throw new IllegalArgumentException("Email déjà utilisé");
+        }
+
+        Role targetRole = (req.role() != null && !req.role().isBlank())
+                ? Role.valueOf(req.role().toUpperCase())
+                : Role.USER;
+
+        if (targetRole == Role.SUPER_ADMIN && !creatorRole.equals("SUPER_ADMIN")) {
+            throw new org.springframework.security.access.AccessDeniedException("Seul un SUPER_ADMIN peut créer un SUPER_ADMIN");
+        }
+
+        String plainPassword = generateSecurePassword();
+
+        var u = User.builder()
+                .nom(req.nom())
+                .email(req.email())
+                .motDePasseHash(encoder.encode(plainPassword))
+                .phoneNumber(req.phoneNumber())
+                .role(targetRole)
+                .passwordExpiresAt(LocalDateTime.now().plusDays(14))
+                .accountLocked(false)
+                .build();
+        repo.save(u);
+
+        sendWelcomeEmail(req.email(), req.nom(), plainPassword);
+    }
+
+    @Transactional
+    public void regeneratePassword(Long userId) {
+        var u = repo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+
+        String plainPassword = generateSecurePassword();
+        u.setMotDePasseHash(encoder.encode(plainPassword));
+        u.setPasswordExpiresAt(LocalDateTime.now().plusDays(14));
+        u.setAccountLocked(false);
+        repo.save(u);
+
+        sendWelcomeEmail(u.getEmail(), u.getNom(), plainPassword);
+    }
+
+    private void sendWelcomeEmail(String to, String nom, String password) {
+        if (sesEmailService != null) {
+            sesEmailService.sendWelcomePassword(to, nom, password);
+        } else {
+            emailService.sendWelcomePassword(to, nom, password);
+        }
+    }
+
+    private String generateSecurePassword() {
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String special = "!@#$%&*";
+        String all = upper + lower + digits + special;
+
+        SecureRandom rng = new SecureRandom();
+        char[] chars = new char[10];
+        chars[0] = upper.charAt(rng.nextInt(upper.length()));
+        chars[1] = digits.charAt(rng.nextInt(digits.length()));
+        chars[2] = special.charAt(rng.nextInt(special.length()));
+        for (int i = 3; i < 10; i++) {
+            chars[i] = all.charAt(rng.nextInt(all.length()));
+        }
+        for (int i = 9; i > 0; i--) {
+            int j = rng.nextInt(i + 1);
+            char tmp = chars[i]; chars[i] = chars[j]; chars[j] = tmp;
+        }
+        return new String(chars);
     }
 
     public AuthResponse refresh(String refreshToken) {
@@ -116,6 +205,8 @@ public class AuthService {
         ).orElseThrow(() -> new IllegalArgumentException("Code invalide ou expiré"));
 
         u.setMotDePasseHash(encoder.encode(req.newPassword()));
+        u.setPasswordExpiresAt(null);
+        u.setAccountLocked(false);
         repo.save(u);
 
         token.setUsed(true);

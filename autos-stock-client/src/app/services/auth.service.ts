@@ -32,7 +32,11 @@ export class AuthService {
   }
 
   isAdmin() {
-    return this.currentUser?.role === 'ADMIN';
+    return this.currentUser?.role === 'ADMIN' || this.currentUser?.role === 'SUPER_ADMIN';
+  }
+
+  isSuperAdmin() {
+    return this.currentUser?.role === 'SUPER_ADMIN';
   }
 
   register(data: { nom: string; email: string; password: string; phoneNumber?: string }) {

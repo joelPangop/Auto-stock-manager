@@ -10,4 +10,6 @@ public class UserListDto {
     private String nom;
     private String email;
     private String role;
+    private boolean accountLocked;
+    private String passwordExpiresAt;
 }

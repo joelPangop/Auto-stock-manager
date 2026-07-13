@@ -28,6 +28,10 @@ public class SesEmailService {
         this.ses = ses;
     }
 
+    public void sendWelcomePassword(String to, String nom, String password) {
+        send(to, "Bienvenue sur Ted Auto — Votre accès temporaire", buildWelcomeHtml(nom, password));
+    }
+
     public void sendPasswordResetCode(String to, String code) {
         send(to, "Réinitialisation de mot de passe – Auto Stock", buildResetHtml(code));
     }
@@ -90,6 +94,24 @@ public class SesEmailService {
     // -------------------------------------------------------------------------
     // Templates HTML
     // -------------------------------------------------------------------------
+
+    private String buildWelcomeHtml(String nom, String password) {
+        return """
+                <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px">
+                  <h2 style="color:#1e3a8a">Bienvenue sur Ted Auto</h2>
+                  <p style="color:#374151">Bonjour <strong>%s</strong>,</p>
+                  <p style="color:#374151">Un compte vous a été créé sur la plateforme Ted Auto. Voici votre mot de passe temporaire :</p>
+                  <div style="font-size:24px;font-weight:bold;text-align:center;padding:16px;
+                              background:#f1f5f9;border-radius:8px;color:#1e3a8a;
+                              letter-spacing:4px;margin:20px 0">
+                    %s
+                  </div>
+                  <p style="color:#dc2626;font-weight:bold">⚠️ Vous devez changer ce mot de passe dans les <strong>14 jours</strong>, sinon votre compte sera verrouillé.</p>
+                  <p style="color:#374151">Pour changer votre mot de passe après connexion, cliquez sur <em>Mot de passe oublié ?</em> sur la page de connexion.</p>
+                  <p style="color:#9ca3af;font-size:12px">Si vous n'attendiez pas ce courriel, ignorez-le ou contactez votre administrateur.</p>
+                </div>
+                """.formatted(nom, password);
+    }
 
     private String buildResetHtml(String code) {
         return """

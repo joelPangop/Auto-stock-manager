@@ -24,4 +24,12 @@ export class UserService {
   get(id): Observable<User> {
     return this.http.get<User>(`${this.base}/${id}`);
   }
+
+  adminCreate(data: { nom: string; email: string; phoneNumber?: string; role?: string }) {
+    return this.http.post<void>(`${this.base}/admin-create`, data);
+  }
+
+  regeneratePassword(id: number) {
+    return this.http.post<void>(`${this.base}/${id}/regenerate-password`, {});
+  }
 }

@@ -1,5 +1,5 @@
 package org.autostock.enums;
 
 public enum Role {
-    ADMIN, VENDEUR, MANAGER, USER, CLIENT
+    SUPER_ADMIN, ADMIN, VENDEUR, MANAGER, USER, CLIENT
 }

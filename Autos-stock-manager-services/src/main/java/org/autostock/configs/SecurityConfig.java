@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -21,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -68,6 +70,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/voitures/**").authenticated()
                                 .requestMatchers("/api/ventes/**").authenticated()
                                 .requestMatchers("/api/paiements/**").authenticated()
+                                .requestMatchers("/api/users/**").authenticated()
                                 // Tout le reste du back-office
                                 .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()

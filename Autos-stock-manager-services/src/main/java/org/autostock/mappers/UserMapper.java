@@ -38,6 +38,8 @@ public class UserMapper {
         dto.setNom(u.getNom());
         dto.setEmail(u.getEmail());
         dto.setRole(u.getRole().name());
+        dto.setAccountLocked(u.isAccountLocked());
+        dto.setPasswordExpiresAt(u.getPasswordExpiresAt() != null ? u.getPasswordExpiresAt().toString() : null);
         return dto;
     }
 

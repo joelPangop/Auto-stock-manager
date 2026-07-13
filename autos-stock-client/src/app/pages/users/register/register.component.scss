@@ -138,7 +138,23 @@
 }
 
 .header h1 {
-  margin: 0;                 // enlève le margin par défaut
+  margin: 0;
   font-size: 28px;
   font-weight: 600;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 14px;
+  box-shadow: none;
+  margin-bottom: 8px;
+
+  mat-icon { flex-shrink: 0; margin-top: 2px; }
 }

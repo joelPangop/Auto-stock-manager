@@ -15,7 +15,7 @@
     <mat-card-content>
 
       <div class="table-wrap" [class.loading]="loading">
-        <table mat-table [dataSource]="data" matSort (matSortChange)="load()">
+        <table mat-table [dataSource]="data">
 
           <!-- Nom -->
           <ng-container matColumnDef="nom">
@@ -33,8 +33,28 @@
           <ng-container matColumnDef="role">
             <th mat-header-cell *matHeaderCellDef>Rôle</th>
             <td mat-cell *matCellDef="let u">
-              <span class="role-badge" [class.admin]="u.role === 'ADMIN'">
+              <span class="role-badge"
+                    [class.super-admin]="u.role === 'SUPER_ADMIN'"
+                    [class.admin]="u.role === 'ADMIN'">
                 {{ u.role }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let u">
+              <span *ngIf="u.accountLocked" class="locked-badge">
+                <mat-icon style="font-size:16px;height:16px;width:16px;vertical-align:middle">lock</mat-icon>
+                Verrouillé
+              </span>
+              <span *ngIf="!u.accountLocked && u.passwordExpiresAt" class="expiry-badge">
+                <mat-icon style="font-size:16px;height:16px;width:16px;vertical-align:middle">schedule</mat-icon>
+                Temporaire
+              </span>
+              <span *ngIf="!u.accountLocked && !u.passwordExpiresAt" class="active-badge">
+                Actif
               </span>
             </td>
           </ng-container>
@@ -47,6 +67,13 @@
                 <mat-icon>edit</mat-icon>
               </button>
 
+              <button mat-icon-button color="accent"
+                      *ngIf="isSuperAdmin"
+                      (click)="regeneratePassword(u.id)"
+                      matTooltip="Régénérer mot de passe">
+                <mat-icon>refresh</mat-icon>
+              </button>
+
               <button mat-icon-button color="warn" (click)="delete(u.id)" matTooltip="Supprimer">
                 <mat-icon>delete</mat-icon>
               </button>
@@ -56,20 +83,9 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
-
-<!--        <div class="empty" *ngIf="data.data?.length === 0">-->
-<!--          Aucun utilisateur à afficher.-->
-<!--        </div>-->
-<!--        <div class="overlay" *ngIf="loading">-->
-<!--          <mat-spinner diameter="32"></mat-spinner>-->
-<!--        </div>-->
-<!--        <div class="loading" *ngIf="loading">-->
-<!--          Chargement...-->
-<!--        </div>-->
       </div>
 
     </mat-card-content>
-
 
     <mat-paginator
                    [length]="total"

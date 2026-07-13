@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.autostock.enums.Role;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -27,6 +28,12 @@ public class User extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "account_locked", nullable = false)
+    private boolean accountLocked = false;
+
+    @Column(name = "password_expires_at")
+    private LocalDateTime passwordExpiresAt;
 
     @OneToMany(mappedBy = "vendeur")
     private List<Vente> ventes = new ArrayList<>();

@@ -6,71 +6,60 @@
       <mat-icon>arrow_back</mat-icon>
       Retour à la liste
     </button>
-    <h1>Créer un compte</h1>
+    <h1>{{ user ? 'Modifier le compte' : 'Créer un utilisateur' }}</h1>
   </div>
 
   <mat-card class="card">
-      <!-- Nom -->
-      <mat-form-field appearance="outline" class="field">
-        <mat-label>Nom complet</mat-label>
-        <input matInput formControlName="nom" placeholder="Ex: Joel Pangop" />
-        <mat-error *ngIf="f.nom.hasError('required')">Requis</mat-error>
-        <mat-error *ngIf="f.nom.hasError('minlength')">2 caractères min.</mat-error>
-      </mat-form-field>
 
-      <!-- Email -->
-      <mat-form-field appearance="outline" class="field">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="joel@example.com" autocomplete="username" />
-        <mat-error *ngIf="f.email.hasError('required')">Requis</mat-error>
-        <mat-error *ngIf="f.email.hasError('email')">Email invalide</mat-error>
-      </mat-form-field>
+    <!-- Nom -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Nom complet</mat-label>
+      <input matInput formControlName="nom" placeholder="Ex: Joel Pangop" />
+      <mat-error *ngIf="f.nom.hasError('required')">Requis</mat-error>
+      <mat-error *ngIf="f.nom.hasError('minlength')">2 caractères min.</mat-error>
+    </mat-form-field>
 
-      <!-- Téléphone -->
-      <mat-form-field appearance="outline" class="field">
-        <mat-label>Téléphone (optionnel)</mat-label>
-        <mat-icon matPrefix>phone</mat-icon>
-        <input matInput type="tel" formControlName="phoneNumber" placeholder="+237 6XX XXX XXX" />
-        <mat-hint>Utilisé pour la récupération par SMS</mat-hint>
-      </mat-form-field>
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="joel@example.com" autocomplete="username" />
+      <mat-error *ngIf="f.email.hasError('required')">Requis</mat-error>
+      <mat-error *ngIf="f.email.hasError('email')">Email invalide</mat-error>
+    </mat-form-field>
 
-      <!-- Password -->
-      <div formGroupName="passwords" *ngIf="!user">
-        <mat-form-field appearance="outline" class="field">
-          <mat-label>Mot de passe</mat-label>
-          <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" autocomplete="new-password" />
-          <button mat-icon-button matSuffix type="button" (click)="hide = !hide" aria-label="Afficher/Masquer">
-            <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
-          </button>
-          <mat-error *ngIf="pw.password.hasError('required')">Requis</mat-error>
-          <mat-error *ngIf="pw.password.hasError('minlength')">6 caractères min.</mat-error>
-        </mat-form-field>
+    <!-- Téléphone -->
+    <mat-form-field appearance="outline" class="field">
+      <mat-label>Téléphone (optionnel)</mat-label>
+      <mat-icon matPrefix>phone</mat-icon>
+      <input matInput type="tel" formControlName="phoneNumber" placeholder="+1 514 XXX XXXX" />
+      <mat-hint>Utilisé pour la récupération par SMS</mat-hint>
+    </mat-form-field>
 
-        <mat-form-field appearance="outline" class="field">
-          <mat-label>Confirmer le mot de passe</mat-label>
-          <input matInput [type]="hide2 ? 'password' : 'text'" formControlName="confirm" autocomplete="new-password" />
-          <button mat-icon-button matSuffix type="button" (click)="hide2 = !hide2" aria-label="Afficher/Masquer">
-            <mat-icon>{{ hide2 ? 'visibility' : 'visibility_off' }}</mat-icon>
-          </button>
-          <mat-error *ngIf="pw.confirm.hasError('required')">Requis</mat-error>
-          <mat-error *ngIf="mismatch">Les mots de passe ne correspondent pas</mat-error>
-        </mat-form-field>
-      </div>
+    <!-- Rôle (création uniquement) -->
+    <mat-form-field appearance="outline" class="field" *ngIf="!user">
+      <mat-label>Rôle</mat-label>
+      <mat-select formControlName="role">
+        <mat-option *ngFor="let r of roleOptions" [value]="r.value">{{ r.label }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="f.role.hasError('required')">Requis</mat-error>
+    </mat-form-field>
 
-      <button mat-raised-button color="primary" class="btn" [disabled]="loading || form.invalid" *ngIf="!user">
-        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-        <span *ngIf="!loading">Créer mon compte</span>
-      </button>
-      <button mat-raised-button color="primary" class="btn" [disabled]="loading" *ngIf="user">
-        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-        <span *ngIf="!loading">Modifier</span>
-      </button>
+    <!-- Info mot de passe (création uniquement) -->
+    <mat-card *ngIf="!user" class="info-card">
+      <mat-icon>info</mat-icon>
+      <span>Un mot de passe temporaire sera généré automatiquement et envoyé par email à l'utilisateur. Il devra le changer dans les <strong>14 jours</strong>.</span>
+    </mat-card>
 
-<!--      <div class="meta">-->
-<!--        <span>Déjà inscrit ?</span>-->
-<!--        <a routerLink="/login">Se connecter</a>-->
-<!--      </div>-->
+    <button mat-raised-button color="primary" class="btn" [disabled]="loading || form.invalid" *ngIf="!user">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <span *ngIf="!loading">Créer et envoyer l'invitation</span>
+    </button>
+
+    <button mat-raised-button color="primary" class="btn" [disabled]="loading" *ngIf="user">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <span *ngIf="!loading">Modifier</span>
+    </button>
+
   </mat-card>
-<!--</div>-->
 </form>
 </div>

@@ -8,4 +8,6 @@ export interface User {
   role: Role;
   avatarUrl?: string;
   phoneNumber?: string;
+  accountLocked?: boolean;
+  passwordExpiresAt?: string;
 }
