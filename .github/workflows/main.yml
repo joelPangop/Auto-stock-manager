@@ -98,4 +98,10 @@ jobs:
 
       - name: 🚀 Deploy to VPS
         run: |
-          ssh -i ~/.ssh/id_autostock root@178.156.213.72 'bash /root/Auto-stock-manager/docker-compose/docker_git_build.sh'
+          ssh -i ~/.ssh/id_autostock root@178.156.213.72 << 'ENDSSH'
+            set -e
+            cd /root/Auto-stock-manager
+            git pull origin master
+            cd docker-compose
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+          ENDSSH
