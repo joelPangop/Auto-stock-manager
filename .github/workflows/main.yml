@@ -62,17 +62,17 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           
       - name: Make mvnw executable
-        run: chmod +x ./autos-stock-manager-services/mvnw
+        run: chmod +x ./Autos-stock-manager-services/mvnw
 
       - name: Build JAR file
-        working-directory: ./autos-stock-manager-services
+        working-directory: ./Autos-stock-manager-services
         run: ./mvnw clean package -DskipTests
 
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
-          context: ./autos-stock-manager-services
-          file: ./autos-stock-manager-services/Dockerfile
+          context: ./Autos-stock-manager-services
+          file: ./Autos-stock-manager-services/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/autostockmanager:latest
 
