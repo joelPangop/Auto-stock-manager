@@ -37,11 +37,11 @@ jobs:
  
 
       - name: Build JAR
-        working-directory: autos-stock-manager-services
+        working-directory: Autos-stock-manager-services
         run: mvn clean package -DskipTests
-        
+
       - name: Build and run tests
-        working-directory: autos-stock-manager-services
+        working-directory: Autos-stock-manager-services
         run: mvn test -Dspring.profiles.active=test -Dspring.datasource.driver-class-name=org.h2.Driver
 
   docker-build:
