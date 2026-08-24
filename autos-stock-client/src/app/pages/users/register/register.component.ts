@@ -20,6 +20,10 @@ export class RegisterComponent implements OnInit {
   loading = false;
   user: User;
 
+  // Calculé une seule fois : un getter renverrait un nouveau tableau a chaque
+  // cycle de detection de changement, ce qui recree les <mat-option> en boucle.
+  roleOptions: RoleOption[] = [];
+
   form: FormGroup = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
@@ -39,6 +43,8 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.roleOptions = this.buildRoleOptions();
+
     this.route.paramMap
       .pipe(
         switchMap(pm => {
@@ -63,7 +69,9 @@ export class RegisterComponent implements OnInit {
       });
   }
 
-  get roleOptions(): RoleOption[] {
+  trackByRole(_: number, r: RoleOption) { return r.value; }
+
+  private buildRoleOptions(): RoleOption[] {
     if (this.auth.isSuperAdmin()) {
       return [
         {value: 'SUPER_ADMIN', label: 'Super Admin'},

@@ -12,6 +12,7 @@ export class AuthService {
   private readonly base = `${environment.apiUrl}/auth`;
   private currentUser$ = new BehaviorSubject<LoginResponse['user'] | null>(null);
   private _onlyMine: boolean = false;
+  private cachedUserRaw: string | null | undefined = undefined;
 
   constructor(private http: HttpClient, private tokens: TokenStorageService) {
   }
@@ -58,9 +59,22 @@ export class AuthService {
   }
 
   get currentUser() {
-    const user = localStorage.getItem('user_token');
-    this.currentUser$.next(JSON.parse(user));
-    return this.currentUser$.value;
+    const raw = localStorage.getItem('user_token');
+
+    // Ce getter est appele depuis les templates (isAdmin/isSuperAdmin) donc a
+    // chaque detection de changement : on ne re-parse et on ne re-emet que si
+    // la valeur stockee a reellement change, sinon on boucle.
+    if (raw === this.cachedUserRaw) return this.currentUser$.value;
+    this.cachedUserRaw = raw;
+
+    let parsed: LoginResponse['user'] | null = null;
+    try {
+      parsed = raw ? JSON.parse(raw) : null;
+    } catch {
+      parsed = null;
+    }
+    this.currentUser$.next(parsed);
+    return parsed;
   }
 
   set currentUser(value: User) {

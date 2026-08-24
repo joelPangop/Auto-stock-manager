@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {UserService} from '../../../../services/user.service';
 import {AuthService} from '../../../../services/auth.service';
 import {NavigationEnd, Router} from '@angular/router';
@@ -12,7 +12,7 @@ import {User} from '../../../../models/User';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
 
   data = new MatTableDataSource<User>([]);
   loading = false;
@@ -31,11 +31,10 @@ export class UsersComponent implements OnInit {
     private router: Router
   ) {}
 
-  get isSuperAdmin(): boolean {
-    return this.auth.isSuperAdmin();
-  }
+  isSuperAdmin = false;
 
   ngOnInit(): void {
+    this.isSuperAdmin = this.auth.isSuperAdmin();
     this.load();
     this.sub = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))

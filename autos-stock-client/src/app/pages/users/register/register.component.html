@@ -2,7 +2,7 @@
 <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()">
 
   <div class="header">
-    <button mat-stroked-button color="primary" (click)="backToList()">
+    <button type="button" mat-stroked-button color="primary" (click)="backToList()">
       <mat-icon>arrow_back</mat-icon>
       Retour à la liste
     </button>
@@ -39,7 +39,7 @@
     <mat-form-field appearance="outline" class="field" *ngIf="!user">
       <mat-label>Rôle</mat-label>
       <mat-select formControlName="role">
-        <mat-option *ngFor="let r of roleOptions" [value]="r.value">{{ r.label }}</mat-option>
+        <mat-option *ngFor="let r of roleOptions; trackBy: trackByRole" [value]="r.value">{{ r.label }}</mat-option>
       </mat-select>
       <mat-error *ngIf="f.role.hasError('required')">Requis</mat-error>
     </mat-form-field>
