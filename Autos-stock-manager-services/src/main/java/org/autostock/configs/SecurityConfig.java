@@ -54,6 +54,11 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/download/**").permitAll()
                                 // Auth interne (back-office)
+                                // Le changement de mot de passe est le seul endpoint
+                                // /api/auth qui exige un compte connecte : il doit etre
+                                // declare AVANT le permitAll, la premiere regle qui
+                                // correspond l'emporte.
+                                .requestMatchers("/api/auth/change-password").authenticated()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 // Portail client : auth + catalogue public
                                 .requestMatchers("/api/client/auth/register").permitAll()

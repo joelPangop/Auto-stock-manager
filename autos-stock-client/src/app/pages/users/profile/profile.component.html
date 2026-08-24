@@ -5,6 +5,7 @@
     Modifier
   </mat-slide-toggle>
 </div>
+
 <mat-card>
   <mat-card-title>Mon profil</mat-card-title>
   <mat-card-content>
@@ -25,34 +26,68 @@
           <mat-label>Email</mat-label>
           <input matInput formControlName="email">
         </mat-form-field>
-
-        <div formGroupName="passwords" *ngIf="edit">
-          <mat-form-field appearance="outline" class="field">
-            <mat-label>Mot de passe</mat-label>
-            <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" autocomplete="new-password"/>
-            <button mat-icon-button matSuffix type="button" (click)="hide = !hide" aria-label="Afficher/Masquer">
-              <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
-            </button>
-            <mat-error *ngIf="pw.password.hasError('required')">Requis</mat-error>
-            <mat-error *ngIf="pw.password.hasError('minlength')">6 caractères min.</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="field">
-            <mat-label>Confirmer le mot de passe</mat-label>
-            <input matInput [type]="hide2 ? 'password' : 'text'" formControlName="confirm" autocomplete="new-password"/>
-            <button mat-icon-button matSuffix type="button" (click)="hide2 = !hide2" aria-label="Afficher/Masquer">
-              <mat-icon>{{ hide2 ? 'visibility' : 'visibility_off' }}</mat-icon>
-            </button>
-            <mat-error *ngIf="pw.confirm.hasError('required')">Requis</mat-error>
-            <mat-error *ngIf="mismatch">Les mots de passe ne correspondent pas</mat-error>
-          </mat-form-field>
-        </div>
       </div>
+
       <br/>
-      <br/>
-      <br/>
-      <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid">
+      <button mat-flat-button color="primary" *ngIf="edit" (click)="save()" [disabled]="form.invalid">
         <mat-icon>save</mat-icon>&nbsp;Enregistrer
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<br/>
+
+<mat-card>
+  <mat-card-title>Changer mon mot de passe</mat-card-title>
+  <mat-card-content>
+    <p class="hint">
+      Si vous vous êtes connecté avec un mot de passe temporaire reçu par email,
+      choisissez ici le vôtre. Le compte cesse alors d'être temporaire et ne sera
+      plus verrouillé au bout de 14 jours.
+    </p>
+
+    <form [formGroup]="passwordForm">
+      <div class="grid">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Mot de passe actuel</mat-label>
+          <input matInput [type]="hideCurrent ? 'password' : 'text'" formControlName="currentPassword"
+                 autocomplete="current-password"/>
+          <button mat-icon-button matSuffix type="button" (click)="hideCurrent = !hideCurrent"
+                  aria-label="Afficher/Masquer">
+            <mat-icon>{{ hideCurrent ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="pw.currentPassword.hasError('required')">Requis</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Nouveau mot de passe</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" formControlName="newPassword"
+                 autocomplete="new-password"/>
+          <button mat-icon-button matSuffix type="button" (click)="hide = !hide" aria-label="Afficher/Masquer">
+            <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="pw.newPassword.hasError('required')">Requis</mat-error>
+          <mat-error *ngIf="pw.newPassword.hasError('minlength')">6 caractères min.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Confirmer le nouveau mot de passe</mat-label>
+          <input matInput [type]="hide2 ? 'password' : 'text'" formControlName="confirm"
+                 autocomplete="new-password"/>
+          <button mat-icon-button matSuffix type="button" (click)="hide2 = !hide2" aria-label="Afficher/Masquer">
+            <mat-icon>{{ hide2 ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="pw.confirm.hasError('required')">Requis</mat-error>
+        </mat-form-field>
+      </div>
+
+      <p class="mismatch-msg" *ngIf="mismatch">Les mots de passe ne correspondent pas.</p>
+
+      <br/>
+      <button mat-flat-button color="primary" (click)="changePassword()"
+              [disabled]="passwordForm.invalid || changingPassword">
+        <mat-icon>lock_reset</mat-icon>&nbsp;{{ changingPassword ? 'Modification…' : 'Changer le mot de passe' }}
       </button>
     </form>
   </mat-card-content>

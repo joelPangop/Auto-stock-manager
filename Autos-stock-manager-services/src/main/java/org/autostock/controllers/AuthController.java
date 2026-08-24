@@ -53,6 +53,17 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest req,
+                                               @AuthenticationPrincipal UserDetails principal) {
+        // /api/auth/** est public : sans ce garde-fou, l'endpoint serait
+        // atteignable sans jeton. Le SecurityConfig l'exige aussi, la double
+        // verification evite qu'un remaniement des regles ouvre une breche.
+        if (principal == null) return ResponseEntity.status(401).build();
+        authService.changePassword(principal.getUsername(), req);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
         authService.resetPassword(req);

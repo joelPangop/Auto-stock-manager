@@ -206,6 +206,33 @@ public class AuthService {
         }
     }
 
+    /**
+     * Changement de mot de passe par l'utilisateur connecté.
+     *
+     * <p>Efface {@code passwordExpiresAt} : le compte sort du régime « mot de
+     * passe temporaire » et n'est plus verrouillé au bout de 14 jours, puisque
+     * le mot de passe est désormais choisi par son propriétaire.
+     */
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest req) {
+        var u = repo.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+
+        if (!encoder.matches(req.currentPassword(), u.getMotDePasseHash())) {
+            throw new IllegalArgumentException("Mot de passe actuel incorrect");
+        }
+        if (encoder.matches(req.newPassword(), u.getMotDePasseHash())) {
+            throw new IllegalArgumentException("Le nouveau mot de passe doit être différent de l'actuel");
+        }
+
+        u.setMotDePasseHash(encoder.encode(req.newPassword()));
+        u.setPasswordExpiresAt(null);
+        u.setAccountLocked(false);
+        repo.save(u);
+
+        log.info("Mot de passe changé par l'utilisateur " + email);
+    }
+
     @Transactional
     public void resetPassword(ResetPasswordRequest req) {
         var u = findByIdentifier(req.identifier());

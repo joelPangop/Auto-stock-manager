@@ -35,3 +35,24 @@ button[mat-flat-button] {
   text-transform: uppercase;
   font-weight: 600;
 }
+
+.hint {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0 0 1.25rem;
+}
+
+.mismatch-msg {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}
+
+// Le bouton est flottant : sans ceci il deborde de la carte, ce qui se voyait
+// des qu'une deuxieme carte a suivi la premiere.
+mat-card-content form::after {
+  content: '';
+  display: block;
+  clear: both;
+}

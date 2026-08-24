@@ -33,7 +33,7 @@ public final class MailTemplates {
                     %s
                   </div>
                   <p style="color:#dc2626;font-weight:bold">⚠️ Vous devez changer ce mot de passe dans les <strong>14 jours</strong>, sinon votre compte sera verrouillé.</p>
-                  <p style="color:#374151">Pour changer votre mot de passe après connexion, cliquez sur <em>Mot de passe oublié ?</em> sur la page de connexion.</p>
+                  <p style="color:#374151">Connectez-vous avec ce mot de passe, puis rendez-vous dans <strong>Mon profil</strong> pour choisir le vôtre. Votre compte cessera alors d'être temporaire.</p>
                   <p style="color:#9ca3af;font-size:12px">Si vous n'attendiez pas ce courriel, ignorez-le ou contactez votre administrateur.</p>
                 </div>
                 """.formatted(nom, password);

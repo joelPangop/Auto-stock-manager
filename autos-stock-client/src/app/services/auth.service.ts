@@ -115,6 +115,11 @@ export class AuthService {
     return this.http.post<void>(`${this.base}/reset-password`, payload);
   }
 
+  /** Changement de mot de passe par l'utilisateur connecte (mot de passe actuel exige). */
+  changePassword(payload: { currentPassword: string; newPassword: string }) {
+    return this.http.post<void>(`${this.base}/change-password`, payload);
+  }
+
   get onlyMine(): boolean {
     return this._onlyMine;
   }
