@@ -35,6 +35,15 @@ public class User extends AbstractEntity {
     @Column(name = "password_expires_at")
     private LocalDateTime passwordExpiresAt;
 
+    /**
+     * Date du dernier changement de mot de passe. Tout jeton emis avant cette
+     * date est refuse : changer son mot de passe coupe immediatement les
+     * sessions ouvertes ailleurs, y compris celle de qui connaitrait l'ancien.
+     * Null pour les comptes anterieurs a cette regle : aucune contrainte.
+     */
+    @Column(name = "password_changed_at")
+    private LocalDateTime passwordChangedAt;
+
     @OneToMany(mappedBy = "vendeur")
     private List<Vente> ventes = new ArrayList<>();
 

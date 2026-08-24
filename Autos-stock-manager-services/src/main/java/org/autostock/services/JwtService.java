@@ -64,6 +64,11 @@ public class JwtService {
         return parse(token).getBody().getSubject();
     }
 
+    /** Date d'emission du jeton, pour comparer avec le dernier changement de mot de passe. */
+    public Date extractIssuedAt(String token) {
+        return parse(token).getBody().getIssuedAt();
+    }
+
     public boolean isTokenValid(String token) {
         try { parse(token); return true; }
         catch (JwtException | IllegalArgumentException e) { return false; }

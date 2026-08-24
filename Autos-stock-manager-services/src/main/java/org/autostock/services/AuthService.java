@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -107,6 +108,7 @@ public class AuthService {
                 .phoneNumber(req.phoneNumber())
                 .role(targetRole)
                 .passwordExpiresAt(LocalDateTime.now().plusDays(14))
+                .passwordChangedAt(now())
                 .accountLocked(false)
                 .build();
         repo.save(u);
@@ -123,6 +125,7 @@ public class AuthService {
         String plainPassword = generateSecurePassword();
         u.setMotDePasseHash(encoder.encode(plainPassword));
         u.setPasswordExpiresAt(LocalDateTime.now().plusDays(14));
+        u.setPasswordChangedAt(now());
         u.setAccountLocked(false);
         repo.save(u);
 
@@ -140,6 +143,15 @@ public class AuthService {
     private boolean sendWelcomeEmail(String to, String nom, String password) {
         return mailDispatcher.send(to, MailTemplates.SUJET_BIENVENUE,
                 MailTemplates.bienvenue(nom, password));
+    }
+
+    /**
+     * Horodatage tronque a la seconde : la date d'emission d'un JWT (iat) l'est
+     * aussi. Sans cette troncature, le jeton emis dans la meme seconde que le
+     * changement serait considere comme anterieur, donc rejete a tort.
+     */
+    private LocalDateTime now() {
+        return LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     private String generateSecurePassword() {
@@ -170,6 +182,18 @@ public class AuthService {
         }
         var email = jwt.extractUsername(refreshToken);
         var u = repo.findByEmail(email).orElseThrow();
+
+        // Sans ce controle, un refresh token emis avant le changement de mot de
+        // passe permettrait de se refabriquer un access token valide et de
+        // survivre a la revocation.
+        var issuedAt = jwt.extractIssuedAt(refreshToken);
+        if (u.getPasswordChangedAt() != null && issuedAt != null) {
+            var issued = LocalDateTime.ofInstant(issuedAt.toInstant(), java.time.ZoneId.systemDefault());
+            if (issued.isBefore(u.getPasswordChangedAt())) {
+                throw new IllegalArgumentException("Session expirée : le mot de passe a été modifié. Reconnectez-vous.");
+            }
+        }
+
         return buildAuthResponse(u, refreshToken);
     }
 
@@ -227,6 +251,7 @@ public class AuthService {
 
         u.setMotDePasseHash(encoder.encode(req.newPassword()));
         u.setPasswordExpiresAt(null);
+        u.setPasswordChangedAt(now());
         u.setAccountLocked(false);
         repo.save(u);
 
@@ -243,6 +268,7 @@ public class AuthService {
 
         u.setMotDePasseHash(encoder.encode(req.newPassword()));
         u.setPasswordExpiresAt(null);
+        u.setPasswordChangedAt(now());
         u.setAccountLocked(false);
         repo.save(u);
 

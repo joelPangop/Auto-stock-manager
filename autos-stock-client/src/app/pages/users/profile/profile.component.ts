@@ -5,6 +5,7 @@ import {User} from "../../../models/User";
 import {BehaviorSubject} from "rxjs";
 import {UserService} from "../../../services/user.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {Router} from "@angular/router";
 
 function matchPasswordValidator(group: AbstractControl): ValidationErrors | null {
   const p = group.get('newPassword')?.value;
@@ -45,7 +46,8 @@ export class ProfileComponent implements OnInit {
     confirm: ['', [Validators.required]]
   }, {validators: matchPasswordValidator});
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private userService: UserService, private snack: MatSnackBar,) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private userService: UserService,
+              private snack: MatSnackBar, private router: Router) {
     this.user = this.auth.currentUser;
     if (this.user) {
       this.form.patchValue({ fullName: this.user.nom, email: this.user.email });
@@ -84,7 +86,13 @@ export class ProfileComponent implements OnInit {
       next: () => {
         this.changingPassword = false;
         this.passwordForm.reset();
-        this.snack.open('Mot de passe modifié ✔ Utilisez-le à votre prochaine connexion.', 'OK', {duration: 5000});
+        this.snack.open('Mot de passe modifié ✔ Reconnectez-vous avec le nouveau.', 'OK', {duration: 6000});
+
+        // Le serveur invalide les jetons emis avant le changement : la session
+        // courante est morte. On deconnecte proprement plutot que de laisser
+        // l'utilisateur enchainer des 401 sur chaque ecran.
+        this.auth.logout();
+        this.router.navigateByUrl('/login');
       },
       error: (e) => {
         this.changingPassword = false;
