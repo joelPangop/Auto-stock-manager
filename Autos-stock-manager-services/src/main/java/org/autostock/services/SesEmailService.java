@@ -10,9 +10,11 @@ import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
 
 /**
- * Service d'envoi d'email via AWS SES (ou LocalStack en dev).
- * Activé quand aws.ses.from est défini.
- * Remplace / complète EmailService (SMTP Gmail).
+ * Canal d'envoi AWS SES (ou LocalStack en dev). Activé quand aws.ses.from est défini.
+ *
+ * <p>Tant que le compte AWS est dans le bac à sable, SES rejette tout envoi dont
+ * l'expéditeur ou le destinataire n'est pas une identité vérifiée. C'est pourquoi
+ * {@link MailDispatcher} ne l'utilise qu'en secours de SMTP.
  */
 @Service
 @ConditionalOnProperty(name = "aws.ses.from")
@@ -29,51 +31,38 @@ public class SesEmailService {
     }
 
     public void sendWelcomePassword(String to, String nom, String password) {
-        send(to, "Bienvenue sur Ted Auto — Votre accès temporaire", buildWelcomeHtml(nom, password));
+        sendHtml(to, MailTemplates.SUJET_BIENVENUE, MailTemplates.bienvenue(nom, password));
     }
 
     public void sendPasswordResetCode(String to, String code) {
-        send(to, "Réinitialisation de mot de passe – Auto Stock", buildResetHtml(code));
+        sendHtml(to, MailTemplates.SUJET_RESET, MailTemplates.codeReset(code));
     }
 
     public void sendVenteConfirmation(String to, String nomClient, String modele, String montant) {
-        send(to, "Confirmation d'achat – Auto Stock",
-                buildVenteHtml(nomClient, modele, montant));
+        sendHtml(to, MailTemplates.SUJET_VENTE, MailTemplates.vente(nomClient, modele, montant));
     }
 
     public void sendAlertStockBas(String to, String modele, int quantite) {
-        send(to, "⚠️ Alerte stock bas – Auto Stock",
-                buildStockAlertHtml(modele, quantite));
+        sendHtml(to, "⚠️ Alerte stock bas – Auto Stock", MailTemplates.alerteStockBas(modele, quantite));
     }
 
     /** Confirmation de réservation pour le client du portail Ted Auto. */
     public void sendReservationConfirmation(String to, String nomClient, String voitureLabel, LocalDate dateVisite) {
-        send(to, "Confirmation de votre réservation – Ted Auto",
-                buildReservationHtml(nomClient, voitureLabel, dateVisite));
+        sendHtml(to, MailTemplates.SUJET_RESERVATION,
+                MailTemplates.reservation(nomClient, voitureLabel, dateVisite));
     }
 
     /** Email de contact reçu depuis le formulaire Ted Auto. */
     public void sendContactMessage(String adminEmail, String nomContact, String emailContact,
                                    String telephone, String sujet, String message) {
-        String body = """
-                <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px">
-                  <h2 style="color:#dc2626">📬 Nouveau message de contact – Ted Auto</h2>
-                  <table style="width:100%%">
-                    <tr><td style="padding:6px 0;color:#6b7280;width:120px">Nom</td><td><strong>%s</strong></td></tr>
-                    <tr><td style="padding:6px 0;color:#6b7280">Email</td><td><a href="mailto:%s">%s</a></td></tr>
-                    <tr><td style="padding:6px 0;color:#6b7280">Téléphone</td><td>%s</td></tr>
-                    <tr><td style="padding:6px 0;color:#6b7280">Sujet</td><td><strong>%s</strong></td></tr>
-                  </table>
-                  <hr style="margin:16px 0;border-color:#e5e7eb"/>
-                  <p style="white-space:pre-wrap;color:#374151">%s</p>
-                </div>
-                """.formatted(nomContact, emailContact, emailContact, telephone, sujet, message);
-        send(adminEmail, "Contact Ted Auto : " + sujet, body);
+        sendHtml(adminEmail, "Contact Ted Auto : " + sujet,
+                MailTemplates.contact(nomContact, emailContact, telephone, sujet, message));
     }
 
     // -------------------------------------------------------------------------
 
-    private void send(String to, String subject, String htmlBody) {
+    /** Envoi générique. Lève une exception si SES refuse le message. */
+    public void sendHtml(String to, String subject, String htmlBody) {
         try {
             ses.sendEmail(SendEmailRequest.builder()
                     .source(from)
@@ -89,77 +78,5 @@ public class SesEmailService {
         } catch (SesException e) {
             throw new RuntimeException("Échec d'envoi SES : " + e.getMessage(), e);
         }
-    }
-
-    // -------------------------------------------------------------------------
-    // Templates HTML
-    // -------------------------------------------------------------------------
-
-    private String buildWelcomeHtml(String nom, String password) {
-        return """
-                <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px">
-                  <h2 style="color:#1e3a8a">Bienvenue sur Ted Auto</h2>
-                  <p style="color:#374151">Bonjour <strong>%s</strong>,</p>
-                  <p style="color:#374151">Un compte vous a été créé sur la plateforme Ted Auto. Voici votre mot de passe temporaire :</p>
-                  <div style="font-size:24px;font-weight:bold;text-align:center;padding:16px;
-                              background:#f1f5f9;border-radius:8px;color:#1e3a8a;
-                              letter-spacing:4px;margin:20px 0">
-                    %s
-                  </div>
-                  <p style="color:#dc2626;font-weight:bold">⚠️ Vous devez changer ce mot de passe dans les <strong>14 jours</strong>, sinon votre compte sera verrouillé.</p>
-                  <p style="color:#374151">Pour changer votre mot de passe après connexion, cliquez sur <em>Mot de passe oublié ?</em> sur la page de connexion.</p>
-                  <p style="color:#9ca3af;font-size:12px">Si vous n'attendiez pas ce courriel, ignorez-le ou contactez votre administrateur.</p>
-                </div>
-                """.formatted(nom, password);
-    }
-
-    private String buildResetHtml(String code) {
-        return """
-                <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
-                  <h2 style="color:#1e3a8a">Réinitialisation de mot de passe</h2>
-                  <p style="color:#374151">Votre code de réinitialisation est :</p>
-                  <div style="font-size:36px;font-weight:bold;letter-spacing:10px;text-align:center;
-                              padding:20px;background:#f1f5f9;border-radius:10px;color:#1e3a8a;margin:20px 0">
-                    %s
-                  </div>
-                  <p style="color:#6b7280;font-size:14px">Ce code expire dans <strong>15 minutes</strong>.</p>
-                  <p style="color:#9ca3af;font-size:12px">Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
-                </div>
-                """.formatted(code);
-    }
-
-    private String buildVenteHtml(String nomClient, String modele, String montant) {
-        return """
-                <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
-                  <h2 style="color:#1e3a8a">Confirmation d'achat</h2>
-                  <p style="color:#374151">Bonjour <strong>%s</strong>,</p>
-                  <p>Votre achat du véhicule <strong>%s</strong> pour un montant de <strong>%s FCFA</strong> a bien été enregistré.</p>
-                  <p style="color:#6b7280;font-size:14px">Merci de votre confiance – Auto Stock</p>
-                </div>
-                """.formatted(nomClient, modele, montant);
-    }
-
-    private String buildReservationHtml(String nomClient, String voitureLabel, LocalDate dateVisite) {
-        String dateStr = dateVisite != null ? dateVisite.toString() : "à confirmer";
-        return """
-                <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;background:#0a0a0a;color:#fff;border-radius:10px">
-                  <h2 style="color:#dc2626">Ted Auto — Réservation confirmée</h2>
-                  <p>Bonjour <strong>%s</strong>,</p>
-                  <p>Votre demande de visite pour le véhicule <strong>%s</strong> a bien été enregistrée.</p>
-                  <p style="font-size:18px">📅 Date souhaitée : <strong>%s</strong></p>
-                  <p style="color:#9ca3af;font-size:13px">Notre équipe vous contactera sous 24h pour confirmer le rendez-vous.</p>
-                  <p style="color:#9ca3af;font-size:13px">— L'équipe Ted Auto</p>
-                </div>
-                """.formatted(nomClient, voitureLabel, dateStr);
-    }
-
-    private String buildStockAlertHtml(String modele, int quantite) {
-        return """
-                <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
-                  <h2 style="color:#dc2626">⚠️ Alerte stock bas</h2>
-                  <p>Le stock du modèle <strong>%s</strong> est bas : <strong>%d</strong> unité(s) restante(s).</p>
-                  <p style="color:#6b7280;font-size:14px">Veuillez réapprovisionner dès que possible.</p>
-                </div>
-                """.formatted(modele, quantite);
     }
 }

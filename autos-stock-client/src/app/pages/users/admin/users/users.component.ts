@@ -80,9 +80,11 @@ export class UsersComponent implements OnInit, OnDestroy {
   regeneratePassword(id: number) {
     if (!confirm('Régénérer un nouveau mot de passe temporaire et l\'envoyer par email ?')) return;
     this.api.regeneratePassword(id).subscribe({
-      next: () => {
+      next: (res) => {
         this.load();
-        alert('Nouveau mot de passe envoyé par email.');
+        alert(res?.emailSent
+          ? 'Nouveau mot de passe envoyé par email.'
+          : 'Mot de passe régénéré, mais l\'email n\'a PAS pu être envoyé. Vérifiez la configuration email avant de réessayer.');
       },
       error: (err) => alert(err?.error?.message ?? 'Erreur lors de la régénération')
     });

@@ -96,9 +96,15 @@ export class RegisterComponent implements OnInit {
 
     if (!this.id) {
       this.userService.adminCreate({nom, email, phoneNumber, role}).subscribe({
-        next: () => {
+        next: (res) => {
           this.loading = false;
-          this.snack.open('Utilisateur cree. Un email avec le mot de passe temporaire a ete envoye.', 'OK', {duration: 4000});
+          if (res?.emailSent) {
+            this.snack.open('Utilisateur cree. Un email avec le mot de passe temporaire a ete envoye.', 'OK', {duration: 4000});
+          } else {
+            this.snack.open(
+              'Utilisateur cree, mais l\'email n\'a PAS pu etre envoye. Le mot de passe temporaire est perdu : utilisez "Regenerer mot de passe" une fois l\'envoi retabli.',
+              'Compris', {duration: 12000});
+          }
           this.router.navigateByUrl('/users');
         },
         error: (e) => {

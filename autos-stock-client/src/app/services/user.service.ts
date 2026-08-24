@@ -26,10 +26,10 @@ export class UserService {
   }
 
   adminCreate(data: { nom: string; email: string; phoneNumber?: string; role?: string }) {
-    return this.http.post<void>(`${this.base}/admin-create`, data);
+    return this.http.post<{ emailSent: boolean }>(`${this.base}/admin-create`, data);
   }
 
   regeneratePassword(id: number) {
-    return this.http.post<void>(`${this.base}/${id}/regenerate-password`, {});
+    return this.http.post<{ emailSent: boolean }>(`${this.base}/${id}/regenerate-password`, {});
   }
 }

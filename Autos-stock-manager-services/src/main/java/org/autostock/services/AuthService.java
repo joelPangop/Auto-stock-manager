@@ -34,8 +34,8 @@ public class AuthService {
     @Autowired
     private EmailService emailService;
 
-    @Autowired(required = false)
-    private SesEmailService sesEmailService;
+    @Autowired
+    private MailDispatcher mailDispatcher;
 
     @Autowired
     private SmsService smsService;
@@ -83,8 +83,9 @@ public class AuthService {
         return buildAuthResponse(u);
     }
 
+    /** @return true si l'email d'invitation est bien parti */
     @Transactional
-    public void createUserByAdmin(AdminCreateUserRequest req, String creatorRole) {
+    public boolean createUserByAdmin(AdminCreateUserRequest req, String creatorRole) {
         if (repo.findByEmail(req.email()).isPresent()) {
             throw new IllegalArgumentException("Email déjà utilisé");
         }
@@ -110,11 +111,12 @@ public class AuthService {
                 .build();
         repo.save(u);
 
-        sendWelcomeEmail(req.email(), req.nom(), plainPassword);
+        return sendWelcomeEmail(req.email(), req.nom(), plainPassword);
     }
 
+    /** @return true si le nouveau mot de passe est bien parti par email */
     @Transactional
-    public void regeneratePassword(Long userId) {
+    public boolean regeneratePassword(Long userId) {
         var u = repo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
 
@@ -124,19 +126,20 @@ public class AuthService {
         u.setAccountLocked(false);
         repo.save(u);
 
-        sendWelcomeEmail(u.getEmail(), u.getNom(), plainPassword);
+        return sendWelcomeEmail(u.getEmail(), u.getNom(), plainPassword);
     }
 
-    private void sendWelcomeEmail(String to, String nom, String password) {
-        try {
-            if (sesEmailService != null) {
-                sesEmailService.sendWelcomePassword(to, nom, password);
-            } else {
-                emailService.sendWelcomePassword(to, nom, password);
-            }
-        } catch (Exception e) {
-            log.warning("Email non envoyé à " + to + " : " + e.getMessage());
-        }
+    /**
+     * Envoie l'email de bienvenue via SES, puis via SMTP si SES échoue.
+     * Ne propage jamais d'exception (la création du compte ne doit pas échouer
+     * à cause de l'email) mais retourne l'issue réelle pour que l'appelant
+     * puisse en informer l'administrateur.
+     *
+     * @return true si un email est effectivement parti
+     */
+    private boolean sendWelcomeEmail(String to, String nom, String password) {
+        return mailDispatcher.send(to, MailTemplates.SUJET_BIENVENUE,
+                MailTemplates.bienvenue(nom, password));
     }
 
     private String generateSecurePassword() {

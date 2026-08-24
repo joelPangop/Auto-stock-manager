@@ -25,8 +25,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final CompteClientRepository clientRepo;
     private final VoitureRepository voitureRepo;
 
-    @Autowired(required = false)
-    private SesEmailService sesEmailService;
+    @Autowired
+    private MailDispatcher mailDispatcher;
 
     public ReservationServiceImpl(ReservationRepository reservationRepo,
                                   CompteClientRepository clientRepo,
@@ -58,15 +58,15 @@ public class ReservationServiceImpl implements ReservationService {
         res.setMessage(dto.message());
         reservationRepo.save(res);
 
-        // Notification email (meilleur effort — SES peut être absent en test)
-        if (sesEmailService != null) {
-            try {
-                String label = voiture.getModele().getMarque().getNom()
-                        + " " + voiture.getModele().getNom() + " (" + voiture.getAnnee() + ")";
-                sesEmailService.sendReservationConfirmation(client.getEmail(), client.getNom(), label, dto.dateVisite());
-            } catch (Exception e) {
-                log.warn("[Reservation] Envoi email confirmation échoué : {}", e.getMessage());
-            }
+        // Notification email (meilleur effort : la réservation reste valide même
+        // si aucun canal n'a pu envoyer la confirmation)
+        String label = voiture.getModele().getMarque().getNom()
+                + " " + voiture.getModele().getNom() + " (" + voiture.getAnnee() + ")";
+        boolean envoye = mailDispatcher.send(client.getEmail(), MailTemplates.SUJET_RESERVATION,
+                MailTemplates.reservation(client.getNom(), label, dto.dateVisite()));
+        if (!envoye) {
+            log.warn("[Reservation] Confirmation non envoyée à {} pour la réservation #{}",
+                    client.getEmail(), res.getId());
         }
 
         log.info("[Reservation] Nouvelle réservation #{}  client={} voiture={}", res.getId(), clientEmail, voiture.getId());

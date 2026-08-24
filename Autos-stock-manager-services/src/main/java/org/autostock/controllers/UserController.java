@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -90,19 +91,21 @@ public class UserController {
 
     @PostMapping("/admin-create")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
-    public ResponseEntity<Void> adminCreate(@Valid @RequestBody AdminCreateUserRequest req, Authentication auth) {
+    public ResponseEntity<Map<String, Boolean>> adminCreate(@Valid @RequestBody AdminCreateUserRequest req, Authentication auth) {
         String creatorRole = auth.getAuthorities().stream()
                 .findFirst()
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
                 .orElse("");
-        authService.createUserByAdmin(req, creatorRole);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        boolean emailSent = authService.createUserByAdmin(req, creatorRole);
+        // Le compte est créé quoi qu'il arrive ; emailSent dit à l'admin si
+        // l'invitation est réellement partie ou si le mot de passe est perdu.
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("emailSent", emailSent));
     }
 
     @PostMapping("/{id}/regenerate-password")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public ResponseEntity<Void> regeneratePassword(@PathVariable Long id) {
-        authService.regeneratePassword(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, Boolean>> regeneratePassword(@PathVariable Long id) {
+        boolean emailSent = authService.regeneratePassword(id);
+        return ResponseEntity.ok(Map.of("emailSent", emailSent));
     }
 }

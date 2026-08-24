@@ -3,7 +3,8 @@ package org.autostock.controllers;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.autostock.dtos.client.ContactDto;
-import org.autostock.services.SesEmailService;
+import org.autostock.services.MailDispatcher;
+import org.autostock.services.MailTemplates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ import java.util.Map;
 @Slf4j
 public class PublicContactController {
 
-    @Autowired(required = false)
-    private SesEmailService sesEmailService;
+    @Autowired
+    private MailDispatcher mailDispatcher;
 
     @Value("${autostock.ses.from:joelpangop@gmail.com}")
     private String adminEmail;
@@ -25,22 +26,20 @@ public class PublicContactController {
     @PostMapping
     public ResponseEntity<Map<String, String>> contact(@Valid @RequestBody ContactDto dto) {
         log.info("[Contact] Message reçu de {} <{}>", dto.nom(), dto.email());
-        if (sesEmailService != null) {
-            try {
-                sesEmailService.sendContactMessage(
-                        adminEmail,
-                        dto.nom(),
-                        dto.email(),
-                        dto.telephone(),
-                        dto.sujet(),
-                        dto.message()
-                );
-            } catch (Exception e) {
-                log.error("[Contact] Erreur envoi SES : {}", e.getMessage());
-            }
-        } else {
-            log.warn("[Contact] SesEmailService non disponible — email non envoyé");
+
+        boolean envoye = mailDispatcher.send(
+                adminEmail,
+                "Contact Ted Auto : " + dto.sujet(),
+                MailTemplates.contact(dto.nom(), dto.email(), dto.telephone(), dto.sujet(), dto.message())
+        );
+
+        // Le contenu du message est tracé si aucun canal n'a fonctionné, pour ne
+        // pas perdre une demande client derrière un accusé de réception optimiste.
+        if (!envoye) {
+            log.error("[Contact] Message NON transmis — de {} <{}> tel={} sujet={} : {}",
+                    dto.nom(), dto.email(), dto.telephone(), dto.sujet(), dto.message());
         }
+
         return ResponseEntity.ok(Map.of("message", "Votre message a bien été envoyé."));
     }
 }
