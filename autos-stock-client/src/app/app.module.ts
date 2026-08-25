@@ -63,6 +63,7 @@ import { ProfileDialogComponent } from './pages/features/user/profile-dialog/pro
 import { ProfileComponent } from './pages/users/profile/profile.component';
 import { SettingsComponent } from './pages/users/settings/settings.component';
 import { UsersComponent } from './pages/users/admin/users/users.component';
+import { MigrationComponent } from './pages/migration/migration.component';
 import {MatChipsModule} from "@angular/material/chips";
 import { DepenseMonthlyChartComponent } from './pages/depense-monthly-chart/depense-monthly-chart.component';
 import {ChartsModule} from "ng2-charts";
@@ -104,6 +105,7 @@ import { VenteEditDialogComponent } from './pages/features/ventes/vente-edit-dia
     ProfileComponent,
     SettingsComponent,
     UsersComponent,
+    MigrationComponent,
     DepenseMonthlyChartComponent,
     VoitureDepensesComponent,
     VoitureDepenseDialogComponent,

@@ -18,6 +18,7 @@ type NavItem = { icon: string; label: string; path: string; };
 export class LayoutComponent {
 
   isAdmin = false;
+  isSuperAdmin = false;
 
   get currentLang(): string { return this.langSvc.current; }
 
@@ -29,6 +30,7 @@ export class LayoutComponent {
     private langSvc: LanguageService
   ) {
     this.isAdmin = this.auth.isAdmin();
+    this.isSuperAdmin = this.auth.isSuperAdmin();
   }
 
   setLang(lang: string): void { this.langSvc.use(lang); }

@@ -64,6 +64,11 @@ public class SecurityConfig {
                                 .requestMatchers("/api/client/auth/register").permitAll()
                                 .requestMatchers("/api/client/auth/login").permitAll()
                                 .requestMatchers("/api/public/**").permitAll()
+                                // Export / sauvegarde des donnees : super admin uniquement.
+                                // Le @PreAuthorize du controleur suffirait, mais la chaine de
+                                // filtres se termine par un permitAll sur /api/** : sans cette
+                                // ligne, la protection reposerait sur une seule annotation.
+                                .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
                                 // ── Routes protégées : CLIENT ────────────────────────────────
                                 .requestMatchers("/api/client/**").hasRole("CLIENT")
                                 // ── Routes protégées : personnel interne ─────────────────────

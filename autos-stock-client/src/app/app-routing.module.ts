@@ -19,6 +19,8 @@ import {ProfileComponent} from "./pages/users/profile/profile.component";
 import {SettingsComponent} from "./pages/users/settings/settings.component";
 import {AdminGuard} from "./services/AdminGuard";
 import {UsersComponent} from "./pages/users/admin/users/users.component";
+import {SuperAdminGuard} from "./services/SuperAdminGuard";
+import {MigrationComponent} from "./pages/migration/migration.component";
 import {EntretiensListComponent} from "./pages/entretiens/entretiens-list/entretiens-list.component";
 
 const routes: Routes = [
@@ -46,6 +48,7 @@ const routes: Routes = [
       { path: 'users', component: UsersComponent, canActivate: [AdminGuard] },
       { path: 'register', component: RegisterComponent, canActivate: [AdminGuard] },   // ⬅️ ajouté
       { path: 'register/:id', component: RegisterComponent, canActivate: [AdminGuard] },   // ⬅️ ajouté
+      { path: 'migration', component: MigrationComponent, canActivate: [SuperAdminGuard] },
     ]
   },
   { path: '**', redirectTo: '' }

@@ -1,0 +1,55 @@
+<div class="page">
+  <mat-card class="card">
+    <mat-card-title>Migration des données</mat-card-title>
+    <mat-card-content>
+
+      <p class="intro">
+        Génère une archive ZIP contenant la base de données, et selon vos choix
+        les fichiers téléversés et les objets stockés sur S3. L'archive est
+        téléchargée directement sur cet appareil.
+      </p>
+
+      <div class="options">
+        <mat-checkbox [(ngModel)]="includeUploads" [disabled]="running">
+          Inclure les fichiers téléversés
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="includeS3" [disabled]="running">
+          Inclure les objets S3
+        </mat-checkbox>
+      </div>
+
+      <div class="warn">
+        <mat-icon>info</mat-icon>
+        <span>
+          L'archive ne contient <strong>aucun fichier de configuration</strong> :
+          mots de passe et clés d'API n'ont pas à transiter par le navigateur.
+          Pour un export incluant la configuration, utilisez le script
+          <code>pull-backup.ps1</code> en SSH.
+        </span>
+      </div>
+
+      <button mat-flat-button color="primary" (click)="export()" [disabled]="running">
+        <mat-icon>cloud_download</mat-icon>&nbsp;
+        {{ running ? 'Export en cours…' : 'Lancer l\'export' }}
+      </button>
+
+      <mat-progress-bar mode="indeterminate" *ngIf="running"></mat-progress-bar>
+
+      <p class="running-note" *ngIf="running">
+        Ne quittez pas cette page. Sur une base volumineuse, l'opération peut
+        prendre plusieurs minutes.
+      </p>
+
+      <div class="result ok" *ngIf="lastFile && !running && !errorMsg">
+        <mat-icon>check_circle</mat-icon>
+        <span>Archive téléchargée : <strong>{{ lastFile }}</strong> ({{ lastSize }})</span>
+      </div>
+
+      <div class="result ko" *ngIf="errorMsg && !running">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMsg }}</span>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -19,6 +19,7 @@
       <a mat-list-item routerLink="/mouvements"  routerLinkActive="nav-active"><mat-icon matListItemIcon>compare_arrows</mat-icon><span matListItemTitle>{{ 'NAV.MOUVEMENTS' | translate }}</span></a>
       <a mat-list-item routerLink="/paiements"   routerLinkActive="nav-active"><mat-icon matListItemIcon>payments</mat-icon><span matListItemTitle>{{ 'NAV.PAIEMENTS' | translate }}</span></a>
       <a mat-list-item routerLink="/users" *ngIf="isAdmin" routerLinkActive="nav-active"><mat-icon matListItemIcon>group</mat-icon><span matListItemTitle>{{ 'NAV.UTILISATEURS' | translate }}</span></a>
+      <a mat-list-item routerLink="/migration" *ngIf="isSuperAdmin" routerLinkActive="nav-active"><mat-icon matListItemIcon>cloud_download</mat-icon><span matListItemTitle>Migration</span></a>
     </mat-nav-list>
 
     <div class="grow"></div>
