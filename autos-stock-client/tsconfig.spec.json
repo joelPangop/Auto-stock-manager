@@ -3,14 +3,14 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    // TestBed compile en JIT : sans emitDecoratorMetadata, les types des
+    // parametres de constructeur disparaissent et l'injection echoue avec
+    // "Can't resolve all parameters". Le build AOT, lui, s'en passe.
+    "emitDecoratorMetadata": true,
     "types": [
-      "jasmine"
+      "jest"
     ]
   },
-  "files": [
-    "src/test.ts",
-    "src/polyfills.ts"
-  ],
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"
