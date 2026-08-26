@@ -33,7 +33,10 @@ export class JwtInterceptor implements HttpInterceptor {
               } catch {
                 message = text;
               }
-              return throwError(() => new Error(message));
+              // RxJS 6 : throwError(valeur), pas throwError(fabrique). La forme
+              // a fabrique n'existe qu'a partir de RxJS 7 et ferait remonter la
+              // fonction elle-meme comme erreur.
+              return throwError(new Error(message));
             })
           );
         }
@@ -54,12 +57,12 @@ export class JwtInterceptor implements HttpInterceptor {
             }),
             catchError(e => {
               this.auth.logout();
-              return throwError(() => e);
+              return throwError(e);
             })
           );
         }
 
-        return throwError(() =>
+        return throwError(
           new HttpErrorResponse({
             status: err.status,
             statusText: err.statusText,
