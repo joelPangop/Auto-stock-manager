@@ -118,18 +118,18 @@ export class VenteCreateDialogComponent implements OnInit {
     dialogRef.afterClosed().pipe(
       filter(res => !!res), // res = ClientDto créé
       switchMap((newClient: Client) => {
-        // recharger la liste ou simplement ajouter en local
+        // La liste rechargee doit remplacer this.clients : sans cela le nouveau
+        // client n'a aucune option correspondante et la selection reste vide.
         return this.clientsSrv.list().pipe(
-          tap(clients => {
-            // tu pourrais soit recharger complètement
-            // soit mettre à jour localement
-          }),
+          tap(clients => (this.clients = clients)),
           map(() => newClient)
         );
       })
     ).subscribe((newClient) => {
-      // sélectionner le nouveau client
-      this.form.controls['clientId'].setValue(newClient.id);
+      // Le controle s'appelle idClient, comme dans le template. 'clientId'
+      // n'existe pas : controls['clientId'] valait undefined et setValue
+      // levait une TypeError a chaque client cree depuis ce dialogue.
+      this.form.controls['idClient'].setValue(newClient.id);
     });
   }
 }
