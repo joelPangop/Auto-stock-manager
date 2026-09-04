@@ -9,5 +9,12 @@
     "src/main.ts",
     "src/polyfills.ts"
   ],
-  "include": ["src/**/*.d.ts", "src/**/*.ts"]
+  "include": ["src/**/*.d.ts", "src/**/*.ts"],
+  // Les tests sont compiles par tsconfig.spec.json, qui seul declare les types
+  // du runner. Sans cette exclusion, `ng build` type-verifie les .spec.ts et
+  // echoue sur describe/it/expect/jest — ce qui casse l'image Docker du front.
+  "exclude": [
+    "src/test.ts",
+    "src/**/*.spec.ts"
+  ]
 }
