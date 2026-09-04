@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VenteService } from '../../../../services/vente.service';
 import { Vente } from '../../../../models/vente';
-import { MethodePaiement } from '../../../../models/enums/MethodePaiement';
+import { MethodePaiement, METHODES_PAIEMENT } from '../../../../models/enums/MethodePaiement';
 import { Client } from '../../../../models/client';
 import { User } from '../../../../models/User';
 import { ClientService } from '../../../../services/client.service';
@@ -19,12 +19,7 @@ export class VenteEditDialogComponent implements OnInit {
   clients: Client[] = [];
   vendeurs: User[] = [];
 
-  modes: { value: MethodePaiement; label: string }[] = [
-    { value: 'ESPECES', label: 'Espèces' },
-    { value: 'CARTE',   label: 'Carte' },
-    { value: 'VIREMENT', label: 'Virement' },
-    { value: 'CHEQUE',  label: 'Chèque' },
-  ];
+  modes: { value: MethodePaiement; label: string }[] = METHODES_PAIEMENT;
 
   constructor(
     private fb: FormBuilder,
@@ -39,7 +34,7 @@ export class VenteEditDialogComponent implements OnInit {
       idVendeur:    [(vente as any).vendeurId ?? null, Validators.required],
       dateVente:    [vente.dateVente   ?? new Date().toISOString().substring(0, 10), Validators.required],
       prixFinal:    [vente.prixFinal   ?? null, [Validators.required, Validators.min(0)]],
-      modePaiement: [(vente as any).modePaiement ?? 'ESPECES', Validators.required],
+      modePaiement: [(vente as any).modePaiement ?? 'CASH', Validators.required],
     });
   }
 

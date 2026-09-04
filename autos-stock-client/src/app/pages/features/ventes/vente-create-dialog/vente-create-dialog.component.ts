@@ -7,7 +7,7 @@ import {VenteCreateDto} from "../../../../models/VenteCreateDto";
 import {VenteService} from "../../../../services/vente.service";
 import {UserService} from "../../../../services/user.service";
 import {ClientService} from "../../../../services/client.service";
-import {MethodePaiement} from "../../../../models/enums/MethodePaiement";
+import {MethodePaiement, METHODES_PAIEMENT} from "../../../../models/enums/MethodePaiement";
 import {ClientCreateDialogComponent} from "../../client/client-create-dialog/client-create-dialog.component";
 import {filter, map, switchMap, tap} from "rxjs/operators";
 import {VenteDialogData} from "../../../../models/VenteDialogData";
@@ -24,13 +24,9 @@ export class VenteCreateDialogComponent implements OnInit {
   clients: Client[] = [];
   vendeurs: User[] = [];
   loading = false;
+  apiError: string | null = null;
 
-  modes: { value: MethodePaiement; label: string }[] = [
-    {value: 'ESPECES', label: 'Espèces'},
-    {value: 'CARTE', label: 'Carte'},
-    {value: 'VIREMENT', label: 'Virement'},
-    {value: 'CHEQUE', label: 'Chèque'}
-  ];
+  modes: { value: MethodePaiement; label: string }[] = METHODES_PAIEMENT;
 
   constructor(
     private fb: FormBuilder,
@@ -47,7 +43,7 @@ export class VenteCreateDialogComponent implements OnInit {
       idVendeur: [data.vendeurCourantId ?? null, Validators.required],
       dateVente: [new Date().toISOString().substring(0, 10), Validators.required], // yyyy-MM-dd
       prixFinal: [data.prixSuggere ?? null, [Validators.required, Validators.min(0)]],
-      modePaiement: ['ESPECES', Validators.required],
+      modePaiement: ['CASH' as MethodePaiement, Validators.required],
       acompteMontant: [null, [Validators.min(0)]],
     });
   }
@@ -63,6 +59,7 @@ export class VenteCreateDialogComponent implements OnInit {
       return;
     }
     this.loading = true;
+    this.apiError = null;
 
     const dto: VenteCreateDto = {
       idVoiture: this.data.idVoiture,
@@ -92,16 +89,23 @@ export class VenteCreateDialogComponent implements OnInit {
         // paiement.methode = v.modePaiement;
         // paiement.montant = v.prixFinal;
         // paiement.idVoiture = v.idVoiture;
+        // Le paiement doit etre signale s'il echoue : sans branche d'erreur,
+        // une vente pouvait etre creee sans paiement associe, sans que rien
+        // ne l'indique a l'utilisateur.
         this.pSrv.create(paiement).subscribe({
-          next: p => {
-            console.log("Paiement", p)
+          next: () => this.ref.close(v),
+          error: err => {
+            this.loading = false;
+            this.apiError = err?.error?.message
+              ?? 'Vente enregistree, mais le paiement n a pas pu etre cree.';
           }
-        })
-        this.ref.close(v);
+        });
       },
-      error: _ => {
+      error: err => {
+        // Poser l'erreur sur le formulaire le rendait invalide, ce qui
+        // desactivait le bouton Enregistrer definitivement.
         this.loading = false;
-        this.form.setErrors({api: true});
+        this.apiError = err?.error?.message ?? null;
       }
     });
   }

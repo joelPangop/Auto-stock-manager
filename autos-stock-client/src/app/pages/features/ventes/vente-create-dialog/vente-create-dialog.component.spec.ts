@@ -8,7 +8,8 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatIconModule} from '@angular/material/icon';
-import {of} from 'rxjs';
+import {of, throwError} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
 
 import {VenteCreateDialogComponent} from './vente-create-dialog.component';
 import {VenteService} from '../../../../services/vente.service';
@@ -90,6 +91,44 @@ describe('VenteCreateDialogComponent', () => {
       component.openNewClientDialog();
 
       expect(component.form.value.idClient).toBe(1);
+    });
+  });
+
+  describe('methodes de paiement', () => {
+    it('ne propose que les valeurs resolues par MethodePaiement.fromValue', () => {
+      // Le backend compare au champ `value` de l'enum, pas au nom de la
+      // constante : ESPECES et CARTE levaient une IllegalArgumentException
+      // et le paiement n'etait jamais cree.
+      expect(component.modes.map(m => m.value))
+        .toEqual(['CASH', 'CARD', 'CHEQUE', 'VIREMENT', 'FINANCEMENT']);
+    });
+
+    it('utilise une valeur valide par defaut', () => {
+      expect(component.modes.map(m => m.value)).toContain(component.form.value.modePaiement);
+    });
+  });
+
+  describe('echec cote API', () => {
+    it('signale l echec de creation du paiement au lieu de le taire', () => {
+      const paiements = TestBed.inject(PaiementService) as any;
+      paiements.create.mockReturnValue(
+        throwError(new HttpErrorResponse({status: 400, error: {message: 'Methode inconnue'}})));
+      component.form.patchValue({idClient: 1, idVendeur: 2, prixFinal: 15000});
+
+      component.save();
+
+      expect(component.apiError).toBe('Methode inconnue');
+    });
+
+    it('laisse le formulaire valide pour permettre une nouvelle tentative', () => {
+      const ventes = TestBed.inject(VenteService) as any;
+      ventes.create.mockReturnValue(throwError(new HttpErrorResponse({status: 500, error: null})));
+      component.form.patchValue({idClient: 1, idVendeur: 2, prixFinal: 15000});
+
+      component.save();
+
+      expect(component.loading).toBe(false);
+      expect(component.form.errors).toBeNull();
     });
   });
 

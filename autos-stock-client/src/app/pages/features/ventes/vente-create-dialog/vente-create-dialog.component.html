@@ -49,8 +49,8 @@
     <input matInput type="number" formControlName="acompteMontant" placeholder="ex: 1000">
   </mat-form-field>
 
-  <mat-error *ngIf="form.errors?.api" class="api-error">
-    {{ 'VENTES.ERREUR_API' | translate }}
+  <mat-error *ngIf="apiError !== null" class="api-error">
+    {{ apiError || ('VENTES.ERREUR_API' | translate) }}
   </mat-error>
 </mat-dialog-content>
 
