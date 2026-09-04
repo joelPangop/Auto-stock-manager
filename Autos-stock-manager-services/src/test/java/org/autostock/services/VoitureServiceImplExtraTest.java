@@ -248,25 +248,34 @@ class VoitureServiceImplExtraTest {
         }
 
         @Test
-        @DisplayName("le controle d acces porte sur le proprietaire envoye, pas sur celui en base")
-        void controleAccesPorteSurLeProprietaireEnvoye() throws Exception {
-            // Comportement actuel documente, et non valide comme souhaitable :
-            // update() compare sec.currentUserId() a v.getOwner() — le
-            // proprietaire du PATCH — au lieu de celui du vehicule en base.
-            // Un tiers qui envoie son propre identifiant comme owner passe donc
-            // le controle, meme s il ne possede pas le vehicule. La valeur est
-            // ensuite ecrasee par celle de la base, donc rien n est corrompu,
-            // mais le refus attendu n a pas lieu.
+        @DisplayName("un tiers qui se declare proprietaire dans le patch reste refuse")
+        void proprietaireDuPatchIgnore() throws Exception {
+            // Le controle porte sur le proprietaire en base, pas sur celui du
+            // corps de la requete : se declarer owner ne donne aucun droit.
             when(sec.isAdmin()).thenReturn(false);
             when(sec.currentUserId()).thenReturn(2L);
 
             var patchDUnTiers = new Voiture();
             patchDUnTiers.setOwner(new User(2L)); // le tiers se declare proprietaire
 
-            assertThatCode(() -> service.update(10L, patchDUnTiers))
-                    .as("si ce test se met a echouer, c est que le controle a ete corrige "
-                            + "pour porter sur le proprietaire en base — mettre a jour ce test")
-                    .doesNotThrowAnyException();
+            assertThatThrownBy(() -> service.update(10L, patchDUnTiers))
+                    .isInstanceOf(AccessDeniedException.class);
+
+            verify(repository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("un patch sans proprietaire ne fait pas echouer le controle")
+        void patchSansProprietaire() throws Exception {
+            // Le mapper ne renseigne jamais owner : le controle doit rester
+            // fonctionnel sans NullPointerException.
+            when(sec.isAdmin()).thenReturn(false);
+            when(sec.currentUserId()).thenReturn(1L);
+
+            var patchSansOwner = new Voiture();
+            patchSansOwner.setCouleur("Bleu");
+
+            assertThat(service.update(10L, patchSansOwner).getCouleur()).isEqualTo("Bleu");
         }
     }
 }

@@ -89,7 +89,10 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
     public Voiture update(Long id, Voiture v) throws AccessDeniedException {
         Voiture existedVoiture = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
-        if (!sec.isAdmin() && !v.getOwner().getId().equals(sec.currentUserId())) {
+        // v vient du mapper et n'a pas de proprietaire : le controle doit porter
+        // sur la voiture en base, sinon getOwner() est null (NPE -> 500) et la
+        // verification de propriete ne s'applique jamais.
+        if (!sec.isAdmin() && !existedVoiture.getOwner().getId().equals(sec.currentUserId())) {
             throw new AccessDeniedException("Vous n’êtes pas propriétaire");
         }
         v.setId(existedVoiture.getId());

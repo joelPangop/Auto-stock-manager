@@ -29,10 +29,11 @@ export class VoitureCreateDialogComponent implements OnInit {
   form: FormGroup;
   fournisseurs: Fournisseur[] = [];
   loading = false;
+  apiError: string | null = null;
   marques: Marque[] = [];
   modeles: Modele[] = [];
 
-  statuts: StatutVoiture[] = ['EN_STOCK', 'DISPONIBLE', 'RESERVEE', 'VENDUE'];
+  statuts: StatutVoiture[] = ['EN_STOCK', 'RESERVEE', 'VENDUE', 'HORS_SERVICE'];
 
   constructor(
     private fb: FormBuilder,
@@ -47,7 +48,9 @@ export class VoitureCreateDialogComponent implements OnInit {
       idMarque: [null, [Validators.required]],
       idModele: [null, [Validators.required]],
       annee: [new Date().getFullYear(), [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
-      vin: [''],
+      // vin est NOT NULL et UNIQUE en base : sans validateur, un VIN vide
+      // passe une premiere fois puis fait echouer toutes les creations suivantes.
+      vin: ['', [Validators.required]],
       couleur: [''],
       kilometrage: [null, [Validators.min(0)]],
       prixAchat: [null, [Validators.min(0)]],
@@ -89,15 +92,19 @@ export class VoitureCreateDialogComponent implements OnInit {
       return;
     }
     this.loading = true;
+    this.apiError = null;
     const dto: VoitureCreateDto = this.form.value;
     this.voitures.create(dto).subscribe({
       next: v => {
         this.loading = false;
         this.ref.close(v);
       },
-      error: _ => {
+      error: err => {
         this.loading = false;
-        this.form.setErrors({api: true});
+        // Le message du backend (VIN deja utilise, modele introuvable...) est
+        // plus utile que l'erreur generique ; on ne pose pas d'erreur sur le
+        // formulaire, sinon le bouton Enregistrer reste desactive.
+        this.apiError = err?.error?.message ?? null;
       }
     });
   }

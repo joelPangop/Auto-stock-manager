@@ -33,6 +33,7 @@
   <mat-form-field appearance="outline">
     <mat-label>{{ 'COMMON.VIN' | translate }}</mat-label>
     <input matInput formControlName="vin">
+    <mat-error *ngIf="form.get('vin')?.hasError('required')">{{ 'COMMON.OBLIGATOIRE' | translate }}</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
@@ -83,8 +84,8 @@
     {{ 'VOITURE_CREATE.CREER_MOUVEMENT' | translate }}
   </mat-checkbox>
 
-  <mat-error *ngIf="form.errors?.api" class="api-error">
-    {{ 'VOITURE_CREATE.ERREUR_API' | translate }}
+  <mat-error *ngIf="apiError !== null" class="api-error">
+    {{ apiError || ('VOITURE_CREATE.ERREUR_API' | translate) }}
   </mat-error>
 </mat-dialog-content>
 
