@@ -24,7 +24,12 @@ public class DocumentMapper {
     public DocumentDto toDto(Document d) {
         DocumentDto dto = new DocumentDto();
         dto.setId(d.getId());
-        dto.setType(d.getType().getValue());
+        // name() et non getValue() : l'ecriture (DocumentServiceImpl) resout le
+        // type avec TypeDocument.valueOf(), donc en nom de constante. Renvoyer
+        // getValue() faisait ressortir FACTURE en "INVOICE" et IMMATRICULATION
+        // en "REGISTRATION", que le front ne sait pas classer. Le libelle
+        // lisible reste disponible dans typeLabel.
+        dto.setType(d.getType().name());
         dto.setTypeLabel(d.getType().getLabel());
         dto.setUrlFichier(d.getUrlFichier());
         dto.setDateUpload(d.getDateUpload());

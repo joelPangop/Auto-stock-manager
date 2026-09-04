@@ -17,7 +17,8 @@ const TYPE_ICONS: Record<string, string> = {
   CARFAX: 'history',
   IMMATRICULATION: 'credit_card',
   INSPECTION: 'fact_check',
-  ASSURANCE: 'security',
+  CONTRAT: 'gavel',
+  RECU_PAIEMENT: 'payments',
   AUTRE: 'folder'
 };
 
@@ -62,7 +63,9 @@ export class DocumentsComponent implements OnInit {
       if (!map.has(key)) { map.set(key, []); }
       map.get(key)!.push(d);
     });
-    const order = ['FACTURE', 'CARFAX', 'IMMATRICULATION', 'INSPECTION', 'ASSURANCE', 'AUTRE'];
+    // RECU_PAIEMENT est pose par le backend lors d'un paiement : sans entree
+    // ici, ces documents tombaient dans le fourre-tout de fin de liste.
+    const order = ['FACTURE', 'CARFAX', 'IMMATRICULATION', 'INSPECTION', 'CONTRAT', 'RECU_PAIEMENT', 'AUTRE'];
     const sorted = Array.from(map.entries()).sort(([a], [b]) => {
       return (order.indexOf(a) === -1 ? 99 : order.indexOf(a)) -
              (order.indexOf(b) === -1 ? 99 : order.indexOf(b));
