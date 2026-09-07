@@ -36,7 +36,7 @@
     <div class="title">{{ marqueLabelle }} {{ modeleLabelle }} ({{ v.annee }})</div>
     <div class="sub">VIN: {{ v.vin || '—' }} • {{ 'COMMON.COULEUR' | translate }}: {{ v.couleur || '—' }} • Km: {{ v.kilometrage || '—' }}</div>
     <!-- Tant que la voiture n'est pas vendue, c'est le prix demande qui fait foi. -->
-    <div class="price">{{ (v.prixVente ?? v.prixDemande) | number:'1.0-0' }} $</div>
+    <div class="price">{{ prixAffiche(v) | number:'1.0-0' }} $</div>
     <div class="status">
       <span class="chip" [class.ok]="v.statut === 'EN_STOCK' && !v.needsRemark"
             [class.bad]="v.statut === 'EN_STOCK' && v.needsRemark" [class.warn]="v.statut==='VENDUE'">

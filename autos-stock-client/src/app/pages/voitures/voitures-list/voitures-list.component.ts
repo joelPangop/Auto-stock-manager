@@ -148,4 +148,13 @@ export class VoituresListComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
+
+  /**
+   * Prix a afficher : le montant encaisse si la voiture est vendue, le prix
+   * demande sinon. Le calcul vit ici car le parseur de templates d'Angular 10
+   * ne connait pas ??, et un ternaire prendrait un prix de 0 pour une absence.
+   */
+  prixAffiche(v: { prixVente?: number | null; prixDemande?: number | null }): number | null {
+    return v.prixVente != null ? v.prixVente : (v.prixDemande != null ? v.prixDemande : null);
+  }
 }
