@@ -53,7 +53,8 @@ public class VentePaiementSteps {
                 context.getClients().get(nomClient).getId(),
                 context.getUtilisateurs().get(nomVendeur).getId(),
                 BigDecimal.valueOf(prix),
-                methode
+                methode,
+                null
         );
         context.getVentes().put(nomVoiture, vente);
     }
@@ -67,7 +68,8 @@ public class VentePaiementSteps {
                     context.getClients().get(nomClient).getId(),
                     context.getUtilisateurs().get(nomVendeur).getId(),
                     BigDecimal.valueOf(prix),
-                    methode
+                    methode,
+                    null
             );
             context.getVentes().put(nomVoiture, vente);
         } catch (Exception e) {

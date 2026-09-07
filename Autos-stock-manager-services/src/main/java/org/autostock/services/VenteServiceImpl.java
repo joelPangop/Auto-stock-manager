@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,8 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
 
     @Override
     public Vente creerVente(Long idVoiture, Long idClient, Long idVendeur,
-                            BigDecimal prixFinal, String modePaiement) throws AccessDeniedException {
+                            BigDecimal prixFinal, String modePaiement,
+                            LocalDate dateVente) throws AccessDeniedException {
 
         Voiture voiture = voitureService.findById(idVoiture)
                 .orElseThrow(() -> new EntityNotFoundException("Voiture introuvable"));
@@ -53,7 +55,9 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
         vente.setVoiture(voiture);
         vente.setClient(client);
         vente.setVendeur(vendeur);
-        vente.setDateVente(LocalDateTime.now());
+        // La date choisie dans le formulaire fait foi ; sans elle, on retombe
+        // sur maintenant. Elle etait auparavant ecrasee dans tous les cas.
+        vente.setDateVente(dateVente != null ? dateVente.atStartOfDay() : LocalDateTime.now());
         vente.setPrixFinal(prixFinal);
         vente.setModePaiement(modePaiement);
 

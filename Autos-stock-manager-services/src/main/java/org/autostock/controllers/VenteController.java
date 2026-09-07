@@ -57,7 +57,7 @@ public class VenteController {
     public VenteDto create(@RequestBody VenteCreateDto dto) throws AccessDeniedException {
         Vente v = venteService.creerVente(
                 dto.getIdVoiture(), dto.getIdClient(), dto.getIdVendeur(),
-                dto.getPrixFinal(), dto.getModePaiement()
+                dto.getPrixFinal(), dto.getModePaiement(), dto.getDateVente()
         );
         BigDecimal total = paiementService.totalPaye(v.getId());
         BigDecimal reste = v.getPrixFinal().subtract(total);
