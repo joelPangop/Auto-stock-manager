@@ -54,7 +54,7 @@ export class VoitureCreateDialogComponent implements OnInit {
       couleur: [''],
       kilometrage: [null, [Validators.min(0)]],
       prixAchat: [null, [Validators.min(0)]],
-      prixVente: [null, [Validators.min(0)]],
+      prixDemande: [null, [Validators.min(0)]],
       statut: ['EN_STOCK' as StatutVoiture, Validators.required],
       idFournisseur: [null],
       dateEntreeStock: [new Date().toISOString().substring(0, 10)],

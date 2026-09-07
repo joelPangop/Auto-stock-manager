@@ -5,6 +5,7 @@ export interface VoitureListDto {
   marque: string;
   modele: string;
   annee: number;
+  prixDemande: number;
   prixVente: number;
   statut: StatutVoiture;
   needsRemark: boolean;

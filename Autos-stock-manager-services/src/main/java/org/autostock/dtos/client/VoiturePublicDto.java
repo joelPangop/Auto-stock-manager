@@ -11,6 +11,9 @@ public record VoiturePublicDto(
         Integer annee,
         String couleur,
         Long kilometrage,
+        // Alimente par prixDemande : c'est le prix affiche tant que la voiture
+        // n'est pas vendue. Le nom du champ reste prixVente pour ne pas casser
+        // le portail client, qui est deploye separement.
         BigDecimal prixVente,
         String statut,
         Long photoId   // ID du premier document de type PHOTO, null si aucun
@@ -23,7 +26,7 @@ public record VoiturePublicDto(
                 v.getAnnee(),
                 v.getCouleur(),
                 v.getKilometrage(),
-                v.getPrixVente(),
+                v.getPrixDemande(),
                 v.getStatut().getValue(),
                 photoId
         );

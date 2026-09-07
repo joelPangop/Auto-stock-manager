@@ -11,7 +11,8 @@ public class VoitureUpdateDto {
     Long idMarque;
     Long idModele;
     Integer annee;
-    BigDecimal prixVente;
+    /** Prix affiche sur la vitrine. prixVente n'est plus modifiable ici. */
+    BigDecimal prixDemande;
     BigDecimal prixAchat;
     String vin;
     String couleur;

@@ -31,6 +31,11 @@ public class Voiture extends AbstractEntity {
     private String vin;
 
     private BigDecimal prixAchat;
+
+    /** Prix affiche aux clients sur la vitrine, tant que la voiture est en stock. */
+    private BigDecimal prixDemande;
+
+    /** Montant reellement encaisse : renseigne par la vente, jamais saisi a la main. */
     private BigDecimal prixVente;
 
     @Column(nullable = false)

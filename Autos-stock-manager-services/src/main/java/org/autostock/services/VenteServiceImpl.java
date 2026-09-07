@@ -63,6 +63,10 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
 
         Vente saved = repository.save(vente);
 
+        // Le prix de vente de la voiture decoule de la vente : c'est le seul
+        // endroit qui le renseigne depuis qu'il a quitte la fiche voiture.
+        voiture.setPrixVente(prixFinal);
+
         voitureService.changerStatut(voiture.getId(), StatutVoiture.VENDUE);
         stockMouvementService.enregistrerMouvement(voiture, TypeMouvement.VENTE,
                 "Vente #" + saved.getId() + " au client " + client.getNom());
@@ -88,7 +92,13 @@ public class VenteServiceImpl extends AbstractBaseService<Vente, Long, VenteRepo
             vente.setVendeur(vendeur);
         }
         if (dateVente != null)    vente.setDateVente(dateVente);
-        if (prixFinal != null)    vente.setPrixFinal(prixFinal);
+        if (prixFinal != null) {
+            vente.setPrixFinal(prixFinal);
+            // Le prix affiche sur la fiche voiture suit la vente qui le porte.
+            if (vente.getVoiture() != null) {
+                vente.getVoiture().setPrixVente(prixFinal);
+            }
+        }
         if (modePaiement != null) vente.setModePaiement(modePaiement);
 
         return repository.save(vente);

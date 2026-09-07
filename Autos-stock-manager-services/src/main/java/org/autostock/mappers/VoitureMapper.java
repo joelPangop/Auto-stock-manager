@@ -25,7 +25,8 @@ public class VoitureMapper {
         v.setVin(dto.getVin());
         v.setKilometrage(dto.getKilometrage());
         v.setPrixAchat(dto.getPrixAchat());
-        v.setPrixVente(dto.getPrixVente());
+        // prixVente n'est pas repris du formulaire : il decoule de la vente.
+        v.setPrixDemande(dto.getPrixDemande());
         v.setCategorie(dto.getCategorie());
         return v;
     }
@@ -40,6 +41,7 @@ public class VoitureMapper {
         dto.setAnnee(v.getAnnee());
         dto.setCouleur(v.getCouleur());
         dto.setVin(v.getVin());
+        dto.setPrixDemande(v.getPrixDemande());
         dto.setPrixVente(v.getPrixVente());
         dto.setOwner(v.getOwner().getId());
         dto.setStatut(v.getStatut().name());
@@ -65,6 +67,7 @@ public class VoitureMapper {
         dto.setKilometrage(v.getKilometrage());
         dto.setCreatedAt(v.getCreatedAt());
         dto.setUpdatedAt(v.getUpdatedAt());
+        dto.setPrixDemande(v.getPrixDemande());
         dto.setPrixVente(v.getPrixVente());
         dto.setStatut(v.getStatut().name());
         dto.setOwner(v.getOwner().getId());
@@ -89,7 +92,8 @@ public class VoitureMapper {
         v.setCategorie(CategorieVoiture.fromValue(dto.getCategorie()));
         v.setKilometrage(dto.getKilometrage());
         v.setPrixAchat(dto.getPrixAchat());
-        v.setPrixVente(dto.getPrixVente());
+        // prixVente est repris de la base par le service : il appartient a la vente.
+        v.setPrixDemande(dto.getPrixDemande());
         v.setDescription(dto.getDescription());
         return v;
     }

@@ -16,7 +16,8 @@ public class VoitureCreateDto {
     private String couleur;
     private String vin;
     private BigDecimal prixAchat;
-    private BigDecimal prixVente;
+    /** Prix affiche sur la vitrine. Le prix de vente reel vient de la vente. */
+    private BigDecimal prixDemande;
     private Long kilometrage;
     StatutVoiture statut;
     CategorieVoiture categorie;

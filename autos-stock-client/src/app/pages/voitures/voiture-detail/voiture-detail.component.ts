@@ -196,8 +196,8 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
         idMarque: [voiture.idMarque ? voiture.idMarque : null, [Validators.required]],
         idModele: [voiture.idModele ? voiture.idModele : null, [Validators.required]],
         annee: [voiture.annee ? voiture.annee : null, [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
-        prixVente: [voiture.prixVente ? voiture.prixVente : null, [Validators.min(0)]],
         prixAchat: [voiture.prixAchat ? voiture.prixAchat : null, [Validators.required, Validators.min(0)]],
+        prixDemande: [voiture.prixDemande ?? null, [Validators.min(0)]],
         vin: [voiture.vin ? voiture.vin : ''],
         couleur: [voiture.couleur ? voiture.couleur : ''],
         kilometrage: [voiture.kilometrage ? voiture.kilometrage : null, [Validators.min(0)]],
@@ -460,7 +460,8 @@ export class VoitureDetailComponent implements OnInit, OnDestroy {
               idMarque: v.idMarque,
               idModele: v.idModele,
               idFournisseur: v.idFournisseur ?? null,
-              prixSuggere: (v as any).prixVente ?? (v as any).prix ?? null,
+              // Le prix demande est ce qu'on propose au client comme point de depart.
+              prixSuggere: v.prixDemande ?? null,
               vendeurId: undefined // ou l'id de l'utilisateur connecté si tu l'as
             }
           });

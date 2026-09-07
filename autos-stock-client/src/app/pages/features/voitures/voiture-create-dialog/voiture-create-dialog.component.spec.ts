@@ -82,6 +82,13 @@ describe('VoitureCreateDialogComponent', () => {
       expect(component.statuts).not.toContain('DISPONIBLE');
     });
 
+    it('n expose pas de prix de vente : il releve de la vente', () => {
+      // Le prix de vente d'une voiture decoule de la vente qui la solde. Le
+      // proposer ici laissait saisir un montant qu'aucune transaction ne
+      // justifiait.
+      expect(component.form.contains('prixVente')).toBe(false);
+    });
+
     it('exige un VIN, la colonne etant NOT NULL et UNIQUE', () => {
       const vin = component.form.get('vin')!;
 

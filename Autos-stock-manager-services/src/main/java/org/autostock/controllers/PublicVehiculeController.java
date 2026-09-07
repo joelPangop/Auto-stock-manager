@@ -54,7 +54,7 @@ public class PublicVehiculeController {
                 .filter(v -> v.getStatut() == StatutVoiture.EN_STOCK
                           || v.getStatut() == StatutVoiture.RESERVEE)
                 .filter(v -> marque == null || v.getModele().getMarque().getNom().equalsIgnoreCase(marque))
-                .filter(v -> prixMax == null || (v.getPrixVente() != null && v.getPrixVente().compareTo(prixMax) <= 0))
+                .filter(v -> prixMax == null || (v.getPrixDemande() != null && v.getPrixDemande().compareTo(prixMax) <= 0))
                 .filter(v -> anneeMin == null || (v.getAnnee() != null && v.getAnnee() >= anneeMin))
                 .filter(v -> searchLower == null
                           || v.getModele().getMarque().getNom().toLowerCase().contains(searchLower)

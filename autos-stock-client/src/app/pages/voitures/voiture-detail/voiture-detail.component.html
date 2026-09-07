@@ -35,7 +35,8 @@
   <div class="key-info" *ngIf="!isEditing; else editHeader">
     <div class="title">{{ marqueLabelle }} {{ modeleLabelle }} ({{ v.annee }})</div>
     <div class="sub">VIN: {{ v.vin || '—' }} • {{ 'COMMON.COULEUR' | translate }}: {{ v.couleur || '—' }} • Km: {{ v.kilometrage || '—' }}</div>
-    <div class="price">{{ v.prixVente | number:'1.0-0' }} $</div>
+    <!-- Tant que la voiture n'est pas vendue, c'est le prix demande qui fait foi. -->
+    <div class="price">{{ (v.prixVente ?? v.prixDemande) | number:'1.0-0' }} $</div>
     <div class="status">
       <span class="chip" [class.ok]="v.statut === 'EN_STOCK' && !v.needsRemark"
             [class.bad]="v.statut === 'EN_STOCK' && v.needsRemark" [class.warn]="v.statut==='VENDUE'">
@@ -78,8 +79,8 @@
         <input matInput type="number" formControlName="prixAchat">
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>{{ 'COMMON.PRIX_VENTE' | translate }}</mat-label>
-        <input matInput type="number" formControlName="prixVente">
+        <mat-label>{{ 'VOITURES.PRIX_DEMANDE' | translate }}</mat-label>
+        <input matInput type="number" formControlName="prixDemande">
       </mat-form-field>
     </form>
   </ng-template>
@@ -95,7 +96,8 @@
             <div><strong>{{ 'COMMON.ANNEE' | translate }}</strong><div>{{ v.annee }}</div></div>
             <div><strong>{{ 'COMMON.STATUT' | translate }}</strong><div>{{ v.statut }}</div></div>
             <div><strong>{{ 'VOITURES.PRIX_DE_ACHAT' | translate }}</strong><div>{{ v.prixAchat | number:'1.0-0' }} $</div></div>
-            <div><strong>{{ 'COMMON.PRIX_VENTE' | translate }}</strong><div>{{ v.prixVente | number:'1.0-0' }} $</div></div>
+            <div><strong>{{ 'VOITURES.PRIX_DEMANDE' | translate }}</strong><div>{{ v.prixDemande ? (v.prixDemande | number:'1.0-0') + ' $' : '—' }}</div></div>
+            <div><strong>{{ 'COMMON.PRIX_VENTE' | translate }}</strong><div>{{ v.prixVente ? (v.prixVente | number:'1.0-0') + ' $' : '—' }}</div></div>
             <div><strong>{{ 'COMMON.VIN' | translate }}</strong><div>{{ v.vin || '—' }}</div></div>
             <div><strong>{{ 'COMMON.COULEUR' | translate }}</strong><div>{{ v.couleur || '—' }}</div></div>
             <div><strong>{{ 'COMMON.KILOMETRAGE' | translate }}</strong><div>{{ v.kilometrage || '—' }}</div></div>

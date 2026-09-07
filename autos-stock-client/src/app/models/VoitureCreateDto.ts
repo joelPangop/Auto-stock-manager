@@ -9,7 +9,8 @@ export interface VoitureCreateDto {
   couleur?: string;
   kilometrage?: number;
   prixAchat?: number;
-  prixVente?: number;
+  /** Prix affiche sur la vitrine. Le prix de vente reel vient de la vente. */
+  prixDemande?: number;
   statut?: StatutVoiture;
   categorie?: CategorieVoiture;
   idFournisseur?: number;

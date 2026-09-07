@@ -82,6 +82,7 @@
     "NOUVELLE_VOITURE": "New vehicle",
     "REINITIALISER": "Reset",
     "PRIX_VENTE": "Sale price",
+    "PRIX_DEMANDE": "Asking price",
     "EN_STOCK_DEPUIS": "In stock for more than 3 months",
     "VISUALISER": "View",
     "SUPPRIMER": "Delete",
@@ -135,7 +136,7 @@
     "CREER_MOUVEMENT": "Automatically create an entry movement",
     "ERREUR_API": "Error while saving.",
     "PRIX_ACHAT": "Purchase price (CAD)",
-    "PRIX_VENTE": "Sale price (CAD)"
+    "PRIX_DEMANDE": "Asking price (CAD)"
   },
   "DEPENSES": {
     "TOTAL": "Total expenses",

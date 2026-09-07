@@ -99,6 +99,10 @@ public class VoitureServiceImpl extends AbstractBaseService<Voiture, Long, Voitu
         v.setOwner(existedVoiture.getOwner());
         v.setVente(existedVoiture.getVente());
         v.setDateEntreeStock(existedVoiture.getDateEntreeStock());
+        // Le prix de vente appartient a la vente : il n'est plus saisissable sur
+        // la fiche voiture. Sans cette reprise, le formulaire — qui ne l'envoie
+        // plus — l'effacerait a chaque modification.
+        v.setPrixVente(existedVoiture.getPrixVente());
         v.setVersion(existedVoiture.getVersion());
         return repository.save(v);
     }

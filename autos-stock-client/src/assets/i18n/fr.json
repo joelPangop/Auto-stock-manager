@@ -82,6 +82,7 @@
     "NOUVELLE_VOITURE": "Nouvelle voiture",
     "REINITIALISER": "Réinitialiser",
     "PRIX_VENTE": "Prix vente",
+    "PRIX_DEMANDE": "Prix demandé",
     "EN_STOCK_DEPUIS": "En stock depuis plus de 3 mois",
     "VISUALISER": "Visualiser",
     "SUPPRIMER": "Supprimer",
@@ -135,7 +136,7 @@
     "CREER_MOUVEMENT": "Créer un mouvement d'entrée automatiquement",
     "ERREUR_API": "Erreur lors de l'enregistrement.",
     "PRIX_ACHAT": "Prix d'achat (CAD)",
-    "PRIX_VENTE": "Prix de vente (CAD)"
+    "PRIX_DEMANDE": "Prix demandé (CAD)"
   },
   "DEPENSES": {
     "TOTAL": "Total dépenses",

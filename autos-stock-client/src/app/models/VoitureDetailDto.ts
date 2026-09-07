@@ -8,6 +8,9 @@ export interface VoitureDetailDto {
   idModele: number;
   annee: number;
   prixAchat: number;
+  /** Prix affiche sur la vitrine, saisi sur la fiche. */
+  prixDemande: number;
+  /** Montant reellement encaisse, renseigne par la vente. */
   prixVente: number;
   depenseDivers: number;
   idFournisseur: number;

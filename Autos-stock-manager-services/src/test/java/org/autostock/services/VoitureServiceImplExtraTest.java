@@ -265,6 +265,23 @@ class VoitureServiceImplExtraTest {
         }
 
         @Test
+        @DisplayName("le prix de vente n est pas modifiable depuis la fiche voiture")
+        void prixVenteNonModifiable() throws Exception {
+            // Le prix de vente appartient a la vente. Le formulaire ne l'envoie
+            // plus : sans reprise depuis la base, chaque modification de la
+            // fiche l'effacerait.
+            when(sec.isAdmin()).thenReturn(true);
+            voiture.setPrixVente(new java.math.BigDecimal("18000"));
+
+            var patchQuiTenteDeLEcraser = new Voiture();
+            patchQuiTenteDeLEcraser.setPrixVente(new java.math.BigDecimal("1"));
+
+            var maj = service.update(10L, patchQuiTenteDeLEcraser);
+
+            assertThat(maj.getPrixVente()).isEqualByComparingTo("18000");
+        }
+
+        @Test
         @DisplayName("un patch sans proprietaire ne fait pas echouer le controle")
         void patchSansProprietaire() throws Exception {
             // Le mapper ne renseigne jamais owner : le controle doit rester

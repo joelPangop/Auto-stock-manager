@@ -18,6 +18,7 @@ public class VoitureDetailDto {
     private String couleur;
     private String vin;
     private BigDecimal prixAchat;
+    private BigDecimal prixDemande;
     private BigDecimal prixVente;
     private String statut;
     private String categorie;

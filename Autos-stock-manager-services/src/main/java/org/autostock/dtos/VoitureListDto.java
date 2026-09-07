@@ -15,6 +15,7 @@ public class VoitureListDto {
     private Integer annee;
     private String couleur;
     private String vin;
+    private BigDecimal prixDemande;
     private BigDecimal prixVente;
     private Long owner;
     private String statut; // "EN_STOCK", "VENDUE", etc.
