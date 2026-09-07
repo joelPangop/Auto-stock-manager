@@ -27,6 +27,8 @@
     <textarea matInput rows="3" formControlName="commentaire"></textarea>
   </mat-form-field>
 
+  <mat-error *ngIf="apiError" class="api-error">{{ apiError }}</mat-error>
+
   <div class="actions">
     <button mat-button mat-dialog-close>Annuler</button>
     <button mat-flat-button color="primary" [disabled]="form.invalid">Enregistrer</button>

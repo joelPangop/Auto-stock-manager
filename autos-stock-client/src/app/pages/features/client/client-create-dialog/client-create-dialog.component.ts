@@ -16,6 +16,7 @@ export interface ClientDialogData {
 export class ClientCreateDialogComponent implements OnInit {
   form: FormGroup;
   editMode: boolean;
+  apiError: string | null = null;
 
   constructor(
     private clientService: ClientService,
@@ -38,15 +39,17 @@ export class ClientCreateDialogComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
+    this.apiError = null;
     const val = this.form.getRawValue();
-    if (this.editMode && this.data.client?.id) {
-      this.clientService.update(this.data.client.id, val).subscribe(updated => {
-        this.ref.close(updated);
-      });
-    } else {
-      this.clientService.create(val).subscribe(created => {
-        this.ref.close(created);
-      });
-    }
+    const requete = this.editMode && this.data.client?.id
+      ? this.clientService.update(this.data.client.id, val)
+      : this.clientService.create(val);
+
+    // Sans branche d'erreur, un echec laissait la boite ouverte sans rien dire.
+    requete.subscribe({
+      next: client => this.ref.close(client),
+      error: err => this.apiError =
+        err?.error?.message ?? "L'enregistrement du client a echoue."
+    });
   }
 }

@@ -12,6 +12,7 @@ import {Entretien} from "../../../../models/entretien";
 export class EntretienEditDialogComponent implements OnInit {
 
   form: FormGroup;
+  apiError: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -32,21 +33,23 @@ export class EntretienEditDialogComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) { return; }
+    this.apiError = null;
     const raw = this.form.value as Entretien;
     const dateStr: string = raw.dateEntretien as any;
     const dto = {
       ...raw,
       dateEntretien: dateStr.length === 10 ? dateStr + 'T00:00:00' : dateStr.slice(0, 19)
     };
-    if (this.data.entretien?.id) {
-      this.srv.update(this.data.entretien.id!, dto).subscribe(res => {
-        this.ref.close(res);
-      });
-    } else {
-      this.srv.create(dto).subscribe(res => {
-        this.ref.close(res);
-      });
-    }
+    const requete = this.data.entretien?.id
+      ? this.srv.update(this.data.entretien.id!, dto)
+      : this.srv.create(dto);
+
+    // Sans branche d'erreur, un echec laissait la boite ouverte sans rien dire.
+    requete.subscribe({
+      next: res => this.ref.close(res),
+      error: err => this.apiError =
+        err?.error?.message ?? "L'enregistrement de l'entretien a echoue."
+    });
   }
 
   private toDateString(val: any): string {

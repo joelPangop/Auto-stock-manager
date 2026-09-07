@@ -9,5 +9,8 @@ public interface ClientService extends IService<Client, Long> {
 
     Optional<Client> trouverParEmail(String email);
 
+    /** Met a jour les champs editables d'un client existant. */
+    Client modifier(Long id, Client patch);
+
     List<Client> rechercherParNom(String nomPartiel);
 }

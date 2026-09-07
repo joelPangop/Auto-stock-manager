@@ -14,6 +14,7 @@ import {TypeFournisseur} from "../../../../models/enums/TypeFournisseur";
 })
 export class FournisseurCreateDialogComponent implements OnInit {
   form: FormGroup;
+  apiError: string | null = null;
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -44,8 +45,12 @@ export class FournisseurCreateDialogComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
-    this.srv.create(this.form.getRawValue()).subscribe(created => {
-      this.ref.close(created); // ← on renvoie le fournisseur créé
+    this.apiError = null;
+    // Sans branche d'erreur, un echec laissait la boite ouverte sans rien dire.
+    this.srv.create(this.form.getRawValue()).subscribe({
+      next: created => this.ref.close(created), // on renvoie le fournisseur cree
+      error: err => this.apiError =
+        err?.error?.message ?? "L'enregistrement du fournisseur a echoue."
     });
   }
 }

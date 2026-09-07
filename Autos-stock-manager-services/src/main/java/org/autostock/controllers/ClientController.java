@@ -45,6 +45,11 @@ public class ClientController {
         return data.stream().map(clientMapper::toDto).toList();
     }
 
+    @PutMapping("/{id}")
+    public ClientDto update(@PathVariable Long id, @RequestBody ClientCreateDto dto) {
+        return clientMapper.toDto(clientService.modifier(id, clientMapper.toEntity(dto)));
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         clientService.deleteById(id);

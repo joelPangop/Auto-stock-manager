@@ -26,6 +26,8 @@
     <input matInput formControlName="telephone">
   </mat-form-field>
 
+  <mat-error *ngIf="apiError" class="api-error">{{ apiError }}</mat-error>
+
   <div class="actions">
     <button mat-button mat-dialog-close>Annuler</button>
     <button mat-flat-button color="primary" [disabled]="form.invalid">Créer</button>
