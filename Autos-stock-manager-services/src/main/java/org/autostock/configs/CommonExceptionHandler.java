@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
@@ -66,6 +68,22 @@ public class CommonExceptionHandler {
         log.error("Corps de requete invalide: {}", ex.getMessage());
         return ResponseEntity.badRequest()
                 .body(new ApiError("Donnees envoyees invalides : " + ex.getMostSpecificCause().getMessage()));
+    }
+
+    /**
+     * Echec d'authentification : mauvais mot de passe, email inconnu, compte
+     * desactive. Ces exceptions heritent de RuntimeException : sans ce handler,
+     * le fourre-tout ci-dessous les transformait en 500, et une simple faute de
+     * frappe au login passait pour une panne du serveur.
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> authenticationFailed(AuthenticationException ex) {
+        // Message volontairement identique pour un email inconnu et un mauvais
+        // mot de passe : distinguer les deux revelerait quels comptes existent.
+        String message = (ex instanceof BadCredentialsException)
+                ? "Email ou mot de passe incorrect."
+                : ex.getMessage();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(message));
     }
 
     @ExceptionHandler(RuntimeException.class)
