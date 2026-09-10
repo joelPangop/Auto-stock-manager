@@ -22,6 +22,17 @@ export class LayoutComponent {
 
   get currentLang(): string { return this.langSvc.current; }
 
+  /**
+   * Premier mot du nom de l'utilisateur connecte : le modele n'a pas de champ
+   * prenom distinct. Lu via currentUser, dont la valeur n'est re-analysee que
+   * si le stockage local change : l'appel depuis le template reste leger et le
+   * prenom suit une connexion ou une modification du profil.
+   */
+  get prenom(): string {
+    const nom = this.auth.currentUser?.nom?.trim();
+    return nom ? nom.split(/\s+/)[0] : '';
+  }
+
   constructor(
     private bp: BreakpointObserver,
     private auth: AuthService,

@@ -49,7 +49,12 @@
         </button>
       </mat-menu>
 
-      <button mat-icon-button (click)="openProfileDialog()"><mat-icon>account_circle</mat-icon></button>
+      <!-- Le clic sur le bouton remonte au conteneur : un seul appel, et le
+           prenom reste cliquable lui aussi. -->
+      <div class="profile" (click)="openProfileDialog()">
+        <button mat-icon-button aria-label="Profil"><mat-icon>account_circle</mat-icon></button>
+        <span class="profile-name" *ngIf="prenom" [title]="prenom">{{ prenom }}</span>
+      </div>
     </mat-toolbar>
 
     <div class="breadcrumbs">

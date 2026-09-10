@@ -60,3 +60,25 @@ mat-nav-list a {
   a { color: #1d4ed8; text-decoration: none; }
   a:hover { text-decoration: underline; }
 }
+
+// Icone de profil et prenom empiles, centres dans la hauteur de la barre.
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  line-height: 1;
+  margin-left: 4px;
+
+  .mat-icon-button { width: 36px; height: 36px; line-height: 36px; }
+
+  .profile-name {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: -2px;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
